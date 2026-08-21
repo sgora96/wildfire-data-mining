@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Plataforma de mineria de datos para el analisis y prediccion de incendios forestales.">
+  <title>{{ project_name }} · Dashboard</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            ember:  { 400: '#fb923c', 500: '#f97316', 600: '#ea580c', 700: '#c2410c' },
+            ash:    { 800: '#1e293b', 900: '#0f172a', 950: '#020617' }
+          },
+          fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] },
+          keyframes: {
+            'fade-up': { '0%': { opacity: 0, transform: 'translateY(8px)' }, '100%': { opacity: 1, transform: 'translateY(0)' } }
+          },
+          animation: { 'fade-up': 'fade-up .4s ease-out both' }
+        }
+      }
+    };
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔥</text></svg>">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js" defer></script>
+</head>
+
+<body class="min-h-screen bg-ash-950 font-sans text-slate-200 antialiased selection:bg-ember-500/30">
+
+  <!-- ===================== HEADER ===================== -->
+  <header class="sticky top-0 z-40 border-b border-white/5 bg-ash-950/80 backdrop-blur-xl">
+    <div class="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3 sm:px-6 lg:px-8">
+
+      <a href="#dashboard" class="flex items-center gap-3">
+        <span class="grid h-10 w-10 place-items-center rounded-xl bg-gradient-to-br from-ember-500 to-red-600 shadow-lg shadow-ember-600/30">
+          <svg class="h-6 w-6 text-white" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M12 2s4.5 4.2 4.5 8.2A4.5 4.5 0 0 1 12 15a4.5 4.5 0 0 1-4.5-4.8C7.5 6.2 12 2 12 2Zm0 20c-3.9 0-7-2.6-7-6 0 0 1.6 1.6 3.1 1.6 0 0-1-3.4 1.4-6.3 0 2.4 1.6 3.4 2.5 4.3 1.2 1.2 1.5 2.6 1.1 4.1 1.4-.3 2.6-1.6 2.9-3.2 1 1.1 1.5 2.4 1.5 3.5 0 3.4-3.1 6-6.5 6Z"/>
+          </svg>
+        </span>
+        <span class="leading-tight">
+          <span class="block text-base font-extrabold tracking-tight text-white sm:text-lg">{{ project_name }}</span>
+          <span class="hidden text-xs text-slate-400 sm:block">{{ project_tagline }}</span>
+        </span>
+      </a>
+
+      <nav class="hidden items-center gap-1 lg:flex" aria-label="Secciones">
+        <a href="#kpis"     class="rounded-lg px-3 py-2 text-sm font-medium text-slate-300 transition hover:bg-white/5 hover:text-white">Indicadores</a>
+        <a href="#filtros"  class="rounded-lg px-3 py-2 text-sm font-medium text-slate-300 transition hover:bg-white/5 hover:text-white">Filtros</a>
+        <a href="#datasets" class="rounded-lg px-3 py-2 text-sm font-medium text-slate-300 transition hover:bg-white/5 hover:text-white">Datasets</a>
+        <a href="#analisis" class="rounded-lg px-3 py-2 text-sm font-medium text-slate-300 transition hover:bg-white/5 hover:text-white">Analisis</a>
+      </nav>
+
+      <div class="flex items-center gap-3">
+        <span id="api-status"
+              class="hidden items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-medium text-slate-300 sm:inline-flex">
+          <span id="api-status-dot" class="h-2 w-2 animate-pulse rounded-full bg-amber-400"></span>
+          <span id="api-status-text">Conectando…</span>
+        </span>
+        <button id="btn-refresh" type="button"
+                class="inline-flex items-center gap-2 rounded-lg bg-ember-600 px-3.5 py-2 text-sm font-semibold text-white shadow-lg shadow-ember-600/20 transition hover:bg-ember-500 focus:outline-none focus:ring-2 focus:ring-ember-400 focus:ring-offset-2 focus:ring-offset-ash-950">
+          <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <path d="M21 12a9 9 0 1 1-2.6-6.4"/><path d="M21 3v6h-6"/>
+          </svg>
+          <span class="hidden sm:inline">Actualizar</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main id="dashboard" class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+
+    <!-- ===================== TITULO DE PAGINA ===================== -->
+    <section class="mb-8 animate-fade-up">
+      <div class="flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <p class="text-xs font-semibold uppercase tracking-[0.2em] text-ember-400">Analisis exploratorio</p>
+          <h1 class="mt-2 text-3xl font-extrabold tracking-tight text-white sm:text-4xl">Dashboard de incendios forestales</h1>
+          <p class="mt-2 max-w-2xl text-sm text-slate-400">
+            Explora la relacion entre variables climaticas y la severidad de los incendios,
+            carga tus propios datasets y prepara el terreno para modelos predictivos.
+          </p>
+        </div>
+        <div class="rounded-xl border border-white/10 bg-white/5 px-4 py-3">
+          <p class="text-xs uppercase tracking-wider text-slate-400">Fuente activa</p>
+          <p id="dataset-source" class="mt-1 text-sm font-semibold text-white">{{ dataset_source }}</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== KPIs ===================== -->
+    <section id="kpis" class="mb-8 scroll-mt-24">
+      <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+
+        <!-- Total incendios -->
+        <article class="group relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-ash-900 to-ash-950 p-5 shadow-xl transition hover:border-ember-500/40">
+          <div class="absolute -right-6 -top-6 h-24 w-24 rounded-full bg-ember-500/10 blur-2xl transition group-hover:bg-ember-500/20"></div>
+          <div class="relative flex items-start justify-between">
+            <div>
+              <p class="text-xs font-medium uppercase tracking-wider text-slate-400">Total incendios</p>
+              <p data-kpi="total_fires" class="mt-2 text-3xl font-extrabold text-white">{{ kpis.total_fires }}</p>
+              <p class="mt-1 text-xs text-slate-500">Registros en el dataset</p>
+            </div>
+            <span class="grid h-10 w-10 place-items-center rounded-xl bg-ember-500/15 text-ember-400">
+              <svg class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2s4.5 4.2 4.5 8.2A4.5 4.5 0 0 1 12 15a4.5 4.5 0 0 1-4.5-4.8C7.5 6.2 12 2 12 2Z"/></svg>
+            </span>
+          </div>
+        </article>
+
+        <!-- Area afectada -->
+        <article class="group relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-ash-900 to-ash-950 p-5 shadow-xl transition hover:border-amber-500/40">
+          <div class="absolute -right-6 -top-6 h-24 w-24 rounded-full bg-amber-500/10 blur-2xl transition group-hover:bg-amber-500/20"></div>
+          <div class="relative flex items-start justify-between">
+            <div>
+              <p class="text-xs font-medium uppercase tracking-wider text-slate-400">Area afectada</p>
+              <p class="mt-2 text-3xl font-extrabold text-white">
+                <span data-kpi="total_area">{{ kpis.total_area }}</span>
+                <span class="text-base font-semibold text-slate-400">ha</span>
+              </p>
+              <p class="mt-1 text-xs text-slate-500">Media por evento: <span data-kpi="avg_area">{{ kpis.avg_area }}</span> ha</p>
+            </div>
+            <span class="grid h-10 w-10 place-items-center rounded-xl bg-amber-500/15 text-amber-400">
+              <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 20h18M5 20V9l7-5 7 5v11"/></svg>
+            </span>
+          </div>
+        </article>
+
+        <!-- Riesgo promedio -->
+        <article class="group relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-ash-900 to-ash-950 p-5 shadow-xl transition hover:border-red-500/40">
+          <div class="absolute -right-6 -top-6 h-24 w-24 rounded-full bg-red-500/10 blur-2xl transition group-hover:bg-red-500/20"></div>
+          <div class="relative">
+            <div class="flex items-start justify-between">
+              <div>
+                <p class="text-xs font-medium uppercase tracking-wider text-slate-400">Riesgo promedio</p>
+                <p class="mt-2 text-3xl font-extrabold text-white">
+                  <span data-kpi="avg_risk">{{ kpis.avg_risk }}</span>
+                  <span class="text-base font-semibold text-slate-400">/100</span>
+                </p>
+              </div>
+              <span class="grid h-10 w-10 place-items-center rounded-xl bg-red-500/15 text-red-400">
+                <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4m0 4h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/></svg>
+              </span>
+            </div>
+            <div class="mt-4 h-2 w-full overflow-hidden rounded-full bg-white/10">
+              <div id="risk-bar" class="h-full rounded-full bg-gradient-to-r from-amber-400 via-ember-500 to-red-600 transition-all duration-700" style="width: {{ kpis.avg_risk }}%"></div>
+            </div>
+          </div>
+        </article>
+
+        <!-- Condiciones medias -->
+        <article class="group relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-ash-900 to-ash-950 p-5 shadow-xl transition hover:border-sky-500/40">
+          <div class="absolute -right-6 -top-6 h-24 w-24 rounded-full bg-sky-500/10 blur-2xl transition group-hover:bg-sky-500/20"></div>
+          <div class="relative">
+            <p class="text-xs font-medium uppercase tracking-wider text-slate-400">Condiciones medias</p>
+            <dl class="mt-3 grid grid-cols-3 gap-2 text-center">
+              <div class="rounded-lg bg-white/5 py-2">
+                <dt class="text-[10px] uppercase text-slate-500">Temp</dt>
+                <dd class="text-lg font-bold text-white"><span data-kpi="avg_temp">{{ kpis.avg_temp }}</span>°</dd>
+              </div>
+              <div class="rounded-lg bg-white/5 py-2">
+                <dt class="text-[10px] uppercase text-slate-500">Viento</dt>
+                <dd class="text-lg font-bold text-white" data-kpi="avg_wind">{{ kpis.avg_wind }}</dd>
+              </div>
+              <div class="rounded-lg bg-white/5 py-2">
+                <dt class="text-[10px] uppercase text-slate-500">Hum</dt>
+                <dd class="text-lg font-bold text-white"><span data-kpi="avg_humidity">{{ kpis.avg_humidity }}</span>%</dd>
+              </div>
+            </dl>
+          </div>
+        </article>
+
+      </div>
+    </section>
+
+    <!-- ===================== GRID PRINCIPAL ===================== -->
+    <div class="grid grid-cols-1 gap-6 lg:grid-cols-12">
+
+      <!-- ---------- COLUMNA LATERAL: filtros + carga ---------- -->
+      <div class="space-y-6 lg:col-span-4 xl:col-span-3">
+
+        <!-- Filtros climaticos -->
+        <section id="filtros" class="scroll-mt-24 rounded-2xl border border-white/10 bg-ash-900/60 p-5 shadow-xl">
+          <header class="mb-5 flex items-center justify-between">
+            <h2 class="text-sm font-bold uppercase tracking-wider text-white">Filtros climaticos</h2>
+            <button id="btn-reset" type="button" class="text-xs font-medium text-ember-400 transition hover:text-ember-300">Restablecer</button>
+          </header>
+
+          <form id="filter-form" class="space-y-6">
+
+            <!-- Temperatura -->
+            <div>
+              <div class="mb-2 flex items-center justify-between">
+                <label for="temp_max" class="flex items-center gap-2 text-sm font-medium text-slate-300">
+                  <span class="h-2 w-2 rounded-full bg-ember-500"></span> Temperatura maxima
+                </label>
+                <span id="temp_max_out" class="rounded-md bg-white/5 px-2 py-0.5 font-mono text-xs text-ember-400">45 °C</span>
+              </div>
+              <input type="range" id="temp_max" name="temp_max" min="0" max="45" step="0.5" value="45"
+                     class="range-ember w-full" data-output="temp_max_out" data-unit=" °C">
+              <div class="mt-3 flex items-center justify-between">
+                <label for="temp_min" class="text-xs text-slate-500">Temperatura minima</label>
+                <span id="temp_min_out" class="font-mono text-xs text-slate-400">0 °C</span>
+              </div>
+              <input type="range" id="temp_min" name="temp_min" min="0" max="45" step="0.5" value="0"
+                     class="range-ember mt-1 w-full" data-output="temp_min_out" data-unit=" °C">
+            </div>
+
+            <!-- Viento -->
+            <div>
+              <div class="mb-2 flex items-center justify-between">
+                <label for="wind_max" class="flex items-center gap-2 text-sm font-medium text-slate-300">
+                  <span class="h-2 w-2 rounded-full bg-sky-400"></span> Viento maximo
+                </label>
+                <span id="wind_max_out" class="rounded-md bg-white/5 px-2 py-0.5 font-mono text-xs text-sky-400">25 km/h</span>
+              </div>
+              <input type="range" id="wind_max" name="wind_max" min="0" max="25" step="0.5" value="25"
+                     class="range-sky w-full" data-output="wind_max_out" data-unit=" km/h">
+              <div class="mt-3 flex items-center justify-between">
+                <label for="wind_min" class="text-xs text-slate-500">Viento minimo</label>
+                <span id="wind_min_out" class="font-mono text-xs text-slate-400">0 km/h</span>
+              </div>
+              <input type="range" id="wind_min" name="wind_min" min="0" max="25" step="0.5" value="0"
+                     class="range-sky mt-1 w-full" data-output="wind_min_out" data-unit=" km/h">
+            </div>
+
+            <!-- Humedad -->
+            <div>
+              <div class="mb-2 flex items-center justify-between">
+                <label for="rh_max" class="flex items-center gap-2 text-sm font-medium text-slate-300">
+                  <span class="h-2 w-2 rounded-full bg-emerald-400"></span> Humedad maxima
+                </label>
+                <span id="rh_max_out" class="rounded-md bg-white/5 px-2 py-0.5 font-mono text-xs text-emerald-400">100 %</span>
+              </div>
+              <input type="range" id="rh_max" name="rh_max" min="0" max="100" step="1" value="100"
+                     class="range-emerald w-full" data-output="rh_max_out" data-unit=" %">
+              <div class="mt-3 flex items-center justify-between">
+                <label for="rh_min" class="text-xs text-slate-500">Humedad minima</label>
+                <span id="rh_min_out" class="font-mono text-xs text-slate-400">0 %</span>
+              </div>
+              <input type="range" id="rh_min" name="rh_min" min="0" max="100" step="1" value="0"
+                     class="range-emerald mt-1 w-full" data-output="rh_min_out" data-unit=" %">
+            </div>
+
+            <!-- Meses -->
+            <div>
+              <p class="mb-2 text-sm font-medium text-slate-300">Meses</p>
+              <div id="month-chips" class="flex flex-wrap gap-1.5">
+                {% for key in month_order %}
+                <button type="button" data-month="{{ key }}"
+                        class="month-chip rounded-md border border-white/10 bg-white/5 px-2 py-1 text-xs font-medium text-slate-400 transition hover:border-ember-500/50 hover:text-white">
+                  {{ month_labels[key] }}
+                </button>
+                {% endfor %}
+              </div>
+            </div>
+
+            <!-- Solo con area quemada -->
+            <label class="flex cursor-pointer items-center justify-between rounded-lg border border-white/10 bg-white/5 px-3 py-2.5">
+              <span class="text-sm text-slate-300">Solo eventos con area &gt; 0</span>
+              <input type="checkbox" id="only_burned" name="only_burned"
+                     class="h-4 w-4 rounded border-white/20 bg-transparent text-ember-500 focus:ring-ember-500 focus:ring-offset-ash-900">
+            </label>
+
+            <button type="submit"
+                    class="w-full rounded-lg bg-ember-600 px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-ember-600/20 transition hover:bg-ember-500 focus:outline-none focus:ring-2 focus:ring-ember-400 focus:ring-offset-2 focus:ring-offset-ash-900">
+              Aplicar filtros
+            </button>
+
+            <p class="text-center text-xs text-slate-500">
+              <span id="match-count">{{ kpis.total_fires }}</span> registros coinciden
+            </p>
+          </form>
+        </section>
+
+        <!-- Carga de datasets -->
+        <section id="datasets" class="scroll-mt-24 rounded-2xl border border-white/10 bg-ash-900/60 p-5 shadow-xl">
+          <h2 class="mb-4 text-sm font-bold uppercase tracking-wider text-white">Carga de dataset</h2>
+
+          <form id="upload-form" enctype="multipart/form-data">
+            <label id="dropzone" for="file-input"
+                   class="flex cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed border-white/15 bg-white/[0.02] px-4 py-8 text-center transition hover:border-ember-500/60 hover:bg-ember-500/5">
+              <svg class="h-9 w-9 text-slate-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M12 16V4m0 0L8 8m4-4 4 4"/><path d="M20 16v2a3 3 0 0 1-3 3H7a3 3 0 0 1-3-3v-2"/>
+              </svg>
+              <p class="mt-3 text-sm font-medium text-slate-300">Arrastra tu archivo o <span class="text-ember-400">busca en tu equipo</span></p>
+              <p class="mt-1 text-xs text-slate-500">CSV, XLS o XLSX · maximo 32 MB</p>
+              <input id="file-input" name="file" type="file" accept=".csv,.xls,.xlsx" class="sr-only">
+            </label>
+          </form>
+
+          <div id="upload-feedback" class="mt-4 hidden rounded-lg border px-3 py-2 text-xs"></div>
+
+          <!-- Perfilado del dataset cargado -->
+          <div id="upload-profile" class="mt-4 hidden space-y-3">
+            <div class="grid grid-cols-3 gap-2 text-center">
+              <div class="rounded-lg bg-white/5 py-2">
+                <p class="text-[10px] uppercase text-slate-500">Filas</p>
+                <p id="profile-rows" class="text-sm font-bold text-white">—</p>
+              </div>
+              <div class="rounded-lg bg-white/5 py-2">
+                <p class="text-[10px] uppercase text-slate-500">Columnas</p>
+                <p id="profile-cols" class="text-sm font-bold text-white">—</p>
+              </div>
+              <div class="rounded-lg bg-white/5 py-2">
+                <p class="text-[10px] uppercase text-slate-500">Nulos</p>
+                <p id="profile-nulls" class="text-sm font-bold text-white">—</p>
+              </div>
+            </div>
+            <div id="profile-columns" class="flex flex-wrap gap-1"></div>
+          </div>
+
+          <!-- Inventario -->
+          <div class="mt-5 border-t border-white/5 pt-4">
+            <p class="mb-2 text-xs font-semibold uppercase tracking-wider text-slate-400">Datasets disponibles</p>
+            <ul id="dataset-list" class="space-y-1.5 text-xs text-slate-400">
+              <li class="italic text-slate-600">Cargando inventario…</li>
+            </ul>
+          </div>
+        </section>
+      </div>
+
+      <!-- ---------- COLUMNA PRINCIPAL: visualizaciones ---------- -->
+      <div id="analisis" class="scroll-mt-24 space-y-6 lg:col-span-8 xl:col-span-9">
+
+        <!-- Serie temporal -->
+        <section class="rounded-2xl border border-white/10 bg-ash-900/60 p-5 shadow-xl">
+          <header class="mb-4 flex flex-wrap items-center justify-between gap-2">
+            <div>
+              <h2 class="text-base font-bold text-white">Estacionalidad de los incendios</h2>
+              <p class="text-xs text-slate-400">Frecuencia de eventos y hectareas quemadas por mes</p>
+            </div>
+            <div class="flex gap-3 text-xs">
+              <span class="flex items-center gap-1.5 text-slate-400"><span class="h-2 w-4 rounded-sm bg-ember-500"></span> Incendios</span>
+              <span class="flex items-center gap-1.5 text-slate-400"><span class="h-2 w-4 rounded-sm bg-amber-300"></span> Hectareas</span>
+            </div>
+          </header>
+          <div class="chart-shell h-72"><canvas id="chart-monthly"></canvas></div>
+        </section>
+
+        <!-- Riesgo + viento -->
+        <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+          <section class="rounded-2xl border border-white/10 bg-ash-900/60 p-5 shadow-xl">
+            <h2 class="text-base font-bold text-white">Distribucion de riesgo</h2>
+            <p class="mb-4 text-xs text-slate-400">Registros por franja del indice de riesgo</p>
+            <div class="chart-shell h-64"><canvas id="chart-risk"></canvas></div>
+          </section>
+
+          <section class="rounded-2xl border border-white/10 bg-ash-900/60 p-5 shadow-xl">
+            <h2 class="text-base font-bold text-white">Riesgo segun viento</h2>
+            <p class="mb-4 text-xs text-slate-400">Indice medio por franja de velocidad (km/h)</p>
+            <div class="chart-shell h-64"><canvas id="chart-wind"></canvas></div>
+          </section>
+        </div>
+
+        <!-- Dispersion -->
+        <section class="rounded-2xl border border-white/10 bg-ash-900/60 p-5 shadow-xl">
+          <h2 class="text-base font-bold text-white">Temperatura vs superficie quemada</h2>
+          <p class="mb-4 text-xs text-slate-400">Escala logaritmica log(1 + area); el tamano del punto representa el viento</p>
+          <div class="chart-shell h-72"><canvas id="chart-scatter"></canvas></div>
+        </section>
+
+        <!-- Correlacion -->
+        <section class="rounded-2xl border border-white/10 bg-ash-900/60 p-5 shadow-xl">
+          <header class="mb-4 flex flex-wrap items-center justify-between gap-2">
+            <div>
+              <h2 class="text-base font-bold text-white">Matriz de correlacion</h2>
+              <p class="text-xs text-slate-400">Coeficiente de Pearson entre variables climaticas</p>
+            </div>
+            <div class="flex items-center gap-2 text-[10px] text-slate-500">
+              <span>-1</span>
+              <span class="h-2 w-24 rounded-full bg-gradient-to-r from-sky-500 via-slate-700 to-ember-500"></span>
+              <span>+1</span>
+            </div>
+          </header>
+          <div class="overflow-x-auto">
+            <div id="correlation-grid" class="min-w-[520px] text-[11px]"></div>
+          </div>
+        </section>
+
+        <!-- Tabla de registros -->
+        <section class="rounded-2xl border border-white/10 bg-ash-900/60 p-5 shadow-xl">
+          <header class="mb-4 flex flex-wrap items-center justify-between gap-2">
+            <div>
+              <h2 class="text-base font-bold text-white">Muestra de registros</h2>
+              <p class="text-xs text-slate-400">Primeras filas del subconjunto filtrado</p>
+            </div>
+          </header>
+          <div class="overflow-x-auto rounded-lg border border-white/5">
+            <table class="min-w-full text-left text-xs">
+              <thead id="records-head" class="bg-white/5 text-slate-400"></thead>
+              <tbody id="records-body" class="divide-y divide-white/5 text-slate-300"></tbody>
+            </table>
+          </div>
+        </section>
+
+      </div>
+    </div>
+  </main>
+
+  <!-- ===================== FOOTER ===================== -->
+  <footer class="mt-12 border-t border-white/5 bg-ash-950">
+    <div class="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
+      <div class="grid gap-8 md:grid-cols-4">
+
+        <div class="md:col-span-2">
+          <div class="flex items-center gap-3">
+            <span class="grid h-9 w-9 place-items-center rounded-lg bg-gradient-to-br from-ember-500 to-red-600">
+              <svg class="h-5 w-5 text-white" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2s4.5 4.2 4.5 8.2A4.5 4.5 0 0 1 12 15a4.5 4.5 0 0 1-4.5-4.8C7.5 6.2 12 2 12 2Z"/></svg>
+            </span>
+            <span class="text-base font-extrabold text-white">{{ project_name }}</span>
+          </div>
+          <p class="mt-3 max-w-md text-sm text-slate-400">
+            Proyecto academico de mineria de datos aplicado a la prevencion de incendios
+            forestales: analisis exploratorio, ingenieria de variables y modelos predictivos
+            sobre condiciones meteorologicas.
+          </p>
+        </div>
+
+        <div>
+          <h3 class="text-xs font-semibold uppercase tracking-wider text-white">Proyecto</h3>
+          <ul class="mt-3 space-y-2 text-sm text-slate-400">
+            <li><a href="#kpis" class="transition hover:text-ember-400">Indicadores</a></li>
+            <li><a href="#analisis" class="transition hover:text-ember-400">Analisis exploratorio</a></li>
+            <li><a href="#datasets" class="transition hover:text-ember-400">Datasets</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h3 class="text-xs font-semibold uppercase tracking-wider text-white">Stack</h3>
+          <ul class="mt-3 space-y-2 text-sm text-slate-400">
+            <li>Flask · Pandas · scikit-learn</li>
+            <li>Tailwind CSS · Chart.js</li>
+            <li>Frozen-Flask · GitHub Pages</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="mt-8 flex flex-col items-center justify-between gap-3 border-t border-white/5 pt-6 sm:flex-row">
+        <p class="text-xs text-slate-500">© <span id="year">2026</span> {{ project_name }}. Uso academico e investigativo.</p>
+        <p class="text-xs text-slate-600">v{{ version }} · construido con Flask y Tailwind CSS</p>
+      </div>
+    </div>
+  </footer>
+
+  <script>window.STATIC_EXPORT = {{ 'true' if static_export else 'false' }};</script>
+  <script src="{{ url_for('static', filename='js/main.js') }}" defer></script>
+</body>
+</html>

@@ -1,0 +1,17 @@
+# --- Core web ---------------------------------------------------------------
+Flask>=3.0
+Werkzeug>=3.0
+Jinja2>=3.1
+python-dotenv>=1.0
+
+# --- Data mining / ML -------------------------------------------------------
+pandas>=2.2
+numpy>=1.26
+scikit-learn>=1.5
+scipy>=1.13
+joblib>=1.4
+openpyxl>=3.1
+
+# --- Produccion / despliegue ------------------------------------------------
+gunicorn>=22.0 ; sys_platform != "win32"
+Frozen-Flask>=1.0

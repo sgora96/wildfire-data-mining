@@ -30,22 +30,32 @@
           <td class="px-3 py-2">unidad de analisis principal del proyecto</td>
         </tr>
         <tr>
-          <td class="px-3 py-2 font-medium text-white">TODO (ej. condicion climatica)</td>
-          <td class="px-3 py-2">TODO</td>
-          <td class="px-3 py-2">TODO</td>
+          <td class="px-3 py-2 font-medium text-white">Deteccion satelital de incendio activo</td>
+          <td class="px-3 py-2">latitud, longitud, fecha/hora UTC, brillo/temperatura del pixel, FRP (potencia radiativa), confianza, satelite/sensor (MODIS/VIIRS)</td>
+          <td class="px-3 py-2">unidad de analisis de la fuente global NASA FIRMS; permite ubicar y fechar focos de calor en cualquier pais sin depender de reportes administrativos</td>
         </tr>
         <tr>
-          <td class="px-3 py-2 font-medium text-white">TODO</td>
-          <td class="px-3 py-2">TODO</td>
-          <td class="px-3 py-2">TODO</td>
+          <td class="px-3 py-2 font-medium text-white">Pais / region climatica</td>
+          <td class="px-3 py-2">nombre del pais, continente, ano, hectareas de perdida de cobertura arborea por incendio</td>
+          <td class="px-3 py-2">nivel de agregacion de la fuente global Global Forest Watch Fires; necesario para comparar Colombia contra el resto del mundo</td>
+        </tr>
+        <tr>
+          <td class="px-3 py-2 font-medium text-white">Emergencia atendida (UNGRD)</td>
+          <td class="px-3 py-2">fecha, departamento, municipio, tipo de evento, fallecidos/heridos, personas/familias afectadas, viviendas afectadas, hectareas, ayudas entregadas</td>
+          <td class="px-3 py-2">fuente nacional independiente del IDEAM; agrega variables de impacto humano y economico que el IDEAM no tiene</td>
+        </tr>
+        <tr>
+          <td class="px-3 py-2 font-medium text-white">Zona de amenaza por incendio (CAR)</td>
+          <td class="px-3 py-2">departamento, municipio, categoria de amenaza fisica (Muy Baja a Muy Alta), area en hectareas por zona</td>
+          <td class="px-3 py-2">fuente regional independiente del IDEAM; describe susceptibilidad del territorio, no solo el historial de eventos ocurridos</td>
         </tr>
       </tbody>
     </table>
   </div>
   <p class="mt-3 text-xs text-slate-500">
-    <!-- TODO: agregar filas si se van a integrar otras entidades (ej. estaciones climatologicas,
-         cobertura vegetal, division politico-administrativa) provenientes de las fuentes
-         globales/nacionales/regionales adicionales. -->
+    Filas agregadas a partir de las fuentes adicionales de nivel global (NASA FIRMS, Global
+    Forest Watch Fires), nacional (Emergencias UNGRD) y regional (CAR Cundinamarca — RICV)
+    documentadas en <code>fuentes.html</code>.
   </p>
 </section>
 
@@ -53,8 +63,8 @@
   <section class="rounded-2xl border border-white/10 bg-ash-900/60 p-6 shadow-xl">
     <h2 class="text-sm font-bold uppercase tracking-wider text-white">Cobertura requerida</h2>
     <dl class="mt-4 space-y-3 text-sm">
-      <div><dt class="text-slate-500">Periodo de analisis</dt><dd class="text-white">2010 - 2024 (IDEAM nacional/regional) + TODO periodo de fuentes globales</dd></div>
-      <div><dt class="text-slate-500">Cobertura geografica</dt><dd class="text-white">Global (TODO) · Colombia (nacional) · Cundinamarca (regional)</dd></div>
+      <div><dt class="text-slate-500">Periodo de analisis</dt><dd class="text-white">2010 - 2024 (IDEAM nacional/regional) · 2000/2001 - presente (NASA FIRMS y Global Forest Watch Fires, nivel global) · 2019 - 2022 (UNGRD, nacional adicional) · 2014, foto fija (CAR RICV, regional adicional)</dd></div>
+      <div><dt class="text-slate-500">Cobertura geografica</dt><dd class="text-white">Global — todos los paises (NASA FIRMS, Global Forest Watch Fires) · Colombia (nacional: IDEAM, UNGRD) · Cundinamarca (regional: IDEAM, CAR)</dd></div>
       <div><dt class="text-slate-500">Poblacion / unidad de analisis</dt><dd class="text-white">Eventos de incendio forestal reportados</dd></div>
       <div><dt class="text-slate-500">Nivel de granularidad</dt><dd class="text-white">Evento individual (fecha, municipio) — no agregado por mes/departamento</dd></div>
     </dl>
@@ -63,11 +73,28 @@
   <section class="rounded-2xl border border-white/10 bg-ash-900/60 p-6 shadow-xl">
     <h2 class="text-sm font-bold uppercase tracking-wider text-white">Variables para comparar escalas</h2>
     <p class="mt-3 text-sm text-slate-300">
-      <!-- TODO: explicar con que variables se va a poder comparar global vs nacional vs
-           regional (ej. tasa de incendios por area de bosque, area quemada normalizada,
-           estacionalidad relativa). -->
-      TODO: variables de comparacion global-nacional-regional.
+      No se puede comparar el conteo bruto de incendios entre escalas porque los paises,
+      Colombia y Cundinamarca tienen tamanos y superficies de bosque muy distintos. Las
+      comparaciones deben normalizarse:
     </p>
+    <ul class="mt-3 space-y-2 text-sm text-slate-300 list-disc list-inside">
+      <li><strong class="text-white">Tasa de incendios por area de bosque</strong> (numero
+        de eventos / hectareas de cobertura boscosa): permite comparar Cundinamarca vs.
+        Colombia vs. paises de FIRMS/GFW sin que el tamano del territorio distorsione el
+        resultado.</li>
+      <li><strong class="text-white">Hectareas quemadas o perdidas por incendio,
+        normalizadas por area total</strong>: cruza el area afectada del IDEAM/UNGRD con las
+        hectareas de perdida de cobertura arborea de Global Forest Watch Fires (mismo tipo
+        de metrica, escala global vs. nacional).</li>
+      <li><strong class="text-white">Estacionalidad relativa</strong> (porcentaje de eventos
+        por mes/trimestre dentro de cada escala, no el conteo absoluto por mes): compara si
+        el pico de incendios en Cundinamarca/Colombia coincide con el pico global detectado
+        por NASA FIRMS.</li>
+      <li><strong class="text-white">Densidad de amenaza</strong> (proporcion del area
+        clasificada como amenaza Alta/Muy Alta en el mapa de la CAR): variable espacial, no
+        temporal, para relacionar donde ocurre el riesgo fisico regional con donde
+        efectivamente se concentran los eventos historicos del IDEAM.</li>
+    </ul>
   </section>
 </div>
 

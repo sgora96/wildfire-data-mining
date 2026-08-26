@@ -14,7 +14,7 @@
   Responsable de esta pagina: <span class="font-semibold text-white">Sara Vargas</span>
 </div>
 
-{% macro fuente_card(nivel, color, nombre, institucion, url, tipo, cobertura, periodo, formato, metodo, registros, variables, fecha_consulta, restricciones, pendiente=false) %}
+{% macro fuente_card(nivel, color, nombre, institucion, url, tipo, cobertura, periodo, formato, metodo, registros, variables, fecha_consulta, restricciones, justificacion, pendiente=false) %}
 <article class="rounded-2xl border {{ 'border-dashed border-white/20' if pendiente else 'border-white/10' }} bg-ash-900/60 p-5 shadow-xl">
   <div class="flex flex-wrap items-center justify-between gap-2">
     <h3 class="text-sm font-bold text-white">{{ nombre }}</h3>
@@ -33,7 +33,7 @@
   </dl>
   <p class="mt-3 text-xs text-slate-400"><span class="text-slate-500">Restricciones/uso:</span> {{ restricciones }}</p>
   <p class="mt-2 text-xs text-slate-400"><span class="text-slate-500">Pertinencia/confiabilidad/actualidad/cobertura:</span>
-    {% if pendiente %}TODO: justificar.{% else %}Fuente oficial del Estado colombiano, con metodologia documentada y actualizacion periodica; cubre el periodo y las variables necesarias para las preguntas de investigacion.{% endif %}
+    {% if pendiente %}TODO: justificar.{% else %}{{ justificacion }}{% endif %}
   </p>
 </article>
 {% endmacro %}
@@ -41,8 +41,33 @@
 <!-- ===================== GLOBAL ===================== -->
 <h2 class="mt-8 text-xs font-bold uppercase tracking-wider text-sky-400">Nivel global (minimo 2 fuentes)</h2>
 <div class="mt-3 grid grid-cols-1 gap-4 lg:grid-cols-2">
-  {{ fuente_card("global", "bg-sky-500/15 text-sky-300", "TODO: nombre de la fuente global 1 (ej. NASA FIRMS / MODIS Active Fire)", "TODO institucion", "TODO URL", "TODO primaria/secundaria/terciaria", "Global", "TODO", "TODO", "TODO", "TODO", "TODO", "TODO", "TODO", pendiente=true) }}
-  {{ fuente_card("global", "bg-sky-500/15 text-sky-300", "TODO: nombre de la fuente global 2 (ej. Global Forest Watch Fires)", "TODO institucion", "TODO URL", "TODO primaria/secundaria/terciaria", "Global", "TODO", "TODO", "TODO", "TODO", "TODO", "TODO", "TODO", pendiente=true) }}
+  {{ fuente_card("global", "bg-sky-500/15 text-sky-300",
+     "NASA FIRMS (Fire Information for Resource Management System) — detecciones activas MODIS/VIIRS",
+     "NASA — LANCE (Land, Atmosphere Near real-time Capability for EO), Goddard Space Flight Center / ESDIS",
+     "https://firms.modaps.eosdis.nasa.gov/",
+     "Primaria", "Global (todos los continentes, sujeto a cobertura de nubes)",
+     "MODIS: 2000 - presente. VIIRS (375 m): S-NPP desde 2012, NOAA-20 desde 2018, NOAA-21 desde 2023. Actualizacion casi en tiempo real (dentro de 3 horas del paso satelital; menos de 60s para EE.UU./Canada).",
+     "CSV, Shapefile (SHP), KML, GeoJSON, WMS; tambien API REST por area/pais/rango de fechas",
+     "Descarga directa por area/pais/fecha desde el portal web, o via API REST con MAP_KEY gratuita (registro simple con correo); tambien Web Map Service (WMS) y NASA Worldview",
+     "Flujo continuo (no es un archivo estatico de tamano fijo): cientos de miles de detecciones/dia a nivel global, variable segun temporada de incendios; el archivo historico acumulado desde 2000 (MODIS) supera cientos de millones de puntos",
+     "latitud, longitud, fecha y hora de adquisicion (UTC), brillo/temperatura del pixel, FRP (potencia radiativa del fuego), nivel de confianza de la deteccion, satelite/sensor, dia/noche",
+     "2026-08-26",
+     "Datos publicos y de libre uso; se solicita citar la fuente (LANCE FIRMS / NASA GSFC ESDIS, financiado por NASA/HQ, ver politica de datos de NASA). Requiere MAP_KEY gratuita solo para descargas por API.",
+     "Unica fuente con cobertura verdaderamente mundial y deteccion casi diaria: permite comparar estacionalidad y tendencia de incendios activos en cualquier region frente a los datos nacionales/regionales del IDEAM. Al ser observacion satelital directa (no un reporte administrativo) no depende de la capacidad de cada pais para reportar sus incendios, lo que la hace confiable para comparaciones entre paises con distinta capacidad institucional.") }}
+  {{ fuente_card("global", "bg-sky-500/15 text-sky-300",
+     "Global Forest Watch Fires — perdida de cobertura arborea por incendio (Global Forest Loss due to Fire, GLAD/UMD)",
+     "World Resources Institute (Global Forest Watch) y GLAD Lab, Dept. of Geographical Sciences, University of Maryland, en colaboracion con Google",
+     "https://www.globalforestwatch.org/ (visualizacion y descarga por pais) — dataset raster original en https://glad.umd.edu/dataset/Fire_GFL",
+     "Secundaria (producto derivado de imagenes satelitales Landsat mediante algoritmo de deteccion, no observacion directa de eventos individuales)",
+     "Global (todas las regiones forestales, excepto Antartida y otras islas articas), agregable por pais",
+     "2001 - 2024/2025 (actualizacion anual)",
+     "GeoTIFF (raster 30 m) para descarga directa por continente; tambien disponible como coleccion de imagenes en Google Earth Engine y como estadisticas anuales agregadas por pais en formato tabular (CSV) en el dashboard de Global Forest Watch",
+     "Descarga directa de mosaicos GeoTIFF desde el servidor de GLAD, o consulta/descarga de estadisticas por pais desde la interfaz web de Global Forest Watch (sin registro)",
+     "No aplica como tabla de eventos (es un raster global a 30 m); la vista agregada por pais y ano de Global Forest Watch equivale aprox. a 200 paises x 24 anos ≈ 4.800 registros tabulares",
+     "año de perdida de cobertura arborea (2001-2025), certeza de atribucion a incendio (baja/alta), pais/region (vista agregada), hectareas de perdida",
+     "2026-08-26",
+     "Uso abierto con atribucion academica requerida (citar Tyukavina et al. 2022, Frontiers in Remote Sensing, y Global Forest Watch); verificar terminos de uso exactos en globalforestwatch.org antes de redistribuir.",
+     "Complementa a FIRMS con una metrica distinta: area de bosque efectivamente perdida por incendio (severidad/impacto), no solo deteccion de calor (frecuencia). Al estar agregada tambien por pais, facilita cruzarla con las cifras nacionales de Colombia (IDEAM) para contrastar si el patron nacional sigue la tendencia global de incremento de perdida forestal por fuego.") }}
 </div>
 
 <!-- ===================== NACIONAL ===================== -->
@@ -51,13 +76,26 @@
   {{ fuente_card("nacional", "bg-ember-500/15 text-ember-300",
      "Base de datos nacional de incendios de la cobertura vegetal (BD-ICV)",
      "IDEAM — Instituto de Hidrologia, Meteorologia y Estudios Ambientales",
-     "TODO: URL del portal de datos abiertos / IDEAM (pendiente por confirmar)",
+     "https://ideam.gov.co/nuestra-entidad/ecosistemas-e-informacion-ambiental/incendios-de-la-cobertura-vegetal/base-de-datos-de-eventos-de-incendios-de-la",
      "Secundaria", "Nacional (Colombia, 32 departamentos)", "2010 - 2024",
      "Microsoft Excel (.xlsx), 5 hojas por rango de anios",
      "Archivo entregado para el curso; se consolido con un script propio (scripts/Build-IdeamDataset.ps1) a partir de las hojas BD_ICV_2010_2020, BD_ICV_2021, BD_ICV_2022, BD_ICV_2023 y BD_ICV_2024",
      "40.010", "35 variables (ver diccionario de datos)", "2026-08-25",
-     "Uso academico. Verificar licencia exacta en el portal de datos abiertos del IDEAM.") }}
-  {{ fuente_card("nacional", "bg-ember-500/15 text-ember-300", "TODO: segunda fuente nacional (ej. UNGRD, SIAC, Datos Abiertos Colombia)", "TODO institucion", "TODO URL", "TODO primaria/secundaria/terciaria", "Nacional", "TODO", "TODO", "TODO", "TODO", "TODO", "TODO", "TODO", pendiente=true) }}
+     "Uso academico. Verificar licencia exacta en el portal de datos abiertos del IDEAM.",
+     "Fuente oficial del Estado colombiano, con metodologia documentada y actualizacion periodica; cubre el periodo y las variables necesarias para las preguntas de investigacion.") }}
+  {{ fuente_card("nacional", "bg-ember-500/15 text-ember-300",
+     "Emergencias UNGRD — registro nacional de emergencias (incluye la categoria 'Incendio de cobertura vegetal')",
+     "Unidad Nacional para la Gestion del Riesgo de Desastres (UNGRD), publicado en el portal Datos Abiertos Colombia (MinTIC)",
+     "https://www.datos.gov.co/Ambiente-y-Desarrollo-Sostenible/Emergencias-UNGRD-/wwkg-r6te",
+     "Secundaria", "Nacional (Colombia, todos los departamentos, incluye Cundinamarca)",
+     "2019 - 2022 (segun descripcion oficial del dataset; ultima actualizacion de filas registrada: 2023-09-07)",
+     "CSV, Excel (XLSX), JSON, TSV; ademas API publica Socrata (SODA) para consulta programatica",
+     "Descarga directa desde el portal (boton Exportar) o via API publica de Socrata sin autenticacion, ej. https://www.datos.gov.co/resource/wwkg-r6te.json",
+     "25.857 registros totales de emergencias; de estos, 7.634 corresponden a la categoria 'INCENDIO DE COBERTURA VEGETAL' (segun metadatos del propio dataset, consultados el 2026-08-26)",
+     "fecha, departamento, municipio, tipo de evento (EVENTO), codigo DIVIPOLA, fallecidos, heridos, personas y familias afectadas, viviendas destruidas/averiadas, hectareas afectadas, apoyos entregados",
+     "2026-08-26",
+     "Licencia Creative Commons Atribucion-CompartirIgual 4.0 (CC BY-SA 4.0), segun metadatos del dataset en datos.gov.co.",
+     "Es independiente del IDEAM (otra entidad, otro proceso de reporte: emergencias atendidas por gestion del riesgo, no solo el evento de incendio en si), lo que permite contrastar/validar los conteos nacionales del IDEAM. Incluye variables de impacto humano y economico (personas, familias, ayudas) que el dataset del IDEAM no trae. Limitacion a declarar: su periodo (2019-2022) es mas corto que el del IDEAM (2010-2024), por lo que sirve mejor para validacion cruzada en el rango que se superpone que para extender la serie temporal.") }}
 </div>
 
 <!-- ===================== REGIONAL ===================== -->
@@ -71,8 +109,22 @@
      "CSV (data/processed/incendios_ideam_cundinamarca_2010_2024.csv)",
      "Filtro DEPARTAMENTO = 'CUNDINAMARCA' sobre el dataset nacional consolidado",
      "6.027", "35 variables (mismas del dataset nacional)", "2026-08-25",
-     "Mismas restricciones que la fuente nacional IDEAM.") }}
-  {{ fuente_card("regional", "bg-emerald-500/15 text-emerald-300", "TODO: segunda fuente regional (ej. CAR Cundinamarca, alcaldias, boletines regionales IDEAM)", "TODO institucion", "TODO URL", "TODO primaria/secundaria/terciaria", "Cundinamarca", "TODO", "TODO", "TODO", "TODO", "TODO", "TODO", "TODO", pendiente=true) }}
+     "Mismas restricciones que la fuente nacional IDEAM.",
+     "Fuente oficial del Estado colombiano, con metodologia documentada y actualizacion periodica; cubre el periodo y las variables necesarias para las preguntas de investigacion.") }}
+  {{ fuente_card("regional", "bg-emerald-500/15 text-emerald-300",
+     "RICV — Escenario fisico ante incendios de la cobertura vegetal (zonificacion de amenaza, 2014)",
+     "Corporacion Autonoma Regional de Cundinamarca (CAR)",
+     "https://datosgeograficos.car.gov.co/maps/CARCundinamarca::ricv-escenario-fisico-incendios-cobertura-vegetal",
+     "Secundaria (mapa de zonificacion de amenaza derivado de analisis fisico-espacial, no registro de eventos individuales)",
+     "Departamental — Cundinamarca (jurisdiccion CAR)",
+     "2014 (mapa a escala 1:100.000, sin actualizacion anual conocida; ultima modificacion del recurso: enero de 2019)",
+     "Servicio geografico (Feature Service / ArcGIS REST API); exportable a Shapefile, GeoJSON o CSV desde el portal",
+     "Descarga directa desde el portal de datos geograficos de la CAR (boton Descargar), o consulta programatica via REST: https://services6.arcgis.com/yq6pe3Lw2oWFjWtF/arcgis/rest/services/RICV_Escenario_fisico_incendios_cobertura_vegetal/FeatureServer",
+     "373 poligonos/zonas de amenaza clasificadas (no es un registro de eventos sino de zonas geograficas)",
+     "corporacion responsable, departamento, categoria de amenaza fisica (Muy Baja/Baja/Moderada/Alta/Muy Alta), calificacion ponderada, area en hectareas por zona",
+     "2026-08-26",
+     "Licencia Creative Commons Atribucion 4.0 Internacional (CC BY 4.0), segun metadatos del recurso en ArcGIS.",
+     "Fuente regional independiente del IDEAM, producida directamente por la autoridad ambiental con jurisdiccion sobre Cundinamarca. Aporta una dimension que el dataset de eventos del IDEAM no tiene (amenaza/susceptibilidad fisica del territorio), util para relacionar donde han ocurrido mas incendios (IDEAM) con donde el territorio es fisicamente mas propenso (CAR). Limitacion a declarar: es una fotografia estatica de 2014 a escala 1:100.000, no una serie temporal de eventos, por lo que no sirve para analizar tendencia o estacionalidad, solo para contexto espacial de riesgo.") }}
 </div>
 
 <p class="mt-6 text-xs text-slate-500">

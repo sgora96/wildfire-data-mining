@@ -83,13 +83,24 @@
   </div>
 </section>
 
-<section class="mt-6 rounded-2xl border border-dashed border-white/20 bg-ash-900/40 p-6">
-  <h2 class="text-sm font-bold uppercase tracking-wider text-white">Pendiente</h2>
+<section class="mt-6 rounded-2xl border border-white/10 bg-ash-900/60 p-6 shadow-xl">
+  <h2 class="text-sm font-bold uppercase tracking-wider text-white">Integracion con las fuentes globales</h2>
   <p class="mt-3 text-sm text-slate-300">
-    <!-- TODO: una vez se agregue la fuente global, documentar aqui como se integra
-         (join por anio/pais, o se analiza por separado y se compara) y actualizar el
-         conteo total de registros / variables si cambia. -->
-    TODO: integrar fuente(s) global(es) y documentar el metodo de integracion.
+    Las fuentes globales (NASA FIRMS y Global Forest Watch Fires) ya estan documentadas
+    en <a href="{{ url_for('etapa1.fuentes') }}" class="text-ember-400 hover:underline">Fuentes de datos</a>,
+    pero <strong>no se descargaron ni se unieron fila a fila</strong> a este CSV
+    consolidado: son flujos de deteccion satelital (puntos de calor / perdida de
+    cobertura por pais) con una unidad de analisis distinta a los eventos con area
+    quemada del IDEAM.
+  </p>
+  <p class="mt-3 text-sm text-slate-300">
+    La integracion propuesta (ver <a href="{{ url_for('etapa1.necesidades') }}" class="text-ember-400 hover:underline">Necesidades de informacion</a>)
+    es por <strong>comparacion normalizada, no join fila a fila</strong>: agrupar cada
+    fuente por AÑO/MES y comparar tasas (estacionalidad relativa, hectareas por area de
+    bosque) en vez de intentar cruzar un evento puntual del IDEAM con una deteccion
+    satelital puntual. El conteo total de registros de este dataset (40.010 nacional /
+    6.027 Cundinamarca) no cambia por esto — las fuentes globales se analizarian como
+    tablas separadas, comparadas lado a lado.
   </p>
 </section>
 

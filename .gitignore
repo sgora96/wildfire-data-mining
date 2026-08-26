@@ -37,11 +37,13 @@ instance/
 .webassets-cache
 build/
 
-# --- Datos (no versionar datasets pesados) ----------------------------------
-data/raw/*
-!data/raw/.gitkeep
-data/processed/*
-!data/processed/.gitkeep
+# --- Datos --------------------------------------------------------------
+# Los .xlsx originales de IDEAM (pesados, binarios) NO se versionan; los CSV
+# derivados (crudos y procesados) SI, para trazabilidad y reproducibilidad
+# del dataset del entregable R1.
+data/raw/*.xlsx
+data/raw/*.xls
+data/processed/build/
 
 # --- Modelos entrenados -----------------------------------------------------
 models/*

@@ -36,6 +36,17 @@ freezer = Freezer(app, with_no_argument_rules=False)
 def dashboard_pages():
     """Vistas HTML a congelar (endpoint, parametros de ruta)."""
     yield "main.index", {}
+    for endpoint in (
+        "etapa1.problema",
+        "etapa1.preguntas",
+        "etapa1.necesidades",
+        "etapa1.fuentes",
+        "etapa1.dataset",
+        "etapa1.diccionario",
+        "etapa1.calidad",
+        "etapa1.limitaciones",
+    ):
+        yield endpoint, {}
 
 
 def _jsonable(df):

@@ -1,0 +1,90 @@
+{% extends "etapa1/_layout.html" %}
+{% block title %}7. Calidad inicial de los datos{% endblock %}
+{% block content %}
+
+<p class="text-xs font-semibold uppercase tracking-[0.2em] text-ember-400">Etapa 1 · Submenu 7</p>
+<h1 class="mt-2 text-3xl font-extrabold tracking-tight text-white sm:text-4xl">Calidad inicial de los datos</h1>
+<p class="mt-3 max-w-3xl text-sm text-slate-400">
+  Diagnostico automatico calculado por
+  <code class="rounded bg-white/10 px-1.5 py-0.5 text-xs">scripts/Build-IdeamDataset.ps1</code>
+  sobre el dataset nacional consolidado (no se hace limpieza todavia: eso corresponde a un
+  entregable posterior).
+</p>
+
+<div class="mt-6 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-slate-400">
+  Responsable de esta pagina: <span class="font-semibold text-white">Camila</span>
+</div>
+
+{% if not calidad %}
+<div class="mt-8 rounded-2xl border border-amber-500/30 bg-amber-500/5 p-6 text-sm text-amber-300">
+  No se encontro <code>data/processed/calidad_resumen.json</code>. Ejecuta
+  <code class="rounded bg-white/10 px-1.5 py-0.5">scripts/Build-IdeamDataset.ps1</code> primero.
+</div>
+{% else %}
+
+<div class="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-4">
+  <div class="rounded-xl border border-white/10 bg-ash-900/60 p-4 text-center">
+    <p class="text-2xl font-extrabold text-white">{{ "{:,}".format(calidad.total_registros) }}</p>
+    <p class="mt-1 text-[11px] uppercase tracking-wider text-slate-500">Registros totales</p>
+  </div>
+  <div class="rounded-xl border border-white/10 bg-ash-900/60 p-4 text-center">
+    <p class="text-2xl font-extrabold text-amber-400">{{ "{:,}".format(calidad.registros_duplicados) }}</p>
+    <p class="mt-1 text-[11px] uppercase tracking-wider text-slate-500">Duplicados exactos</p>
+  </div>
+  <div class="rounded-xl border border-white/10 bg-ash-900/60 p-4 text-center">
+    <p class="text-2xl font-extrabold text-white">{{ calidad.departamentos_distintos }}</p>
+    <p class="mt-1 text-[11px] uppercase tracking-wider text-slate-500">Departamentos distintos</p>
+  </div>
+  <div class="rounded-xl border border-white/10 bg-ash-900/60 p-4 text-center">
+    <p class="text-2xl font-extrabold text-white">{{ calidad.anio_min }}–{{ calidad.anio_max }}</p>
+    <p class="mt-1 text-[11px] uppercase tracking-wider text-slate-500">Rango de anios</p>
+  </div>
+</div>
+
+<!-- Completitud -->
+<section class="mt-8 rounded-2xl border border-white/10 bg-ash-900/60 p-6 shadow-xl">
+  <h2 class="text-sm font-bold uppercase tracking-wider text-white">Completitud por columna (% de valores vacios)</h2>
+  <div class="mt-4 space-y-2">
+    {% for campo, pct in calidad.porcentaje_nulos_por_columna.items() %}
+    <div>
+      <div class="flex items-center justify-between text-[11px]">
+        <span class="font-mono text-slate-400">{{ campo }}</span>
+        <span class="text-slate-300">{{ pct }}%</span>
+      </div>
+      <div class="mt-1 h-1.5 w-full overflow-hidden rounded-full bg-white/5">
+        <div class="h-full rounded-full {{ 'bg-red-500' if pct > 80 else ('bg-amber-400' if pct > 30 else 'bg-emerald-500') }}"
+             style="width: {{ pct }}%"></div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+
+<!-- Hallazgos -->
+<section class="mt-6 rounded-2xl border border-white/10 bg-ash-900/60 p-6 shadow-xl">
+  <h2 class="text-sm font-bold uppercase tracking-wider text-white">Hallazgos del diagnostico inicial</h2>
+  <ul class="mt-4 space-y-3 text-sm text-slate-300">
+    <li><strong class="text-white">Duplicados:</strong> {{ "{:,}".format(calidad.registros_duplicados) }} registros ({{ "%.1f"|format(100*calidad.registros_duplicados/calidad.total_registros) }}%) tienen todas las columnas identicas. Muchos ocurren en filas con la mayoria de campos vacios (coincidencia por vacio, no necesariamente el mismo evento reportado dos veces) — <em>requiere revision manual antes de decidir si se eliminan</em>.</li>
+    <li><strong class="text-white">Inconsistencia de nombre de columna:</strong> el campo que el IDEAM llama "DIA" en realidad contiene la fecha completa del evento (serial de Excel), no el numero de dia (1-31). Se renombro a <code class="font-mono">FECHA_REGISTRO</code> y se convirtio a formato ISO.</li>
+    <li><strong class="text-white">Diferencia de formato entre archivos/anios:</strong> la hoja 2024 agrega la columna <code class="font-mono">ENTIDAD_REPORTA</code> (ej. "UNGRD"), ausente en 2010-2023. Ademas la plantilla 2024 desplaza el orden de columnas respecto a los anios anteriores (se corrigio en el script de consolidacion).</li>
+    <li><strong class="text-white">LATITUD / LONGITUD como texto:</strong> vienen en formato grados.minutos.segundos (ej. <code class="font-mono">06.08.39,5</code>) en vez de decimal; no son utilizables en un mapa sin una transformacion adicional. Ademas estan vacias en ~92% de los registros.</li>
+    <li><strong class="text-white">Alta dispersion (sparsity) en variables de causa y cobertura:</strong> las columnas de causa y tipo de cobertura superan 90% de valores vacios — el reporte de campo del IDEAM no siempre clasifica estos atributos.</li>
+    <li><strong class="text-white">Registros sin fecha/ubicacion:</strong> ANIO, MES, FECHA_REGISTRO y DEPARTAMENTO estan vacios en ~9,8% de los registros — revisar si corresponden a filas de totales/resumen dentro de las hojas originales.</li>
+    <li><strong class="text-white">Columnas "numericas" que en realidad mezclan tipos:</strong> revisando manualmente los valores unicos de las columnas de area (<code class="font-mono">AREA_SUPERFICIAL_HA</code>, <code class="font-mono">AREA_MIXTO_HA</code>, <code class="font-mono">AREA_COPA_HA</code>) y de causa (<code class="font-mono">CAUSA_INTENCIONAL</code>, <code class="font-mono">CAUSA_DESCUIDO_NEGLIGENCIA</code>) se encontro que no contienen unicamente numeros de hectareas: mezclan marcas ("X"), abreviaturas ("SUP", "MX", "D", "C"), texto completo ("Superficial", "Mixto", "Descuido y negligencia") y numeros (0, 1, 2, 3, 10...) para lo que originalmente parece ser un check/marca de si esa categoria aplico al evento. Ademas <code class="font-mono">AREA_COPA_HA</code> tiene 10 registros con el valor literal "Bogota" (un error de digitacion o desplazamiento de columna, no un area). Esto significa que estas columnas no se pueden tratar como numericas continuas sin antes normalizar sus valores (decidir si son booleanas/categoricas o convertir los codigos a un area real).</li>
+  </ul>
+</section>
+
+<!-- Diagnostico de fuentes adicionales -->
+<section class="mt-6 rounded-2xl border border-white/10 bg-ash-900/60 p-6 shadow-xl">
+  <h2 class="text-sm font-bold uppercase tracking-wider text-white">Diagnostico de calidad de las fuentes adicionales (ver <a href="{{ url_for('etapa1.fuentes') }}" class="text-ember-400 underline">Fuentes de datos</a>)</h2>
+  <ul class="mt-4 space-y-3 text-sm text-slate-300">
+    <li><strong class="text-white">NASA FIRMS (MODIS/VIIRS, global):</strong> no es un archivo estatico con "% de nulos" calculable como el de IDEAM, sino un flujo continuo de detecciones satelitales; sus "datos faltantes" son omisiones por cobertura de nubes o por el barrido del satelite, no celdas vacias en un CSV. Esta muy actualizada (near real-time, menos de 3 horas). Formato tabular limpio (lat/lon decimal, fecha UTC, FRP, confianza), pero <strong>no trae departamento/municipio</strong>: para cruzarla con el dataset del IDEAM se necesitaria primero asignar cada punto a una division politico-administrativa (geocodificacion inversa), por lo que el analisis mas viable en esta entrega es comparar agregados por ano/pais, no un merge fila a fila.</li>
+    <li><strong class="text-white">Global Forest Watch Fires (GLAD/UMD, global):</strong> el dato original es un raster (imagen), no una tabla de eventos; la vista agregada por pais y ano que se usaria para comparar con Colombia tiene solo ~200 paises x ~24 anos (≈4.800 filas), muy por debajo del volumen del dataset IDEAM. La certeza de atribucion a incendio solo viene en dos niveles (baja/alta), lo que limita el detalle causal. Se actualiza una vez al ano (no en tiempo real), por lo que el ano mas reciente puede aparecer incompleto al momento de la consulta.</li>
+    <li><strong class="text-white">UNGRD — Emergencias (segunda fuente nacional):</strong> cubre solo 2019-2022, un periodo mucho mas corto que IDEAM (2010-2024), por lo que sirve para validacion cruzada en el rango que se superpone, no para extender la serie temporal. Requiere filtrar la columna <code class="font-mono">EVENTO</code> por el valor "INCENDIO DE COBERTURA VEGETAL" antes de comparar (el dataset trae todo tipo de emergencias, no solo incendios).</li>
+    <li><strong class="text-white">CAR — RICV (segunda fuente regional, Cundinamarca):</strong> es una zonificacion de amenaza de 2014 (373 poligonos), no un registro de eventos con fecha: no tiene variable temporal utilizable para tendencia/estacionalidad, solo sirve para contexto espacial (donde el territorio es mas propenso), a cruzar espacialmente con los puntos de IDEAM.</li>
+  </ul>
+</section>
+
+{% endif %}
+
+{% endblock %}

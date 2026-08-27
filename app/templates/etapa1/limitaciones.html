@@ -1,0 +1,63 @@
+{% extends "etapa1/_layout.html" %}
+{% block title %}8. Limitaciones y consideraciones{% endblock %}
+{% block content %}
+
+<p class="text-xs font-semibold uppercase tracking-[0.2em] text-ember-400">Etapa 1 · Submenu 8</p>
+<h1 class="mt-2 text-3xl font-extrabold tracking-tight text-white sm:text-4xl">Limitaciones y consideraciones</h1>
+
+<div class="mt-6 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-slate-400">
+  Responsable de esta pagina: <span class="font-semibold text-white">Camila</span>
+</div>
+
+<section class="mt-8 rounded-2xl border border-white/10 bg-ash-900/60 p-6 shadow-xl">
+  <h2 class="text-sm font-bold uppercase tracking-wider text-white">Limitaciones identificadas hasta ahora</h2>
+  <ul class="mt-4 space-y-3 text-sm text-slate-300">
+    <li><strong class="text-white">Dependencia de una sola fuente para nacional y regional:</strong> tanto el dataset nacional como el regional (Cundinamarca) provienen del mismo origen (IDEAM); el subconjunto regional no es una fuente independiente, es un filtro del dataset nacional. Se debe complementar con al menos una fuente adicional por nivel (ver "Fuentes de datos").</li>
+    <li><strong class="text-white">Falta de fuente global:</strong> el dataset actual no tiene alcance mundial; toda comparacion global-nacional-regional depende de las fuentes globales que aun se deben incorporar.</li>
+    <li><strong class="text-white">Subregistro probable:</strong> al ser reportes de campo (IDEAM/entidades territoriales), es probable que existan incendios no reportados, especialmente en zonas de dificil acceso o en anios con menor capacidad institucional de reporte.</li>
+    <li><strong class="text-white">Campos de causa y cobertura con alta proporcion de vacios (&gt;90%):</strong> limita el analisis de causalidad y de tipo de vegetacion afectada a un subconjunto minoritario de registros bien diligenciados.</li>
+    <li><strong class="text-white">Coordenadas en formato no estandar:</strong> LATITUD/LONGITUD como texto (grados.minutos.segundos) y con ~92% de vacios — el analisis geoespacial fino (mapas de calor, clustering espacial) solo sera posible sobre una fraccion de los datos, salvo que se consiga una fuente geoespacial complementaria.</li>
+    <li><strong class="text-white">Inconsistencia entre anios:</strong> la plantilla de reporte del IDEAM cambio en 2024 (columna nueva ENTIDAD_REPORTA, orden de columnas distinto), lo que sugiere que el proceso de captura de datos no fue completamente estable en el tiempo — factor a considerar en analisis de tendencia temporal.</li>
+    <li><strong class="text-white">Posible sesgo por vigencia mediatica/institucional:</strong> anios con mayor cobertura noticiosa de incendios (ej. temporadas de fenomeno de El Nino) podrian tener mejor reporte en IDEAM/UNGRD, no necesariamente mas incendios reales. NASA FIRMS, al ser observacion satelital directa, no tiene este sesgo (ver limitaciones propias mas abajo), por lo que sirve como referencia para contrastar si un pico de reportes nacionales coincide con un pico real de detecciones globales.</li>
+    <li><strong class="text-white">Columnas de area y causa con codificacion mixta (no solo vacias):</strong> como se detalla en <a href="{{ url_for('etapa1.calidad') }}" class="text-ember-400 underline">Calidad inicial</a>, varias columnas pensadas como numericas (AREA_SUPERFICIAL_HA, AREA_MIXTO_HA, AREA_COPA_HA) o de causa mezclan marcas de texto, abreviaturas y numeros para lo que originalmente parece ser un check de categoria. Cualquier analisis que use esas columnas como numeros continuos sin normalizarlas primero produciria resultados incorrectos.</li>
+  </ul>
+</section>
+
+<section class="mt-6 rounded-2xl border border-white/10 bg-ash-900/60 p-6 shadow-xl">
+  <h2 class="text-sm font-bold uppercase tracking-wider text-white">Limitaciones de las fuentes adicionales (global, nacional y regional)</h2>
+  <ul class="mt-4 space-y-3 text-sm text-slate-300">
+    <li><strong class="text-white">NASA FIRMS (global):</strong> detecta puntos de calor, no "incendios" delimitados — un mismo evento grande puede generar muchas detecciones (sobre-conteo) y focos pequenos o cubiertos por nubes/dosel denso pueden no detectarse (sub-conteo); no trae division politico-administrativa (departamento/municipio), por lo que cruzarla con IDEAM requiere un paso adicional de geocodificacion inversa que esta entrega no alcanza a hacer; su resolucion espacial (375 m-1 km segun sensor) tambien limita comparar incendios pequenos con precision.</li>
+    <li><strong class="text-white">Global Forest Watch Fires (global):</strong> mide perdida de cobertura arborea atribuida a fuego, una variable de <em>impacto/severidad</em>, no un conteo de eventos como IDEAM o FIRMS — no es directamente comparable numero a numero con "cantidad de incendios"; se actualiza una vez al ano, por lo que el dato mas reciente puede estar desactualizado frente a IDEAM (actualizacion mas frecuente) al momento del analisis.</li>
+    <li><strong class="text-white">UNGRD — Emergencias (segunda fuente nacional):</strong> periodo corto (2019-2022) frente a IDEAM (2010-2024); al ser un registro de "emergencias atendidas" (gestion del riesgo) y no de "eventos reportados en campo" (IDEAM), las cifras de dos fuentes para el mismo ano y departamento pueden no coincidir sin que eso signifique un error — miden procesos distintos.</li>
+    <li><strong class="text-white">CAR — RICV (segunda fuente regional):</strong> es una fotografia estatica de amenaza a 2014, no una serie temporal de eventos; no permite analizar tendencia ni estacionalidad, solo aporta contexto espacial de que tan propenso es un territorio dentro de Cundinamarca.</li>
+  </ul>
+</section>
+
+<section class="mt-6 rounded-2xl border border-white/10 bg-ash-900/60 p-6 shadow-xl">
+  <h2 class="text-sm font-bold uppercase tracking-wider text-white">Como estas limitaciones podrian afectar las preguntas de investigacion</h2>
+  <p class="mt-3 text-xs text-slate-400">
+    Analisis sobre la pregunta principal y las 4 preguntas secundarias definidas en
+    <a href="{{ url_for('etapa1.preguntas') }}" class="text-ember-400 underline">Pregunta principal y preguntas secundarias</a>
+    (estacionalidad, geografia/amenaza fisica, causas, y comparacion con la tendencia
+    global).
+  </p>
+  <ul class="mt-4 space-y-3 text-sm text-slate-300">
+    <li><strong class="text-white">Preguntas que comparan la escala global con la nacional/regional:</strong> como FIRMS mide deteccion de calor y GFW Fires mide perdida de bosque, mientras que IDEAM mide "eventos reportados", cualquier comparacion global-nacional debe hacerse por tendencia/orden de magnitud agregada por ano, no como una igualdad de conteos — de lo contrario se estaria comparando variables distintas como si fueran la misma.</li>
+    <li><strong class="text-white">Preguntas sobre tendencia temporal (¿ha aumentado/disminuido el numero de incendios?):</strong> se ven afectadas por el cambio de plantilla del IDEAM en 2024 y por la actualizacion anual (no continua) de GFW Fires — un salto o caida en la serie podria deberse a un cambio de metodologia de captura y no a un cambio real en el fenomeno.</li>
+    <li><strong class="text-white">Preguntas sobre causas de los incendios (humano vs. natural, tipo de causa):</strong> quedan limitadas a la fraccion minoritaria de registros de IDEAM con las columnas de causa diligenciadas (&gt;90% vacias) y ahora ademas normalizadas (ver hallazgo de codificacion mixta); las respuestas deben presentarse como un patron sobre esa submuestra, no como el total nacional.</li>
+    <li><strong class="text-white">Preguntas sobre ubicacion/geografia fina (mapas de calor, puntos exactos):</strong> limitadas porque LATITUD/LONGITUD de IDEAM estan vacias en ~92% de los registros y en formato no estandar; FIRMS si trae coordenadas decimales completas pero sin division politico-administrativa. La pregunta se puede responder a nivel de departamento/municipio (variable con menos vacios) o usando FIRMS como aproximacion espacial complementaria, no con las coordenadas de IDEAM como fuente principal.</li>
+  </ul>
+</section>
+
+<section class="mt-6 rounded-2xl border border-white/10 bg-ash-900/60 p-6 shadow-xl">
+  <h2 class="text-sm font-bold uppercase tracking-wider text-white">Decisiones de alcance del grupo para mitigar estas limitaciones</h2>
+  <ul class="mt-4 list-disc space-y-2 pl-5 text-sm text-slate-300">
+    <li>No se hara merge fila a fila entre IDEAM y las fuentes globales (FIRMS, GFW Fires): la comparacion global-nacional-regional se hara por agregados (ano, pais/departamento), tal como recomienda <code class="font-mono">CLAUDE.md</code>.</li>
+    <li>Los duplicados exactos de IDEAM (~11,6% de las filas) no se eliminaran todavia en esta entrega: se documentan como hallazgo para la etapa de limpieza, ya que muchos coinciden por tener campos vacios en comun y no necesariamente representan el mismo evento repetido.</li>
+    <li>Las columnas de causa y cobertura vegetal (&gt;90% vacias, y con codificacion mixta segun el hallazgo de esta pagina) se trataran como variables categoricas de baja cobertura muestral, no como variables numericas continuas, y cualquier conclusion basada en ellas se reportara aclarando el tamano real de la submuestra.</li>
+    <li>El analisis geoespacial fino (mapas de calor, clustering) queda fuera del alcance de esta primera entrega dado el ~92% de vacios en LATITUD/LONGITUD de IDEAM; se usara la variable DEPARTAMENTO/MUNICIPIO (mucho mas completa) como nivel de agregacion espacial principal, complementada con FIRMS donde se necesite mayor detalle geografico.</li>
+    <li>El subconjunto regional de Cundinamarca seguira derivandose por filtro sobre el dataset nacional de IDEAM (no es una fuente independiente); la independencia de fuente a nivel regional la aporta la fuente adicional de la CAR (RICV), usada solo como contexto espacial, no como serie de eventos.</li>
+  </ul>
+</section>
+
+{% endblock %}

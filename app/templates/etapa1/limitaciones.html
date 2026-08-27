@@ -36,12 +36,10 @@
 <section class="mt-6 rounded-2xl border border-white/10 bg-ash-900/60 p-6 shadow-xl">
   <h2 class="text-sm font-bold uppercase tracking-wider text-white">Como estas limitaciones podrian afectar las preguntas de investigacion</h2>
   <p class="mt-3 text-xs text-slate-400">
-    Al momento de escribir esta pagina, la pregunta principal y las secundarias
-    (<a href="{{ url_for('etapa1.preguntas') }}" class="text-ember-400 underline">ver /etapa-1/preguntas</a>)
-    todavia estan marcadas como <code class="font-mono">TODO</code> por Sergio Gómez, asi que el analisis
-    de abajo se hace sobre los tres tipos de pregunta que este proyecto puede formular dado su alcance
-    (comparacion global-nacional-regional, tendencia temporal y analisis geografico/causal) — cuando
-    Sergio defina el texto final de cada pregunta, revisar si sigue aplicando o si hay que precisarlo mas.
+    Analisis sobre la pregunta principal y las 4 preguntas secundarias definidas en
+    <a href="{{ url_for('etapa1.preguntas') }}" class="text-ember-400 underline">Pregunta principal y preguntas secundarias</a>
+    (estacionalidad, geografia/amenaza fisica, causas, y comparacion con la tendencia
+    global).
   </p>
   <ul class="mt-4 space-y-3 text-sm text-slate-300">
     <li><strong class="text-white">Preguntas que comparan la escala global con la nacional/regional:</strong> como FIRMS mide deteccion de calor y GFW Fires mide perdida de bosque, mientras que IDEAM mide "eventos reportados", cualquier comparacion global-nacional debe hacerse por tendencia/orden de magnitud agregada por ano, no como una igualdad de conteos — de lo contrario se estaria comparando variables distintas como si fueran la misma.</li>

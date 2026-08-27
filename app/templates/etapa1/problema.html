@@ -18,29 +18,48 @@
   <section class="rounded-2xl border border-white/10 bg-ash-900/60 p-5 shadow-xl">
     <h2 class="text-sm font-bold uppercase tracking-wider text-sky-400">Escala global</h2>
     <p class="mt-3 text-sm text-slate-300">
-      <!-- TODO: describir el fenomeno de incendios forestales a nivel mundial: tendencias
-           recientes, regiones mas afectadas, factores como el cambio climatico. Citar
-           fuente(s) usada(s) para esta caracterizacion. -->
-      TODO: contexto global del problema.
+      El comportamiento de los incendios forestales a nivel mundial es cada vez menos
+      estable: la temporada de incendios mas reciente (marzo 2025 - febrero 2026)
+      registro un area quemada global 18% por debajo del promedio 2002-2024, pero con
+      impactos regionales extremos — Canada tuvo su tercer ano consecutivo de incendios
+      extremos (emisiones casi el triple del promedio, ~70.000 evacuaciones) y Europa
+      (Espana, Portugal, Reino Unido) registro area quemada entre las mas altas de su
+      historia, con USD 4.110 millones en activos expuestos al fuego. El cambio
+      climatico ya esta detras de estos picos: estudios de atribucion muestran que
+      condiciones cálidas/secas/ventosas como las de los incendios de 2026 en Francia
+      fueron el doble de probables, y en España 20 veces mas probables, por el
+      calentamiento global. Se proyecta que los incendios extremos sean hasta 50% mas
+      frecuentes hacia final de siglo (fuente: Copernicus/State of Wildfires 2025-2026;
+      ver diccionario de fuentes globales en "Fuentes de datos").
     </p>
   </section>
 
   <section class="rounded-2xl border border-white/10 bg-ash-900/60 p-5 shadow-xl">
     <h2 class="text-sm font-bold uppercase tracking-wider text-ember-400">Escala nacional (Colombia)</h2>
     <p class="mt-3 text-sm text-slate-300">
-      <!-- TODO: describir la situacion de incendios forestales en Colombia: temporadas
-           criticas (ej. temporada seca / fenomeno del Nino), departamentos mas afectados,
-           cifras del IDEAM/UNGRD. -->
-      TODO: contexto nacional del problema.
+      Segun el dataset consolidado del IDEAM que usa este proyecto, Colombia registro
+      40.010 eventos de incendio de la cobertura vegetal entre 2010 y 2024, distribuidos
+      en 32 departamentos, con picos claros en temporada seca (frecuentemente asociados
+      al fenomeno de El Nino). Datos historicos de la UNGRD/DesInventar (1921-2020)
+      muestran que Cundinamarca es, de lejos, el departamento con mas reportes
+      historicos de incendio forestal del pais (7.908), seguido por Boyaca (4.107),
+      Tolima (3.052) y Huila (2.345) — lo que hace especialmente relevante estudiar el
+      caso regional de Cundinamarca dentro del panorama nacional.
     </p>
   </section>
 
   <section class="rounded-2xl border border-white/10 bg-ash-900/60 p-5 shadow-xl">
     <h2 class="text-sm font-bold uppercase tracking-wider text-emerald-400">Escala regional (Cundinamarca)</h2>
     <p class="mt-3 text-sm text-slate-300">
-      <!-- TODO: describir la situacion de incendios forestales en Cundinamarca: municipios
-           mas afectados, cercania a paramos/reservas, relacion con la actividad agricola. -->
-      TODO: contexto regional del problema.
+      Agosto de 2026 fue, segun reportes de la UAEGRD Cundinamarca recogidos por prensa,
+      el mes mas critico del ano para el departamento: 636 emergencias por incendio
+      forestal acumuladas hasta el 23 de agosto en 74 de los 116 municipios (15
+      provincias), con cerca de 1.689 hectareas afectadas — 196 emergencias solo en
+      agosto, coincidiendo con la temporada seca y el fenomeno de El Nino. La
+      Corporacion Autonoma Regional (CAR) tiene ademas zonificada la amenaza fisica por
+      incendio del departamento desde 2014 (ver fuente RICV en "Fuentes de datos"), lo
+      que permite contrastar donde ha ocurrido historicamente el fuego (IDEAM) con donde
+      el territorio es fisicamente mas propenso a el.
     </p>
   </section>
 </div>
@@ -48,19 +67,32 @@
 <section class="mt-8 rounded-2xl border border-white/10 bg-ash-900/60 p-6 shadow-xl">
   <h2 class="text-base font-bold text-white">Problema especifico de investigacion</h2>
   <p class="mt-3 text-sm text-slate-300">
-    <!-- TODO: delimitar en 3-5 lineas el problema especifico que el grupo va a investigar
-         (no solo "hay incendios forestales", sino que aspecto puntual: frecuencia,
-         severidad, causas, relacion con variables climaticas, estacionalidad, etc.) -->
-    TODO: enunciado del problema delimitado.
+    Colombia registra miles de incendios forestales cada año, pero no se sabe con
+    claridad si su comportamiento (frecuencia, estacionalidad, severidad y causas)
+    replica el patron nacional en un departamento como Cundinamarca — el de mayor
+    numero de reportes historicos del pais — o si responde a dinamicas propias.
+    Tampoco es claro si la tendencia nacional se mueve en la misma direccion que la
+    tendencia global de deteccion satelital de incendios. Este proyecto delimita el
+    problema a: <strong>caracterizar la frecuencia, estacionalidad, severidad (area
+    quemada) y causas reportadas de los incendios forestales en Colombia entre 2010 y
+    2024, contrastando el comportamiento de Cundinamarca frente al total nacional y
+    frente a la tendencia global de deteccion de incendios activos.</strong>
   </p>
 </section>
 
 <section class="mt-6 rounded-2xl border border-white/10 bg-ash-900/60 p-6 shadow-xl">
   <h2 class="text-base font-bold text-white">Conocimiento que se espera obtener</h2>
   <p class="mt-3 text-sm text-slate-300">
-    <!-- TODO: explicar que se espera descubrir a partir de los datos (patrones, factores
-         asociados, comparaciones entre escalas, etc.) -->
-    TODO: conocimiento esperado.
+    Se espera identificar patrones de estacionalidad (¿en que meses se concentran los
+    incendios?), patrones geograficos (¿que departamentos/municipios concentran mas
+    eventos y area quemada, y coincide con las zonas de amenaza fisica de la CAR en
+    Cundinamarca?), y patrones de causa (¿que tan frecuentes son las causas
+    intencionales frente a las accidentales o por quemas agricolas fuera de control, en
+    el subconjunto de registros donde esta informacion esta diligenciada?). Tambien se
+    espera determinar si Cundinamarca se comporta de forma distinta al promedio
+    nacional, y si la tendencia de incendios en Colombia sigue (o no) la tendencia
+    global observada por deteccion satelital (NASA FIRMS) y perdida de cobertura
+    boscosa por fuego (Global Forest Watch Fires).
   </p>
 </section>
 

@@ -98,41 +98,41 @@ def _render(slug: str, **extra):
 
 
 @etapa1_bp.route("/")
-@etapa1_bp.route("/problema")
+@etapa1_bp.route("/problema/")
 def problema():
     return _render("problema")
 
 
-@etapa1_bp.route("/preguntas")
+@etapa1_bp.route("/preguntas/")
 def preguntas():
     return _render("preguntas")
 
 
-@etapa1_bp.route("/necesidades")
+@etapa1_bp.route("/necesidades/")
 def necesidades():
     return _render("necesidades")
 
 
-@etapa1_bp.route("/fuentes")
+@etapa1_bp.route("/fuentes/")
 def fuentes():
     return _render("fuentes")
 
 
-@etapa1_bp.route("/dataset")
+@etapa1_bp.route("/dataset/")
 def dataset():
     return _render("dataset", calidad=_quality_summary())
 
 
-@etapa1_bp.route("/diccionario")
+@etapa1_bp.route("/diccionario/")
 def diccionario():
     return _render("diccionario", diccionario=DICCIONARIO)
 
 
-@etapa1_bp.route("/calidad")
+@etapa1_bp.route("/calidad/")
 def calidad():
     return _render("calidad", calidad=_quality_summary())
 
 
-@etapa1_bp.route("/limitaciones")
+@etapa1_bp.route("/limitaciones/")
 def limitaciones():
     return _render("limitaciones")

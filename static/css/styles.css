@@ -1,0 +1,143 @@
+/* =========================================================================
+   Wildfire Data Mining · estilos complementarios a Tailwind CSS
+   Solo se define aqui lo que las utilidades de Tailwind no cubren:
+   sliders nativos, scrollbars y estados de los chips de mes.
+   ========================================================================= */
+
+:root {
+  --ember: #f97316;
+  --sky: #38bdf8;
+  --emerald: #34d399;
+}
+
+/* ------------------------------------------------------------------ */
+/* Sliders de rango                                                    */
+/* ------------------------------------------------------------------ */
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 6px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.1);
+  outline: none;
+  cursor: pointer;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--ember);
+  border: 2px solid #0f172a;
+  box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.2);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+input[type="range"]::-webkit-slider-thumb:hover {
+  transform: scale(1.15);
+  box-shadow: 0 0 0 5px rgba(249, 115, 22, 0.25);
+}
+
+input[type="range"]::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--ember);
+  border: 2px solid #0f172a;
+  cursor: pointer;
+}
+
+input[type="range"]:focus-visible {
+  box-shadow: 0 0 0 2px rgba(249, 115, 22, 0.6);
+}
+
+.range-sky::-webkit-slider-thumb {
+  background: var(--sky);
+  box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.2);
+}
+.range-sky::-moz-range-thumb { background: var(--sky); }
+
+.range-emerald::-webkit-slider-thumb {
+  background: var(--emerald);
+  box-shadow: 0 0 0 3px rgba(52, 211, 153, 0.2);
+}
+.range-emerald::-moz-range-thumb { background: var(--emerald); }
+
+/* ------------------------------------------------------------------ */
+/* Chips de mes                                                        */
+/* ------------------------------------------------------------------ */
+.month-chip.is-active {
+  background-color: rgba(249, 115, 22, 0.15);
+  border-color: rgba(249, 115, 22, 0.6);
+  color: #fdba74;
+}
+
+/* ------------------------------------------------------------------ */
+/* Contenedores de graficos                                            */
+/* ------------------------------------------------------------------ */
+.chart-shell {
+  position: relative;
+  width: 100%;
+}
+
+.chart-shell canvas {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+/* Estado de carga con efecto shimmer */
+.is-loading {
+  position: relative;
+  overflow: hidden;
+}
+
+.is-loading::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.05),
+    transparent
+  );
+  animation: shimmer 1.4s infinite;
+}
+
+@keyframes shimmer {
+  100% { transform: translateX(100%); }
+}
+
+/* ------------------------------------------------------------------ */
+/* Dropzone en estado de arrastre                                      */
+/* ------------------------------------------------------------------ */
+.dropzone-active {
+  border-color: rgba(249, 115, 22, 0.8) !important;
+  background-color: rgba(249, 115, 22, 0.08) !important;
+}
+
+/* ------------------------------------------------------------------ */
+/* Scrollbar                                                           */
+/* ------------------------------------------------------------------ */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: #0f172a; }
+::-webkit-scrollbar-thumb {
+  background: #334155;
+  border-radius: 999px;
+  border: 2px solid #0f172a;
+}
+::-webkit-scrollbar-thumb:hover { background: #475569; }
+
+/* ------------------------------------------------------------------ */
+/* Accesibilidad: respeta la preferencia de movimiento reducido        */
+/* ------------------------------------------------------------------ */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

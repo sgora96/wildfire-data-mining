@@ -1,0 +1,1 @@
+{"ok": true, "source": "incendios_ideam_cundinamarca_2010_2024.csv", "matched": 6027, "total": 6027, "kpis": {"total_fires": 6027, "active_events": 0, "total_area": 0.0, "avg_area": 0.0, "max_area": 0.0, "avg_risk": 38.1, "avg_temp": 0.0, "avg_wind": 0.0, "avg_humidity": 0.0, "high_risk_share": 0.0}}

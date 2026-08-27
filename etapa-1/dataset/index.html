@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Etapa 1 - Del problema a los datos. Bitacora tecnica del proyecto de Mineria de Datos sobre incendios forestales.">
+  <title>5. Dataset · Wildfire Data Mining</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            ember: { 400: '#fb923c', 500: '#f97316', 600: '#ea580c', 700: '#c2410c' },
+            ash:   { 800: '#1e293b', 900: '#0f172a', 950: '#020617' }
+          },
+          fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] }
+        }
+      }
+    };
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../static/css/styles.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔥</text></svg>">
+</head>
+<body class="min-h-screen bg-ash-950 font-sans text-slate-200 antialiased selection:bg-ember-500/30">
+
+  <!-- ===================== HEADER ===================== -->
+  <header class="sticky top-0 z-40 border-b border-white/5 bg-ash-950/80 backdrop-blur-xl">
+    <div class="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3 sm:px-6 lg:px-8">
+      <a href="../../index.html" class="flex items-center gap-3">
+        <span class="grid h-10 w-10 place-items-center rounded-xl bg-gradient-to-br from-ember-500 to-red-600 shadow-lg shadow-ember-600/30">
+          <svg class="h-6 w-6 text-white" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M12 2s4.5 4.2 4.5 8.2A4.5 4.5 0 0 1 12 15a4.5 4.5 0 0 1-4.5-4.8C7.5 6.2 12 2 12 2Zm0 20c-3.9 0-7-2.6-7-6 0 0 1.6 1.6 3.1 1.6 0 0-1-3.4 1.4-6.3 0 2.4 1.6 3.4 2.5 4.3 1.2 1.2 1.5 2.6 1.1 4.1 1.4-.3 2.6-1.6 2.9-3.2 1 1.1 1.5 2.4 1.5 3.5 0 3.4-3.1 6-6.5 6Z"/>
+          </svg>
+        </span>
+        <span class="leading-tight">
+          <span class="block text-base font-extrabold tracking-tight text-white sm:text-lg">Wildfire Data Mining</span>
+          <span class="hidden text-xs text-slate-400 sm:block">Analisis predictivo de incendios forestales</span>
+        </span>
+      </a>
+
+      <!-- Menu principal: Etapa 1 -->
+      <nav class="flex items-center gap-1" aria-label="Etapas del proyecto">
+        <a href="../problema/index.html"
+           class="rounded-lg bg-ember-600/15 px-3 py-2 text-sm font-semibold text-ember-400 ring-1 ring-inset ring-ember-500/30">
+          Etapa 1
+        </a>
+      </nav>
+    </div>
+
+    <!-- Submenu obligatorio de la Etapa 1 -->
+    <div class="border-t border-white/5 bg-ash-900/40">
+      <div class="mx-auto max-w-7xl overflow-x-auto px-4 sm:px-6 lg:px-8">
+        <nav class="flex min-w-max gap-1 py-2" aria-label="Submenu Etapa 1">
+          
+          <a href="../problema/index.html"
+             class="whitespace-nowrap rounded-lg px-3 py-1.5 text-xs font-medium transition
+                    text-slate-400 hover:bg-white/5 hover:text-white">
+            1. Problema y contexto
+          </a>
+          
+          <a href="../preguntas/index.html"
+             class="whitespace-nowrap rounded-lg px-3 py-1.5 text-xs font-medium transition
+                    text-slate-400 hover:bg-white/5 hover:text-white">
+            2. Pregunta principal y secundarias
+          </a>
+          
+          <a href="../necesidades/index.html"
+             class="whitespace-nowrap rounded-lg px-3 py-1.5 text-xs font-medium transition
+                    text-slate-400 hover:bg-white/5 hover:text-white">
+            3. Necesidades de informacion
+          </a>
+          
+          <a href="../fuentes/index.html"
+             class="whitespace-nowrap rounded-lg px-3 py-1.5 text-xs font-medium transition
+                    text-slate-400 hover:bg-white/5 hover:text-white">
+            4. Fuentes de datos
+          </a>
+          
+          <a href="index.html"
+             class="whitespace-nowrap rounded-lg px-3 py-1.5 text-xs font-medium transition
+                    bg-ember-600 text-white shadow">
+            5. Dataset
+          </a>
+          
+          <a href="../diccionario/index.html"
+             class="whitespace-nowrap rounded-lg px-3 py-1.5 text-xs font-medium transition
+                    text-slate-400 hover:bg-white/5 hover:text-white">
+            6. Diccionario de datos
+          </a>
+          
+          <a href="../calidad/index.html"
+             class="whitespace-nowrap rounded-lg px-3 py-1.5 text-xs font-medium transition
+                    text-slate-400 hover:bg-white/5 hover:text-white">
+            7. Calidad inicial de los datos
+          </a>
+          
+          <a href="../limitaciones/index.html"
+             class="whitespace-nowrap rounded-lg px-3 py-1.5 text-xs font-medium transition
+                    text-slate-400 hover:bg-white/5 hover:text-white">
+            8. Limitaciones y consideraciones
+          </a>
+          
+        </nav>
+      </div>
+    </div>
+  </header>
+
+  <!-- ===================== CONTENIDO ===================== -->
+  <main class="mx-auto max-w-5xl px-4 py-10 sm:px-6 lg:px-8">
+    
+
+<p class="text-xs font-semibold uppercase tracking-[0.2em] text-ember-400">Etapa 1 · Submenu 5</p>
+<h1 class="mt-2 text-3xl font-extrabold tracking-tight text-white sm:text-4xl">Dataset inicial</h1>
+<p class="mt-3 max-w-3xl text-sm text-slate-400">
+  Dataset consolidado a partir de la Base de Datos de Incendios de la Cobertura Vegetal
+  (BD-ICV) del IDEAM, 2010-2024. Generado con
+  <code class="rounded bg-white/10 px-1.5 py-0.5 text-xs">scripts/Build-IdeamDataset.ps1</code>.
+</p>
+
+<div class="mt-6 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-slate-400">
+  Responsable de esta pagina: <span class="font-semibold text-white">Laura Bautista</span>
+</div>
+
+<!-- KPIs -->
+<div class="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-4">
+  <div class="rounded-xl border border-white/10 bg-ash-900/60 p-4 text-center">
+    <p class="text-2xl font-extrabold text-white">40,010</p>
+    <p class="mt-1 text-[11px] uppercase tracking-wider text-slate-500">Registros nacionales</p>
+  </div>
+  <div class="rounded-xl border border-white/10 bg-ash-900/60 p-4 text-center">
+    <p class="text-2xl font-extrabold text-white">6,027</p>
+    <p class="mt-1 text-[11px] uppercase tracking-wider text-slate-500">Registros Cundinamarca</p>
+  </div>
+  <div class="rounded-xl border border-white/10 bg-ash-900/60 p-4 text-center">
+    <p class="text-2xl font-extrabold text-white">36</p>
+    <p class="mt-1 text-[11px] uppercase tracking-wider text-slate-500">Variables</p>
+  </div>
+  <div class="rounded-xl border border-white/10 bg-ash-900/60 p-4 text-center">
+    <p class="text-2xl font-extrabold text-white">2010–2024</p>
+    <p class="mt-1 text-[11px] uppercase tracking-wider text-slate-500">Periodo cubierto</p>
+  </div>
+</div>
+
+<!-- Requisitos minimos -->
+<section class="mt-8 rounded-2xl border border-white/10 bg-ash-900/60 p-6 shadow-xl">
+  <h2 class="text-sm font-bold uppercase tracking-wider text-white">Cumplimiento de requisitos minimos (R1)</h2>
+  <ul class="mt-4 space-y-2 text-sm text-slate-300">
+    <li>✅ ≥ 10.000 registros consolidados — dataset nacional tiene 40,010.</li>
+    <li>✅ ≥ 10 variables — el dataset tiene 36 columnas (ver diccionario de datos).</li>
+    <li>✅ ≥ 3 variables numericas — AREA_TOTAL_HA, ELEVACION_MSNM, AREA_COPA_HA, AREA_SUPERFICIAL_HA, etc.</li>
+    <li>✅ ≥ 3 variables categoricas — DEPARTAMENTO, MUNICIPIO, MES, causas y coberturas.</li>
+    <li>✅ ≥ 1 variable temporal — FECHA_REGISTRO (+ ANIO, MES).</li>
+    <li>✅ ≥ 1 variable geografica — DEPARTAMENTO, MUNICIPIO, LATITUD, LONGITUD.</li>
+    <li>✅ Informacion para niveles global / nacional / regional — nacional y regional cubiertos por IDEAM/UNGRD/CAR; nivel global documentado con NASA FIRMS y Global Forest Watch Fires (ver "Fuentes de datos").</li>
+    <li>✅ Posibilidad de integrar fuentes por variables geograficas/temporales — clave de integracion definida: ANIO + MES, por comparacion normalizada (no join fila a fila, ver seccion "Integracion con las fuentes globales" mas abajo).</li>
+  </ul>
+</section>
+
+<!-- Archivos -->
+<section class="mt-6 rounded-2xl border border-white/10 bg-ash-900/60 p-6 shadow-xl">
+  <h2 class="text-sm font-bold uppercase tracking-wider text-white">Archivos del dataset</h2>
+  <div class="mt-4 overflow-x-auto">
+    <table class="min-w-full text-left text-xs">
+      <thead class="bg-white/5 text-slate-400">
+        <tr><th class="px-3 py-2">Archivo</th><th class="px-3 py-2">Nivel</th><th class="px-3 py-2">Contenido</th></tr>
+      </thead>
+      <tbody class="divide-y divide-white/5 text-slate-300">
+        <tr>
+          <td class="px-3 py-2 font-mono">data/processed/incendios_ideam_2010_2024.csv</td>
+          <td class="px-3 py-2">Nacional</td>
+          <td class="px-3 py-2">Dataset consolidado completo (todas las hojas IDEAM 2010-2024)</td>
+        </tr>
+        <tr>
+          <td class="px-3 py-2 font-mono">data/processed/incendios_ideam_cundinamarca_2010_2024.csv</td>
+          <td class="px-3 py-2">Regional</td>
+          <td class="px-3 py-2">Subconjunto filtrado por DEPARTAMENTO = Cundinamarca</td>
+        </tr>
+        <tr>
+          <td class="px-3 py-2 font-mono">data/raw/ideam_incendios_*.csv</td>
+          <td class="px-3 py-2">—</td>
+          <td class="px-3 py-2">Extraccion cruda por hoja/ano, sin unificar (trazabilidad)</td>
+        </tr>
+        <tr>
+          <td class="px-3 py-2 font-mono">data/processed/calidad_resumen.json</td>
+          <td class="px-3 py-2">—</td>
+          <td class="px-3 py-2">Metricas de calidad usadas en esta pagina y en "Calidad inicial"</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section class="mt-6 rounded-2xl border border-white/10 bg-ash-900/60 p-6 shadow-xl">
+  <h2 class="text-sm font-bold uppercase tracking-wider text-white">Integracion con las fuentes globales</h2>
+  <p class="mt-3 text-sm text-slate-300">
+    Las fuentes globales (NASA FIRMS y Global Forest Watch Fires) ya estan documentadas
+    en <a href="../fuentes/index.html" class="text-ember-400 hover:underline">Fuentes de datos</a>,
+    pero <strong>no se descargaron ni se unieron fila a fila</strong> a este CSV
+    consolidado: son flujos de deteccion satelital (puntos de calor / perdida de
+    cobertura por pais) con una unidad de analisis distinta a los eventos con area
+    quemada del IDEAM.
+  </p>
+  <p class="mt-3 text-sm text-slate-300">
+    La integracion propuesta (ver <a href="../necesidades/index.html" class="text-ember-400 hover:underline">Necesidades de informacion</a>)
+    es por <strong>comparacion normalizada, no join fila a fila</strong>: agrupar cada
+    fuente por AÑO/MES y comparar tasas (estacionalidad relativa, hectareas por area de
+    bosque) en vez de intentar cruzar un evento puntual del IDEAM con una deteccion
+    satelital puntual. El conteo total de registros de este dataset (40.010 nacional /
+    6.027 Cundinamarca) no cambia por esto — las fuentes globales se analizarian como
+    tablas separadas, comparadas lado a lado.
+  </p>
+</section>
+
+
+  </main>
+
+  <!-- ===================== FOOTER ===================== -->
+  <footer class="mt-12 border-t border-white/5 bg-ash-950">
+    <div class="mx-auto max-w-7xl px-4 py-8 text-center sm:px-6 lg:px-8">
+      <p class="text-xs text-slate-500">
+        Wildfire Data Mining · Etapa 1 - Del problema a los datos · Proyecto academico de Mineria de Datos
+      </p>
+    </div>
+  </footer>
+</body>
+</html>

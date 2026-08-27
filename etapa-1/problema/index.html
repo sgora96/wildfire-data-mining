@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Etapa 1 - Del problema a los datos. Bitacora tecnica del proyecto de Mineria de Datos sobre incendios forestales.">
+  <title>1. Problema y contexto · Wildfire Data Mining</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            ember: { 400: '#fb923c', 500: '#f97316', 600: '#ea580c', 700: '#c2410c' },
+            ash:   { 800: '#1e293b', 900: '#0f172a', 950: '#020617' }
+          },
+          fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] }
+        }
+      }
+    };
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../static/css/styles.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔥</text></svg>">
+</head>
+<body class="min-h-screen bg-ash-950 font-sans text-slate-200 antialiased selection:bg-ember-500/30">
+
+  <!-- ===================== HEADER ===================== -->
+  <header class="sticky top-0 z-40 border-b border-white/5 bg-ash-950/80 backdrop-blur-xl">
+    <div class="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3 sm:px-6 lg:px-8">
+      <a href="../../index.html" class="flex items-center gap-3">
+        <span class="grid h-10 w-10 place-items-center rounded-xl bg-gradient-to-br from-ember-500 to-red-600 shadow-lg shadow-ember-600/30">
+          <svg class="h-6 w-6 text-white" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M12 2s4.5 4.2 4.5 8.2A4.5 4.5 0 0 1 12 15a4.5 4.5 0 0 1-4.5-4.8C7.5 6.2 12 2 12 2Zm0 20c-3.9 0-7-2.6-7-6 0 0 1.6 1.6 3.1 1.6 0 0-1-3.4 1.4-6.3 0 2.4 1.6 3.4 2.5 4.3 1.2 1.2 1.5 2.6 1.1 4.1 1.4-.3 2.6-1.6 2.9-3.2 1 1.1 1.5 2.4 1.5 3.5 0 3.4-3.1 6-6.5 6Z"/>
+          </svg>
+        </span>
+        <span class="leading-tight">
+          <span class="block text-base font-extrabold tracking-tight text-white sm:text-lg">Wildfire Data Mining</span>
+          <span class="hidden text-xs text-slate-400 sm:block">Analisis predictivo de incendios forestales</span>
+        </span>
+      </a>
+
+      <!-- Menu principal: Etapa 1 -->
+      <nav class="flex items-center gap-1" aria-label="Etapas del proyecto">
+        <a href="index.html"
+           class="rounded-lg bg-ember-600/15 px-3 py-2 text-sm font-semibold text-ember-400 ring-1 ring-inset ring-ember-500/30">
+          Etapa 1
+        </a>
+      </nav>
+    </div>
+
+    <!-- Submenu obligatorio de la Etapa 1 -->
+    <div class="border-t border-white/5 bg-ash-900/40">
+      <div class="mx-auto max-w-7xl overflow-x-auto px-4 sm:px-6 lg:px-8">
+        <nav class="flex min-w-max gap-1 py-2" aria-label="Submenu Etapa 1">
+          
+          <a href="index.html"
+             class="whitespace-nowrap rounded-lg px-3 py-1.5 text-xs font-medium transition
+                    bg-ember-600 text-white shadow">
+            1. Problema y contexto
+          </a>
+          
+          <a href="../preguntas/index.html"
+             class="whitespace-nowrap rounded-lg px-3 py-1.5 text-xs font-medium transition
+                    text-slate-400 hover:bg-white/5 hover:text-white">
+            2. Pregunta principal y secundarias
+          </a>
+          
+          <a href="../necesidades/index.html"
+             class="whitespace-nowrap rounded-lg px-3 py-1.5 text-xs font-medium transition
+                    text-slate-400 hover:bg-white/5 hover:text-white">
+            3. Necesidades de informacion
+          </a>
+          
+          <a href="../fuentes/index.html"
+             class="whitespace-nowrap rounded-lg px-3 py-1.5 text-xs font-medium transition
+                    text-slate-400 hover:bg-white/5 hover:text-white">
+            4. Fuentes de datos
+          </a>
+          
+          <a href="../dataset/index.html"
+             class="whitespace-nowrap rounded-lg px-3 py-1.5 text-xs font-medium transition
+                    text-slate-400 hover:bg-white/5 hover:text-white">
+            5. Dataset
+          </a>
+          
+          <a href="../diccionario/index.html"
+             class="whitespace-nowrap rounded-lg px-3 py-1.5 text-xs font-medium transition
+                    text-slate-400 hover:bg-white/5 hover:text-white">
+            6. Diccionario de datos
+          </a>
+          
+          <a href="../calidad/index.html"
+             class="whitespace-nowrap rounded-lg px-3 py-1.5 text-xs font-medium transition
+                    text-slate-400 hover:bg-white/5 hover:text-white">
+            7. Calidad inicial de los datos
+          </a>
+          
+          <a href="../limitaciones/index.html"
+             class="whitespace-nowrap rounded-lg px-3 py-1.5 text-xs font-medium transition
+                    text-slate-400 hover:bg-white/5 hover:text-white">
+            8. Limitaciones y consideraciones
+          </a>
+          
+        </nav>
+      </div>
+    </div>
+  </header>
+
+  <!-- ===================== CONTENIDO ===================== -->
+  <main class="mx-auto max-w-5xl px-4 py-10 sm:px-6 lg:px-8">
+    
+
+<p class="text-xs font-semibold uppercase tracking-[0.2em] text-ember-400">Etapa 1 · Submenu 1</p>
+<h1 class="mt-2 text-3xl font-extrabold tracking-tight text-white sm:text-4xl">Problema y contexto</h1>
+<p class="mt-3 max-w-3xl text-sm text-slate-400">
+  Tema asignado: <strong class="text-white">Incendios forestales</strong>.
+  El analisis se desarrolla en tres escalas: global, nacional (Colombia) y regional (Cundinamarca).
+</p>
+
+<!-- Responsable -->
+<div class="mt-6 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-slate-400">
+  Responsable de esta pagina: <span class="font-semibold text-white">Sergio Gómez</span>
+</div>
+
+<div class="mt-8 grid grid-cols-1 gap-6 md:grid-cols-3">
+  <section class="rounded-2xl border border-white/10 bg-ash-900/60 p-5 shadow-xl">
+    <h2 class="text-sm font-bold uppercase tracking-wider text-sky-400">Escala global</h2>
+    <p class="mt-3 text-sm text-slate-300">
+      El comportamiento de los incendios forestales a nivel mundial es cada vez menos
+      estable: la temporada de incendios mas reciente (marzo 2025 - febrero 2026)
+      registro un area quemada global 18% por debajo del promedio 2002-2024, pero con
+      impactos regionales extremos — Canada tuvo su tercer ano consecutivo de incendios
+      extremos (emisiones casi el triple del promedio, ~70.000 evacuaciones) y Europa
+      (Espana, Portugal, Reino Unido) registro area quemada entre las mas altas de su
+      historia, con USD 4.110 millones en activos expuestos al fuego. El cambio
+      climatico ya esta detras de estos picos: estudios de atribucion muestran que
+      condiciones cálidas/secas/ventosas como las de los incendios de 2026 en Francia
+      fueron el doble de probables, y en España 20 veces mas probables, por el
+      calentamiento global. Se proyecta que los incendios extremos sean hasta 50% mas
+      frecuentes hacia final de siglo (fuente: Copernicus/State of Wildfires 2025-2026;
+      ver diccionario de fuentes globales en "Fuentes de datos").
+    </p>
+  </section>
+
+  <section class="rounded-2xl border border-white/10 bg-ash-900/60 p-5 shadow-xl">
+    <h2 class="text-sm font-bold uppercase tracking-wider text-ember-400">Escala nacional (Colombia)</h2>
+    <p class="mt-3 text-sm text-slate-300">
+      Segun el dataset consolidado del IDEAM que usa este proyecto, Colombia registro
+      40.010 eventos de incendio de la cobertura vegetal entre 2010 y 2024, distribuidos
+      en 32 departamentos, con picos claros en temporada seca (frecuentemente asociados
+      al fenomeno de El Nino). Datos historicos de la UNGRD/DesInventar (1921-2020)
+      muestran que Cundinamarca es, de lejos, el departamento con mas reportes
+      historicos de incendio forestal del pais (7.908), seguido por Boyaca (4.107),
+      Tolima (3.052) y Huila (2.345) — lo que hace especialmente relevante estudiar el
+      caso regional de Cundinamarca dentro del panorama nacional.
+    </p>
+  </section>
+
+  <section class="rounded-2xl border border-white/10 bg-ash-900/60 p-5 shadow-xl">
+    <h2 class="text-sm font-bold uppercase tracking-wider text-emerald-400">Escala regional (Cundinamarca)</h2>
+    <p class="mt-3 text-sm text-slate-300">
+      Agosto de 2026 fue, segun reportes de la UAEGRD Cundinamarca recogidos por prensa,
+      el mes mas critico del ano para el departamento: 636 emergencias por incendio
+      forestal acumuladas hasta el 23 de agosto en 74 de los 116 municipios (15
+      provincias), con cerca de 1.689 hectareas afectadas — 196 emergencias solo en
+      agosto, coincidiendo con la temporada seca y el fenomeno de El Nino. La
+      Corporacion Autonoma Regional (CAR) tiene ademas zonificada la amenaza fisica por
+      incendio del departamento desde 2014 (ver fuente RICV en "Fuentes de datos"), lo
+      que permite contrastar donde ha ocurrido historicamente el fuego (IDEAM) con donde
+      el territorio es fisicamente mas propenso a el.
+    </p>
+  </section>
+</div>
+
+<section class="mt-8 rounded-2xl border border-white/10 bg-ash-900/60 p-6 shadow-xl">
+  <h2 class="text-base font-bold text-white">Problema especifico de investigacion</h2>
+  <p class="mt-3 text-sm text-slate-300">
+    Colombia registra miles de incendios forestales cada año, pero no se sabe con
+    claridad si su comportamiento (frecuencia, estacionalidad, severidad y causas)
+    replica el patron nacional en un departamento como Cundinamarca — el de mayor
+    numero de reportes historicos del pais — o si responde a dinamicas propias.
+    Tampoco es claro si la tendencia nacional se mueve en la misma direccion que la
+    tendencia global de deteccion satelital de incendios. Este proyecto delimita el
+    problema a: <strong>caracterizar la frecuencia, estacionalidad, severidad (area
+    quemada) y causas reportadas de los incendios forestales en Colombia entre 2010 y
+    2024, contrastando el comportamiento de Cundinamarca frente al total nacional y
+    frente a la tendencia global de deteccion de incendios activos.</strong>
+  </p>
+</section>
+
+<section class="mt-6 rounded-2xl border border-white/10 bg-ash-900/60 p-6 shadow-xl">
+  <h2 class="text-base font-bold text-white">Conocimiento que se espera obtener</h2>
+  <p class="mt-3 text-sm text-slate-300">
+    Se espera identificar patrones de estacionalidad (¿en que meses se concentran los
+    incendios?), patrones geograficos (¿que departamentos/municipios concentran mas
+    eventos y area quemada, y coincide con las zonas de amenaza fisica de la CAR en
+    Cundinamarca?), y patrones de causa (¿que tan frecuentes son las causas
+    intencionales frente a las accidentales o por quemas agricolas fuera de control, en
+    el subconjunto de registros donde esta informacion esta diligenciada?). Tambien se
+    espera determinar si Cundinamarca se comporta de forma distinta al promedio
+    nacional, y si la tendencia de incendios en Colombia sigue (o no) la tendencia
+    global observada por deteccion satelital (NASA FIRMS) y perdida de cobertura
+    boscosa por fuego (Global Forest Watch Fires).
+  </p>
+</section>
+
+
+  </main>
+
+  <!-- ===================== FOOTER ===================== -->
+  <footer class="mt-12 border-t border-white/5 bg-ash-950">
+    <div class="mx-auto max-w-7xl px-4 py-8 text-center sm:px-6 lg:px-8">
+      <p class="text-xs text-slate-500">
+        Wildfire Data Mining · Etapa 1 - Del problema a los datos · Proyecto academico de Mineria de Datos
+      </p>
+    </div>
+  </footer>
+</body>
+</html>

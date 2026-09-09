@@ -63,6 +63,8 @@ def create_app(config_name: str | None = None) -> Flask:
         return render_error(app, 500, "Error interno del servidor"), 500
 
     # --- Variables disponibles en todas las plantillas ----------------------
+    from app.navigation import MODULOS, NAV_INDEX
+
     @app.context_processor
     def _inject_globals():
         return {
@@ -70,6 +72,8 @@ def create_app(config_name: str | None = None) -> Flask:
             "project_tagline": app.config["PROJECT_TAGLINE"],
             "version": __version__,
             "static_export": app.config.get("STATIC_EXPORT", False),
+            "modulos": MODULOS,
+            "nav_index": NAV_INDEX,
         }
 
     return app

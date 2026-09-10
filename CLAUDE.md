@@ -18,6 +18,10 @@ tecnica que crece con cada una (nunca se reemplaza por documentos aislados).
 investigacion, necesidades de informacion, fuentes de datos, dataset, diccionario de
 datos, diagnostico de calidad y limitaciones).
 
+**Etapa 2 — "Calidad de Datos" — en progreso** (perfilamiento, 6 dimensiones de calidad
+con metrica, inventario de problemas, plan de tratamiento aplicado). Ver seccion propia
+mas abajo.
+
 Dataset base ya consolidado, real (no sintetico):
 
 - `data/processed/incendios_ideam_2010_2024.csv` — **40.010 registros**, nacional (Colombia), 2010-2024.
@@ -54,6 +58,15 @@ app/
       problema.html, preguntas.html, necesidades.html, fuentes.html,
       dataset.html, diccionario.html, calidad.html, limitaciones.html,
       tareas.html       # Las 8 paginas oficiales de la Etapa 1 + su pagina de equipo/tareas.
+    etapa2/
+      _layout.html      # Igual que etapa1/_layout.html: solo extends.
+      descripcion.html, perfilamiento.html, dimensiones.html, tratamiento.html
+scripts/
+  Build-IdeamDataset.ps1   # Etapa 1: extrae y consolida el dataset desde los .xlsx del IDEAM.
+  data_quality_r2.py       # Etapa 2: perfilamiento, 6 dimensiones, inventario de problemas,
+                            # tratamiento real (dedup, homologacion, tipos, coordenadas) y
+                            # comparacion antes/despues. Genera calidad_r2_resumen.json y el
+                            # dataset tratado. Requiere pandas/numpy (ver requirements.txt).
 ```
 
 ### Sidebar / modulos (`app/navigation.py`)
@@ -101,6 +114,36 @@ homogeneos entre anios, y `AREA_PROTEGIDA_NACIONAL` es texto libre (no un indica
 Si/No pese al nombre). Si agregas una fuente nueva con variables propias, suma sus
 entradas al final de esta misma lista, sin borrar las existentes.
 
+## Etapa 2 — Calidad de Datos
+
+El requisito completo del profesor esta en `docs/entregable-semana-2.txt`. Ademas de la
+seccion "Calidad de Datos" dentro de la app (ya construida, ver abajo), R2 pide un
+**informe tecnico en PDF aparte** (portada, introduccion, perfilamiento con capturas,
+evaluacion de dimensiones, inventario de problemas, plan de tratamiento, evidencias de
+Flask y de GitHub, referencias) — ese PDF no es parte del repo/app, lo arma el grupo por
+fuera tomando capturas de las paginas `/etapa-2/*` ya publicadas.
+
+Reparto de las 4 paginas (mismo patron que Etapa 1, un dueno por pagina):
+
+| # | Pagina | Ruta | Responsable | Brief |
+|---|---|---|---|---|
+| 1 | Descripcion y requisitos de calidad | `/etapa-2/descripcion` | **Sergio Gómez** | `docs/tareas/sergio.md` |
+| 2 | Perfilamiento de datos | `/etapa-2/perfilamiento` | **Laura Bautista** | `docs/tareas/laura.md` |
+| 3 | Dimensiones e inventario de problemas | `/etapa-2/dimensiones` | **Camila** | `docs/tareas/camila.md` |
+| 4 | Integracion, homologacion y tratamiento | `/etapa-2/tratamiento` | **Sara Vargas** | `docs/tareas/sara.md` |
+
+Logica compartida de Etapa 2 (no editar sin avisar al grupo):
+- `app/etapa2.py` — blueprint, rutas, lista `SUBMENU`, funcion `_resumen()` que lee
+  `data/processed/calidad_r2_resumen.json`.
+- `scripts/data_quality_r2.py` — si encontras un numero que no cuadra, el problema esta
+  aca, no en las plantillas; correlo de nuevo con
+  `python scripts/data_quality_r2.py` despues de corregirlo.
+
+Todas las cifras que ven las 4 paginas (perfilamiento, dimensiones, inventario, plan de
+tratamiento, antes/despues) ya estan calculadas y verificadas contra el dataset real —
+cada persona completa la parte narrativa/interpretativa marcada con `TODO`, no necesita
+recalcular nada a mano.
+
 ## Flujo de git
 
 Cada etapa se desarrolla en su propia rama de integracion (ej. `feature/etapa-1`,
@@ -115,6 +158,22 @@ Como cada persona toca archivos distintos, los merges deberian ser sin conflicto
 aparece uno, lo mas probable es en un archivo compartido (`DICCIONARIO` en
 `app/etapa1.py`, o `app/navigation.py` si dos etapas se agregan en paralelo) —
 resolverlo conservando las entradas de ambas partes, nunca borrando las de otra persona.
+
+**Para arrancar en tu propia maquina:**
+```bash
+git fetch origin
+git checkout feature/etapa-2   # o la rama de integracion de la etapa en curso
+git pull
+git checkout -b feature/etapa-2-<tu-nombre>
+```
+Despues abri Claude Code en esta carpeta (lee este archivo solo) y pegale el prompt
+sugerido al final de tu brief en `docs/tareas/<tu-nombre>.md`. Cuando termines, hace
+commit/push de **solo** los archivos que lista tu brief y abri el PR hacia la rama de
+integracion de la etapa (nunca hacia `main`).
+
+Los archivos `docs/tareas/*.md` de una etapa se borran una vez las 4 personas ya
+integraron sus cambios (mismo criterio que en Etapa 1) — si no los encontras, ya se
+elimino esa etapa y hay que crear los nuevos para la siguiente.
 
 ## Correr el proyecto localmente
 
@@ -133,6 +192,13 @@ PowerShell, no requiere Python):
 
 ```powershell
 ./scripts/Build-IdeamDataset.ps1
+```
+
+Si necesitas regenerar el perfilamiento/tratamiento de la Etapa 2 (requiere pandas/numpy
+del `requirements.txt`, ya instalados en el entorno virtual):
+
+```bash
+python scripts/data_quality_r2.py
 ```
 
 **Nota de encoding:** los CSV en `data/raw/` y `data/processed/` tienen BOM UTF-8 (los

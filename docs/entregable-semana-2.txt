@@ -1,0 +1,107 @@
+Objetivo
+
+Aplicar los conceptos fundamentales de calidad de datos mediante el perfilamiento, diagnóstico, medición y tratamiento del conjunto de datos seleccionado, identificando problemas que puedan afectar su uso. Los resultados deberán integrarse en la aplicación web desarrollada con Flask, publicarse en GitHub y desplegarse en un servicio web.
+
+Instrucciones
+
+Revisar el conjunto de datos seleccionado en la etapa anterior y definir claramente el propósito para el cual será utilizado.
+Establecer los requisitos de calidad que deben cumplir los datos de acuerdo con el problema abordado y las necesidades de sus posibles usuarios.
+Realizar el perfilamiento del conjunto de datos, incluyendo como mínimo:
+Cantidad de registros y variables.
+Tipo de dato de cada variable.
+Valores únicos.
+Valores nulos o vacíos.
+Registros duplicados.
+Valores mínimos, máximos y promedios, cuando corresponda.
+Valores atípicos o inconsistentes.
+Evaluar como mínimo las siguientes dimensiones de calidad:
+Completitud.
+Exactitud.
+Consistencia.
+Unicidad.
+Validez.
+Actualidad.
+Definir y aplicar una métrica para cada dimensión evaluada. Los resultados deberán expresarse mediante cantidades, porcentajes o indicadores verificables.
+Elaborar un inventario de los problemas encontrados. Para cada problema se debe indicar:
+Variable o campo afectado.
+Descripción del problema.
+Cantidad de registros afectados.
+Dimensión de calidad relacionada.
+Nivel de impacto.
+Evidencia obtenida.
+Analizar las posibles causas de los principales problemas detectados, considerando aspectos como errores de captura, formatos diferentes, ausencia de validaciones, duplicidad de fuentes o falta de actualización.
+Realizar la integración y homologación de los datos cuando existan diferentes archivos, fuentes, nombres, categorías, unidades o formatos.
+Diseñar un plan de tratamiento que incluya las acciones necesarias para corregir o controlar los problemas identificados. Se pueden aplicar procesos como:
+Eliminación de duplicados.
+Tratamiento de valores nulos.
+Corrección de tipos de datos.
+Estandarización de fechas y textos.
+Homologación de categorías.
+Validación de rangos.
+Tratamiento justificado de valores atípicos.
+Incorporar en la aplicación Flask una sección denominada Calidad de Datos, en la cual se presenten:
+Descripción del conjunto de datos.
+Resultados del perfilamiento.
+Dimensiones y métricas evaluadas.
+Problemas identificados.
+Acciones de tratamiento aplicadas.
+Comparación antes y después.
+Gráficas, tablas o indicadores relevantes.
+Gestionar el desarrollo mediante GitHub, utilizando una rama específica para la etapa. Al finalizar, realizar el correspondiente pull request y la integración con la rama principal.
+Publicar la versión actualizada de la aplicación y verificar que todas las páginas, gráficas, tablas y enlaces funcionen correctamente.
+Elaborar un informe técnico con el paso a paso del proceso. No se aceptarán únicamente enlaces: el documento deberá incluir las evidencias directamente dentro del informe.
+Formato de entrega
+
+Se debe entregar un único informe técnico en formato PDF, con la siguiente estructura:
+
+Portada
+Universidad.
+Programa académico.
+Espacio académico.
+Título de la actividad.
+Nombre del proyecto.
+Integrantes.
+Docente.
+Fecha.
+Introducción
+Breve descripción del proyecto, del conjunto de datos y de la importancia de evaluar su calidad.
+
+Objetivo de la etapa
+Descripción y propósito de los datos
+Fuente de los datos.
+Variables principales.
+Cantidad de registros.
+Uso esperado de la información.
+Requisitos de calidad
+Perfilamiento de los datos
+Incluir tablas, resultados, código utilizado y capturas legibles de las evidencias.
+
+Evaluación de las dimensiones de calidad
+Presentar las métricas, fórmulas, resultados e interpretación de cada dimensión.
+
+Inventario de problemas encontrados
+Análisis de las causas
+Integración y homologación de los datos
+Plan de tratamiento
+Explicar cada modificación planeada y justificar las decisiones tomadas.
+
+Implementación en Flask
+
+Mostrar el paso a paso de la integración, las páginas desarrolladas y las evidencias de funcionamiento.
+
+Gestión en GitHub
+Incluir evidencias de la rama utilizada, los commits, el pull request y la integración con la rama principal.
+
+Referencias bibliográficas
+Enlaces del proyecto
+URL del repositorio público en GitHub.
+URL de la aplicación publicada.
+URL del pull request realizado.
+Condiciones de entrega
+
+El informe debe entregarse en formato PDF.
+Todas las capturas deben ser legibles y estar acompañadas de una explicación.
+Los enlaces deben ser públicos y funcionar correctamente.
+El repositorio debe contener el código fuente, el archivo de dependencias, el conjunto de datos o su enlace de consulta y un archivo README.md.
+La aplicación publicada debe corresponder con la última versión disponible en la rama principal.
+No se aceptarán enlaces como reemplazo de las evidencias solicitadas dentro del informe.

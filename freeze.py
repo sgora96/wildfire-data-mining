@@ -46,6 +46,10 @@ def dashboard_pages():
         "etapa1.calidad",
         "etapa1.limitaciones",
         "etapa1.tareas",
+        "etapa2.descripcion",
+        "etapa2.perfilamiento",
+        "etapa2.dimensiones",
+        "etapa2.tratamiento",
     ):
         yield endpoint, {}
 

@@ -9,6 +9,7 @@ de paginas; el sidebar y el breadcrumb se actualizan solos.
 from __future__ import annotations
 
 from app.etapa1 import SUBMENU as _ETAPA1_PAGINAS
+from app.etapa2 import SUBMENU as _ETAPA2_PAGINAS
 
 MODULOS: list[dict] = [
     {
@@ -33,6 +34,16 @@ MODULOS: list[dict] = [
                         }
                     ]
                 ),
+            },
+            {
+                "id": "etapa-2",
+                "label": "Etapa 2",
+                "sublabel": "Calidad de datos",
+                "estado": "Completa",
+                "paginas": [
+                    {"endpoint": f"etapa2.{p['slug']}", "label": p["label"]}
+                    for p in _ETAPA2_PAGINAS
+                ],
             },
             # Las siguientes etapas del semestre se agregan aqui, con la
             # misma forma: {"id", "label", "sublabel", "estado", "paginas"}.

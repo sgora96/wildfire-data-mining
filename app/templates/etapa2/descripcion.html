@@ -1,0 +1,63 @@
+{% extends "etapa2/_layout.html" %}
+{% block title %}1. Descripción y requisitos de calidad{% endblock %}
+{% block content %}
+
+<p class="text-xs font-semibold uppercase tracking-[0.2em] text-ember-400">Etapa 2 · Submenu 1</p>
+<h1 class="mt-2 text-3xl font-extrabold tracking-tight text-white sm:text-4xl">Descripción y requisitos de calidad</h1>
+<p class="mt-3 max-w-3xl text-sm text-slate-400">
+  Punto de partida de la Etapa 2: qué dataset se evalúa, para qué se va a usar, y qué
+  debe cumplir para servir a ese propósito.
+</p>
+
+<div class="mt-6 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-slate-400">
+  Responsable de esta página: <span class="font-semibold text-white">Sergio Gómez</span>
+</div>
+
+<section class="mt-8 rounded-2xl border border-white/10 bg-ash-900/60 p-6 shadow-xl">
+  <h2 class="text-base font-bold text-white">Descripción del conjunto de datos</h2>
+  <dl class="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
+    <div><dt class="text-xs uppercase tracking-wider text-slate-500">Fuente</dt><dd class="mt-1 text-sm text-slate-200">Base de Datos de Incendios de la Cobertura Vegetal (BD-ICV) del IDEAM, consolidada en la <a href="{{ url_for('etapa1.dataset') }}" class="text-ember-400 hover:underline">Etapa 1</a>.</dd></div>
+    <div><dt class="text-xs uppercase tracking-wider text-slate-500">Registros evaluados</dt><dd class="mt-1 text-sm text-slate-200">{{ "{:,}".format(resumen.perfilamiento.registros) if resumen else "—" }}</dd></div>
+    <div><dt class="text-xs uppercase tracking-wider text-slate-500">Variables</dt><dd class="mt-1 text-sm text-slate-200">{{ resumen.perfilamiento.variables if resumen else "—" }}</dd></div>
+    <div><dt class="text-xs uppercase tracking-wider text-slate-500">Periodo</dt><dd class="mt-1 text-sm text-slate-200">2010 - 2024</dd></div>
+  </dl>
+  <p class="mt-4 text-sm text-slate-300">
+    <!-- TODO: 3-5 lineas describiendo las variables principales del dataset (fecha,
+         ubicacion, area quemada, causa, cobertura) y por que se eligio este dataset
+         para el proyecto (retomar de la Etapa 1). -->
+    TODO: variables principales y por qué este dataset.
+  </p>
+</section>
+
+<section class="mt-6 rounded-2xl border border-white/10 bg-ash-900/60 p-6 shadow-xl">
+  <h2 class="text-base font-bold text-white">Propósito y uso esperado de la información</h2>
+  <p class="mt-3 text-sm text-slate-300">
+    <!-- TODO: para que se van a usar estos datos en el proyecto (responder la pregunta
+         principal y secundarias de la Etapa 1: estacionalidad, geografia, causas,
+         comparacion con la tendencia global) y quienes serian los usuarios de esa
+         informacion (el propio grupo para el analisis posterior, y potencialmente
+         entidades de gestion del riesgo). -->
+    TODO: propósito y usuarios esperados de la información.
+  </p>
+</section>
+
+<section class="mt-6 rounded-2xl border border-white/10 bg-ash-900/60 p-6 shadow-xl">
+  <h2 class="text-base font-bold text-white">Requisitos de calidad</h2>
+  <p class="mt-3 text-sm text-slate-300">
+    Para responder las preguntas de investigación de la Etapa 1, el dataset necesita
+    cumplir como mínimo:
+  </p>
+  <ul class="mt-3 list-disc space-y-2 pl-5 text-sm text-slate-300">
+    <li><strong class="text-white">Completitud</strong> suficiente en fecha y ubicación (año, mes, departamento, municipio) para poder analizar estacionalidad y geografía sin descartar una fracción grande del dataset.</li>
+    <li><strong class="text-white">Validez</strong> en los nombres de departamento y mes, homologados a un dominio cerrado y conocido (33 departamentos, 12 meses), para poder comparar Cundinamarca contra el total nacional sin fragmentar los conteos por variantes de texto.</li>
+    <li><strong class="text-white">Unicidad</strong>: sin registros duplicados que inflen artificialmente la frecuencia de incendios reportada.</li>
+    <li><strong class="text-white">Exactitud</strong> en las columnas numéricas de área/cobertura, para que un análisis de severidad (hectáreas quemadas) no se calcule sobre celdas que en realidad contienen texto.</li>
+    <li>
+      <!-- TODO: agregar 1-2 requisitos adicionales propios del problema si aplica
+           (ej. requisitos sobre las coordenadas para un futuro analisis geoespacial). -->
+      TODO: requisito adicional si aplica.
+    </li>
+  </ul>
+</section>
+
+{% endblock %}

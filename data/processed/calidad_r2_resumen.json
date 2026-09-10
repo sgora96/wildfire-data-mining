@@ -1,0 +1,559 @@
+{
+  "generado": "2026-09-10",
+  "fuente": "data/processed/incendios_ideam_2010_2024.csv (dataset de la Etapa 1)",
+  "perfilamiento": {
+    "registros": 40010,
+    "variables": 36,
+    "registros_duplicados": 4655,
+    "columnas": {
+      "ANIO": {
+        "tipo_declarado": "texto",
+        "valores_unicos": 15,
+        "nulos": 3939,
+        "pct_nulos": 9.85
+      },
+      "MES": {
+        "tipo_declarado": "texto",
+        "valores_unicos": 25,
+        "nulos": 3938,
+        "pct_nulos": 9.84
+      },
+      "FECHA_REGISTRO": {
+        "tipo_declarado": "texto",
+        "valores_unicos": 3829,
+        "nulos": 4064,
+        "pct_nulos": 10.16
+      },
+      "DEPARTAMENTO": {
+        "tipo_declarado": "texto",
+        "valores_unicos": 45,
+        "nulos": 4040,
+        "pct_nulos": 10.1
+      },
+      "MUNICIPIO": {
+        "tipo_declarado": "texto",
+        "valores_unicos": 1997,
+        "nulos": 4046,
+        "pct_nulos": 10.11
+      },
+      "VEREDA_CORREGIMIENTO": {
+        "tipo_declarado": "texto",
+        "valores_unicos": 9914,
+        "nulos": 26988,
+        "pct_nulos": 67.45
+      },
+      "PREDIO_BARRIO": {
+        "tipo_declarado": "texto",
+        "valores_unicos": 1127,
+        "nulos": 37759,
+        "pct_nulos": 94.37
+      },
+      "AREA_PROTEGIDA_NACIONAL": {
+        "tipo_declarado": "texto",
+        "valores_unicos": 74,
+        "nulos": 39430,
+        "pct_nulos": 98.55
+      },
+      "LATITUD": {
+        "tipo_declarado": "texto",
+        "valores_unicos": 3150,
+        "nulos": 36653,
+        "pct_nulos": 91.61
+      },
+      "LONGITUD": {
+        "tipo_declarado": "texto",
+        "valores_unicos": 3146,
+        "nulos": 36662,
+        "pct_nulos": 91.63
+      },
+      "ELEVACION_MSNM": {
+        "tipo_declarado": "numerico (con texto residual)",
+        "valores_unicos": 691,
+        "nulos": 38880,
+        "pct_nulos": 97.18,
+        "valores_no_numericos": 95,
+        "min": -1.0,
+        "max": 5788.0,
+        "promedio": 1304.79
+      },
+      "AREA_COPA_HA": {
+        "tipo_declarado": "numerico (con texto residual)",
+        "valores_unicos": 8,
+        "nulos": 39203,
+        "pct_nulos": 97.98,
+        "valores_no_numericos": 806,
+        "min": 3.0,
+        "max": 3.0,
+        "promedio": 3.0
+      },
+      "AREA_SUPERFICIAL_HA": {
+        "tipo_declarado": "numerico (con texto residual)",
+        "valores_unicos": 11,
+        "nulos": 32743,
+        "pct_nulos": 81.84,
+        "valores_no_numericos": 7216,
+        "min": 0.0,
+        "max": 1.0,
+        "promedio": 0.98
+      },
+      "AREA_SUBTERRANEO_HA": {
+        "tipo_declarado": "numerico (con texto residual)",
+        "valores_unicos": 3,
+        "nulos": 39877,
+        "pct_nulos": 99.67,
+        "valores_no_numericos": 133,
+        "min": null,
+        "max": null,
+        "promedio": null
+      },
+      "AREA_MIXTO_HA": {
+        "tipo_declarado": "numerico (con texto residual)",
+        "valores_unicos": 7,
+        "nulos": 39633,
+        "pct_nulos": 99.06,
+        "valores_no_numericos": 372,
+        "min": 0.0,
+        "max": 1.0,
+        "promedio": 0.8
+      },
+      "AREA_OTRO_TIPO_HA": {
+        "tipo_declarado": "numerico (con texto residual)",
+        "valores_unicos": 10,
+        "nulos": 38752,
+        "pct_nulos": 96.86,
+        "valores_no_numericos": 1257,
+        "min": 0.0,
+        "max": 0.0,
+        "promedio": 0.0
+      },
+      "CAUSA_QUEMA_FUERA_CONTROL": {
+        "tipo_declarado": "texto",
+        "valores_unicos": 13,
+        "nulos": 38326,
+        "pct_nulos": 95.79
+      },
+      "CAUSA_DESCUIDO_NEGLIGENCIA": {
+        "tipo_declarado": "texto",
+        "valores_unicos": 6,
+        "nulos": 39529,
+        "pct_nulos": 98.8
+      },
+      "CAUSA_INTENCIONAL": {
+        "tipo_declarado": "texto",
+        "valores_unicos": 6,
+        "nulos": 38912,
+        "pct_nulos": 97.26
+      },
+      "CAUSA_ACCIDENTAL": {
+        "tipo_declarado": "texto",
+        "valores_unicos": 6,
+        "nulos": 39796,
+        "pct_nulos": 99.47
+      },
+      "CAUSA_REACTIVACION_FOCOS": {
+        "tipo_declarado": "texto",
+        "valores_unicos": 6,
+        "nulos": 39965,
+        "pct_nulos": 99.89
+      },
+      "CAUSA_OTRA": {
+        "tipo_declarado": "texto",
+        "valores_unicos": 14,
+        "nulos": 38930,
+        "pct_nulos": 97.3
+      },
+      "COB_BOSQUE_NATURAL_DENSO": {
+        "tipo_declarado": "numerico (con texto residual)",
+        "valores_unicos": 168,
+        "nulos": 37609,
+        "pct_nulos": 94.0,
+        "valores_no_numericos": 94,
+        "min": 0.0,
+        "max": 2200.0,
+        "promedio": 17.32
+      },
+      "COB_BOSQUE_INTERVENIDO": {
+        "tipo_declarado": "numerico (con texto residual)",
+        "valores_unicos": 271,
+        "nulos": 38028,
+        "pct_nulos": 95.05,
+        "valores_no_numericos": 71,
+        "min": 0.0,
+        "max": 3800.0,
+        "promedio": 12.93
+      },
+      "COB_BOSQUE_PLANTADO": {
+        "tipo_declarado": "numerico (con texto residual)",
+        "valores_unicos": 205,
+        "nulos": 38170,
+        "pct_nulos": 95.4,
+        "valores_no_numericos": 108,
+        "min": 0.0,
+        "max": 700.0,
+        "promedio": 2.87
+      },
+      "COB_BOSQUE_SECO": {
+        "tipo_declarado": "numerico (con texto residual)",
+        "valores_unicos": 59,
+        "nulos": 38468,
+        "pct_nulos": 96.15,
+        "valores_no_numericos": 60,
+        "min": 0.0,
+        "max": 1000.0,
+        "promedio": 1.98
+      },
+      "COB_CULTIVOS": {
+        "tipo_declarado": "numerico (con texto residual)",
+        "valores_unicos": 156,
+        "nulos": 38111,
+        "pct_nulos": 95.25,
+        "valores_no_numericos": 99,
+        "min": 0.0,
+        "max": 800.0,
+        "promedio": 4.93
+      },
+      "COB_PARAMOS": {
+        "tipo_declarado": "numerico (con texto residual)",
+        "valores_unicos": 93,
+        "nulos": 38195,
+        "pct_nulos": 95.46,
+        "valores_no_numericos": 136,
+        "min": 0.0,
+        "max": 737.0,
+        "promedio": 4.61
+      },
+      "COB_SABANAS_PASTIZALES": {
+        "tipo_declarado": "numerico (con texto residual)",
+        "valores_unicos": 324,
+        "nulos": 37184,
+        "pct_nulos": 92.94,
+        "valores_no_numericos": 232,
+        "min": 0.0,
+        "max": 7500.0,
+        "promedio": 18.32
+      },
+      "COB_PASTOS_MANEJADOS": {
+        "tipo_declarado": "numerico (con texto residual)",
+        "valores_unicos": 199,
+        "nulos": 37724,
+        "pct_nulos": 94.29,
+        "valores_no_numericos": 146,
+        "min": 0.0,
+        "max": 10000.0,
+        "promedio": 13.36
+      },
+      "COB_RASTROJO": {
+        "tipo_declarado": "numerico (con texto residual)",
+        "valores_unicos": 388,
+        "nulos": 36229,
+        "pct_nulos": 90.55,
+        "valores_no_numericos": 637,
+        "min": 0.0,
+        "max": 2500.0,
+        "promedio": 7.73
+      },
+      "COB_VEGETACION_SECA": {
+        "tipo_declarado": "numerico (con texto residual)",
+        "valores_unicos": 96,
+        "nulos": 38165,
+        "pct_nulos": 95.39,
+        "valores_no_numericos": 200,
+        "min": 0.0,
+        "max": 204.0,
+        "promedio": 1.89
+      },
+      "COB_COBERTURA_SIN_DETERMINAR": {
+        "tipo_declarado": "numerico (con texto residual)",
+        "valores_unicos": 435,
+        "nulos": 22374,
+        "pct_nulos": 55.92,
+        "valores_no_numericos": 24,
+        "min": 0.0,
+        "max": 22000.0,
+        "promedio": 27.2
+      },
+      "AREA_TOTAL_HA": {
+        "tipo_declarado": "numerico (con texto residual)",
+        "valores_unicos": 1609,
+        "nulos": 4510,
+        "pct_nulos": 11.27,
+        "valores_no_numericos": 239,
+        "min": 0.0,
+        "max": 41079.0,
+        "promedio": 45.88
+      },
+      "ENTIDAD_REPORTA": {
+        "tipo_declarado": "texto",
+        "valores_unicos": 18,
+        "nulos": 32123,
+        "pct_nulos": 80.29
+      },
+      "FUENTE_HOJA": {
+        "tipo_declarado": "texto",
+        "valores_unicos": 5,
+        "nulos": 0,
+        "pct_nulos": 0.0
+      }
+    }
+  },
+  "dimensiones": {
+    "completitud": {
+      "definicion": "Proporcion de valores presentes (no nulos) sobre el total de registros.",
+      "formula": "1 - (nulos / total), promediado sobre los campos clave",
+      "campos_clave": {
+        "ANIO": 90.15,
+        "MES": 90.16,
+        "FECHA_REGISTRO": 89.84,
+        "DEPARTAMENTO": 89.9,
+        "MUNICIPIO": 89.89,
+        "AREA_TOTAL_HA": 88.73
+      },
+      "resultado_pct": 89.78
+    },
+    "exactitud": {
+      "definicion": "Proporcion de valores que representan correctamente el dato real esperado (no marcadores de texto en campos numericos, ni valores fuera de rango fisico).",
+      "formula": "1 - (valores_no_numericos_en_campos_de_area + elevaciones_fuera_de_rango) / total_de_celdas_evaluadas",
+      "valores_no_numericos_en_areas_cobertura": 11830,
+      "elevaciones_fuera_de_rango_fisico": 2,
+      "resultado_pct": 98.36
+    },
+    "consistencia": {
+      "definicion": "Proporcion de registros donde campos relacionados entre si no se contradicen (ej. el año de ANIO coincide con el año de FECHA_REGISTRO).",
+      "formula": "1 - (registros_inconsistentes / registros_con_ambos_campos_diligenciados)",
+      "anio_vs_fecha_inconsistentes": 1,
+      "registros_evaluables": 35877,
+      "resultado_pct": 100.0
+    },
+    "unicidad": {
+      "definicion": "Proporcion de registros que no estan duplicados exactamente.",
+      "formula": "1 - (registros_duplicados / total_de_registros)",
+      "registros_duplicados": 4655,
+      "resultado_pct": 88.37
+    },
+    "validez": {
+      "definicion": "Proporcion de valores que pertenecen al dominio esperado de la variable (departamento dentro de la lista oficial de 33, mes dentro de los 12 meses, coordenadas dentro del territorio colombiano).",
+      "formula": "promedio de (valores_en_dominio / valores_no_nulos) para DEPARTAMENTO, MES y coordenadas",
+      "departamento_sin_homologar": 0,
+      "coordenadas_fuera_de_rango": 40,
+      "resultado_pct": 98.14
+    },
+    "actualidad": {
+      "definicion": "Que tan reciente es la informacion disponible respecto a la fecha de analisis.",
+      "formula": "hoy - fecha_del_registro_mas_reciente (en anios)",
+      "fecha_analisis": "2026-09-10",
+      "anio_maximo_en_datos": 2024,
+      "brecha_anios": 2,
+      "nota": "Es un registro administrativo historico (no un feed en tiempo real); una brecha de 1-2 anios es esperable mientras el IDEAM consolida y publica el reporte del ultimo anio."
+    }
+  },
+  "problemas": [
+    {
+      "variable": "DEPARTAMENTO",
+      "descripcion": "El mismo departamento aparece escrito de formas distintas entre hojas (con/sin tilde, mayusculas/minusculas, con/sin coma antes de D.C.): 45 valores de texto para 33 departamentos reales.",
+      "registros_afectados": 35970,
+      "dimension": "Validez / Consistencia",
+      "nivel_impacto": "Alto",
+      "evidencia": "45 valores de texto distintos -> homologados a 33 despues del tratamiento."
+    },
+    {
+      "variable": "MES",
+      "descripcion": "Mayusculas/minusculas inconsistentes entre hojas, mas el valor 'SIN REPORTE' sin documentar.",
+      "registros_afectados": 36072,
+      "dimension": "Validez",
+      "nivel_impacto": "Medio",
+      "evidencia": "25 valores distintos -> 13 despues de homologar."
+    },
+    {
+      "variable": "AREA_*_HA (5 columnas por tipo de incendio)",
+      "descripcion": "Columnas pensadas como numericas (hectareas) que mezclan marcadores de texto (ej. 'SUP', 'X', nombres de ciudad) con numeros.",
+      "registros_afectados": 9784,
+      "dimension": "Exactitud",
+      "nivel_impacto": "Alto",
+      "evidencia": "Ver columna 'valores_no_numericos' del perfilamiento para cada campo."
+    },
+    {
+      "variable": "COB_* (11 columnas de cobertura vegetal)",
+      "descripcion": "Columnas mayoritariamente numericas con un porcentaje menor de texto residual (marcadores o nombres de cobertura sueltos).",
+      "registros_afectados": 1807,
+      "dimension": "Exactitud",
+      "nivel_impacto": "Medio",
+      "evidencia": "Ver columna 'valores_no_numericos' del perfilamiento para cada campo COB_*."
+    },
+    {
+      "variable": "LATITUD / LONGITUD",
+      "descripcion": "Formato de texto grados.minutos.segundos con separador decimal de coma, con variantes (a veces sin segundos); ademas ausentes en la gran mayoria de registros.",
+      "registros_afectados": 3357,
+      "dimension": "Completitud / Validez",
+      "nivel_impacto": "Alto",
+      "evidencia": "91.61% nulos; de las presentes, 40 quedaron fuera del rango geografico de Colombia al convertir."
+    },
+    {
+      "variable": "LATITUD / LONGITUD",
+      "descripcion": "Ademas del formato dominante, una parte de los registros usa sistemas de referencia distintos sin documentarlo: grados-minutos-segundos con simbolos (°, ', \") -a veces con latitud y longitud concatenadas en una sola celda-, y coordenadas planas en el sistema MAGNA-SIRGAS (proyectado en metros, no en grados). Estos formatos no son convertibles con una formula de grados/minutos/segundos: requieren una transformacion geodesica con el EPSG correcto.",
+      "registros_afectados": 1768,
+      "dimension": "Validez / Consistencia",
+      "nivel_impacto": "Medio",
+      "evidencia": "1768 registros con coordenada presente en un formato no numerico simple; no se convirtieron en esta etapa (se documentan como limitacion, ver plan de tratamiento)."
+    },
+    {
+      "variable": "ELEVACION_MSNM",
+      "descripcion": "Incluye al menos un valor -1, fisicamente invalido como elevacion sobre el nivel del mar en Colombia.",
+      "registros_afectados": 2,
+      "dimension": "Exactitud",
+      "nivel_impacto": "Bajo",
+      "evidencia": "2 registros fuera del rango plausible 0-5800 msnm."
+    },
+    {
+      "variable": "(registro completo)",
+      "descripcion": "Registros duplicados exactamente en todas las columnas.",
+      "registros_afectados": 4655,
+      "dimension": "Unicidad",
+      "nivel_impacto": "Alto",
+      "evidencia": "4655 de 40010 registros (11.6%) son duplicados exactos."
+    },
+    {
+      "variable": "ANIO / MES / FECHA_REGISTRO / DEPARTAMENTO",
+      "descripcion": "Registros sin ninguno de los campos de fecha ni ubicacion diligenciados; no permiten analisis temporal ni geografico.",
+      "registros_afectados": 3,
+      "dimension": "Completitud",
+      "nivel_impacto": "Medio",
+      "evidencia": "3 registros sin fecha ni ubicacion."
+    },
+    {
+      "variable": "ANIO vs FECHA_REGISTRO",
+      "descripcion": "El año del campo ANIO no coincide con el año contenido en FECHA_REGISTRO para el mismo registro.",
+      "registros_afectados": 1,
+      "dimension": "Consistencia",
+      "nivel_impacto": "Bajo",
+      "evidencia": "1 registros con año inconsistente entre ambos campos."
+    },
+    {
+      "variable": "AREA_TOTAL_HA",
+      "descripcion": "Valores atipicos (muy por encima del resto de la distribucion) segun el criterio de rango intercuartilico (IQR).",
+      "registros_afectados": 5731,
+      "dimension": "Exactitud",
+      "nivel_impacto": "Bajo",
+      "evidencia": "Limite superior IQR = 18.5 ha; 5731 registros lo superan (no se eliminaron: se marcaron, ver plan de tratamiento)."
+    }
+  ],
+  "plan_tratamiento": [
+    {
+      "accion": "Eliminacion de duplicados",
+      "detalle": "Se eliminaron 4655 registros exactamente duplicados, conservando la primera aparicion.",
+      "justificacion": "Duplicados exactos no aportan informacion nueva y sobreestiman la frecuencia de incendios si no se retiran."
+    },
+    {
+      "accion": "Homologacion de categorias (DEPARTAMENTO, MES)",
+      "detalle": "Se normalizaron 45 variantes de texto de DEPARTAMENTO a los 33 departamentos oficiales, y las variantes de MES a 12 meses + 'Sin reporte'.",
+      "justificacion": "Sin esta homologacion, un analisis por departamento o por mes subestima cada categoria real al repartir los conteos entre variantes de texto."
+    },
+    {
+      "accion": "Correccion de tipos de datos",
+      "detalle": "Se generaron columnas numericas limpias (_NUM) para las 17 columnas de area/cobertura/elevacion, separando el valor numerico del marcador de texto (columna _TEXTO_RESIDUAL).",
+      "justificacion": "Permite usar esas columnas en calculos estadisticos sin que un texto como 'SUP' rompa la operacion o se interprete como 0."
+    },
+    {
+      "accion": "Estandarizacion de coordenadas",
+      "detalle": "Se convirtieron a decimal (LATITUD_DEC, LONGITUD_DEC) unicamente los formatos numericos simples (grados.minutos.segundos con punto, o decimal ya convertido), validando que caigan dentro del territorio colombiano: 1018 registros quedaron con coordenadas utilizables.",
+      "justificacion": "El formato original no es utilizable directamente en un mapa; ademas permite detectar coordenadas mal capturadas (fuera del pais)."
+    },
+    {
+      "accion": "Coordenadas en formato no convertible (decision de alcance)",
+      "detalle": "Los 1768 registros con coordenada en sistema MAGNA-SIRGAS (planas) o con simbolos °/'/\" concatenando latitud y longitud NO se convirtieron.",
+      "justificacion": "Convertirlas requiere una transformacion geodesica con el EPSG correcto (no una simple formula de grados/minutos/segundos); forzar una conversion incorrecta produciria coordenadas falsas, peor que dejarlas nulas. Se documenta como limitacion para una etapa posterior."
+    },
+    {
+      "accion": "Validacion de rangos",
+      "detalle": "ELEVACION_MSNM fuera de 0-5800 msnm (incluye el valor -1) se trata como invalida (nula), no como un dato real.",
+      "justificacion": "Un -1 no es una elevacion posible; mantenerlo como numero distorsionaria cualquier promedio o minimo."
+    },
+    {
+      "accion": "Tratamiento justificado de valores atipicos",
+      "detalle": "Los 5731 registros de AREA_TOTAL_HA por encima del limite IQR se marcaron (AREA_TOTAL_ATIPICO = True) en vez de eliminarse.",
+      "justificacion": "Un incendio con area muy grande es un evento real y relevante para el problema de investigacion (severidad); eliminarlo sesgaria el analisis hacia abajo. Se deja marcado para que cualquier analisis posterior decida si lo excluye o no."
+    },
+    {
+      "accion": "Tratamiento de valores nulos",
+      "detalle": "No se imputan valores para LATITUD/LONGITUD/ELEVACION ni para las columnas de causa/cobertura (su ausencia refleja que el campo no fue diligenciado en el reporte original, no un error de captura). Los registros sin fecha ni ubicacion se marcan (REGISTRO_INCOMPLETO) en vez de eliminarse.",
+      "justificacion": "Inventar un valor para un campo que el IDEAM nunca reporto introduciria informacion falsa; es preferible dejar el nulo explicito y que el analisis lo tenga en cuenta."
+    }
+  ],
+  "comparacion_antes_despues": {
+    "registros": {
+      "antes": 40010,
+      "despues": 35355,
+      "eliminados_por_duplicado": 4655
+    },
+    "departamentos_distintos": {
+      "antes": 45,
+      "despues": 33
+    },
+    "meses_distintos": {
+      "antes": 25,
+      "despues": 13
+    },
+    "coordenadas_utilizables": {
+      "antes": 1018,
+      "despues": 1016
+    },
+    "elevaciones_invalidas": {
+      "antes": 2,
+      "despues": 0
+    },
+    "duplicados_exactos": {
+      "antes": 4655,
+      "despues": 0
+    }
+  },
+  "dataset_tratado": {
+    "archivo": "data/processed/incendios_ideam_tratado_2010_2024.csv",
+    "registros": 35355,
+    "columnas_nuevas": [
+      "DEPARTAMENTO_NORM",
+      "MES_NORM",
+      "MUNICIPIO_NORM",
+      "LATITUD_DEC",
+      "LONGITUD_DEC",
+      "COORDENADAS_VALIDAS",
+      "ELEVACION_MSNM_NUM",
+      "REGISTRO_INCOMPLETO",
+      "ANIO_FECHA_INCONSISTENTE",
+      "AREA_TOTAL_HA_NUM",
+      "AREA_TOTAL_ATIPICO",
+      "AREA_COPA_HA_NUM",
+      "AREA_SUPERFICIAL_HA_NUM",
+      "AREA_SUBTERRANEO_HA_NUM",
+      "AREA_MIXTO_HA_NUM",
+      "AREA_OTRO_TIPO_HA_NUM",
+      "COB_BOSQUE_NATURAL_DENSO_NUM",
+      "COB_BOSQUE_INTERVENIDO_NUM",
+      "COB_BOSQUE_PLANTADO_NUM",
+      "COB_BOSQUE_SECO_NUM",
+      "COB_CULTIVOS_NUM",
+      "COB_PARAMOS_NUM",
+      "COB_SABANAS_PASTIZALES_NUM",
+      "COB_PASTOS_MANEJADOS_NUM",
+      "COB_RASTROJO_NUM",
+      "COB_VEGETACION_SECA_NUM",
+      "COB_COBERTURA_SIN_DETERMINAR_NUM",
+      "AREA_TOTAL_HA_NUM",
+      "AREA_COPA_HA_TEXTO_RESIDUAL",
+      "AREA_SUPERFICIAL_HA_TEXTO_RESIDUAL",
+      "AREA_SUBTERRANEO_HA_TEXTO_RESIDUAL",
+      "AREA_MIXTO_HA_TEXTO_RESIDUAL",
+      "AREA_OTRO_TIPO_HA_TEXTO_RESIDUAL",
+      "COB_BOSQUE_NATURAL_DENSO_TEXTO_RESIDUAL",
+      "COB_BOSQUE_INTERVENIDO_TEXTO_RESIDUAL",
+      "COB_BOSQUE_PLANTADO_TEXTO_RESIDUAL",
+      "COB_BOSQUE_SECO_TEXTO_RESIDUAL",
+      "COB_CULTIVOS_TEXTO_RESIDUAL",
+      "COB_PARAMOS_TEXTO_RESIDUAL",
+      "COB_SABANAS_PASTIZALES_TEXTO_RESIDUAL",
+      "COB_PASTOS_MANEJADOS_TEXTO_RESIDUAL",
+      "COB_RASTROJO_TEXTO_RESIDUAL",
+      "COB_VEGETACION_SECA_TEXTO_RESIDUAL",
+      "COB_COBERTURA_SIN_DETERMINAR_TEXTO_RESIDUAL",
+      "AREA_TOTAL_HA_TEXTO_RESIDUAL"
+    ]
+  }
+}

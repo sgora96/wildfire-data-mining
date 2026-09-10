@@ -22,22 +22,29 @@
     <div><dt class="text-xs uppercase tracking-wider text-slate-500">Periodo</dt><dd class="mt-1 text-sm text-slate-200">2010 - 2024</dd></div>
   </dl>
   <p class="mt-4 text-sm text-slate-300">
-    <!-- TODO: 3-5 lineas describiendo las variables principales del dataset (fecha,
-         ubicacion, area quemada, causa, cobertura) y por que se eligio este dataset
-         para el proyecto (retomar de la Etapa 1). -->
-    TODO: variables principales y por qué este dataset.
+    Las variables principales del dataset cubren cuatro frentes: <strong class="text-white">temporalidad</strong>
+    (año, mes y fecha del evento), <strong class="text-white">ubicación</strong> (departamento, municipio,
+    vereda y, cuando está disponible, coordenadas), <strong class="text-white">severidad</strong>
+    (hectáreas afectadas, totales y por tipo de incendio) y <strong class="text-white">causa/cobertura</strong>
+    (qué originó el evento y qué tipo de vegetación se vio afectada). Se eligió este dataset porque es la
+    fuente oficial del IDEAM para incendios forestales en Colombia, cubre 15 años continuos (2010-2024) con
+    un volumen suficiente para un análisis estadístico serio, e incluye tanto el nivel nacional como el
+    subconjunto de Cundinamarca que necesita el proyecto para comparar escalas.
   </p>
 </section>
 
 <section class="mt-6 rounded-2xl border border-white/10 bg-ash-900/60 p-6 shadow-xl">
   <h2 class="text-base font-bold text-white">Propósito y uso esperado de la información</h2>
   <p class="mt-3 text-sm text-slate-300">
-    <!-- TODO: para que se van a usar estos datos en el proyecto (responder la pregunta
-         principal y secundarias de la Etapa 1: estacionalidad, geografia, causas,
-         comparacion con la tendencia global) y quienes serian los usuarios de esa
-         informacion (el propio grupo para el analisis posterior, y potencialmente
-         entidades de gestion del riesgo). -->
-    TODO: propósito y usuarios esperados de la información.
+    Esta información se usará para responder la pregunta principal y las preguntas
+    secundarias planteadas en la <a href="{{ url_for('etapa1.preguntas') }}" class="text-ember-400 hover:underline">Etapa 1</a>:
+    identificar patrones de estacionalidad, concentración geográfica y causas de los
+    incendios forestales, y comparar el comportamiento de Cundinamarca frente al total
+    nacional y frente a la tendencia global de detección de incendios. El principal
+    usuario de esta información es el propio grupo, para las etapas de análisis y
+    modelado que siguen en el curso; en un escenario real, un dataset depurado como
+    este también sería de utilidad para entidades de gestión del riesgo (IDEAM, UAEGRD,
+    CAR) al priorizar zonas y temporadas de mayor atención.
   </p>
 </section>
 
@@ -52,11 +59,8 @@
     <li><strong class="text-white">Validez</strong> en los nombres de departamento y mes, homologados a un dominio cerrado y conocido (33 departamentos, 12 meses), para poder comparar Cundinamarca contra el total nacional sin fragmentar los conteos por variantes de texto.</li>
     <li><strong class="text-white">Unicidad</strong>: sin registros duplicados que inflen artificialmente la frecuencia de incendios reportada.</li>
     <li><strong class="text-white">Exactitud</strong> en las columnas numéricas de área/cobertura, para que un análisis de severidad (hectáreas quemadas) no se calcule sobre celdas que en realidad contienen texto.</li>
-    <li>
-      <!-- TODO: agregar 1-2 requisitos adicionales propios del problema si aplica
-           (ej. requisitos sobre las coordenadas para un futuro analisis geoespacial). -->
-      TODO: requisito adicional si aplica.
-    </li>
+    <li><strong class="text-white">Consistencia</strong> entre campos relacionados (por ejemplo, que el año registrado en <code class="font-mono">ANIO</code> coincida con el año de <code class="font-mono">FECHA_REGISTRO</code>), para que un análisis de tendencia temporal no arrastre errores de captura.</li>
+    <li><strong class="text-white">Actualidad</strong> razonable: dado que el proyecto compara la tendencia nacional con la tendencia global reciente, el dataset debe mantenerse actualizado hasta el año más reciente que publique el IDEAM, documentando explícitamente la brecha si la hay.</li>
   </ul>
 </section>
 

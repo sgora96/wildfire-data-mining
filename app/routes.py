@@ -14,6 +14,7 @@ from flask import Blueprint, current_app, jsonify, render_template, request
 from werkzeug.utils import secure_filename
 
 from app import services
+from app.etapa1 import _quality_summary
 
 main_bp = Blueprint("main", __name__)
 api_bp = Blueprint("api", __name__)
@@ -76,6 +77,7 @@ def index():
         dataset_source=source,
         month_labels=services.MONTH_LABELS,
         month_order=services.MONTH_ORDER,
+        calidad=_quality_summary(),
     )
 
 

@@ -10,16 +10,15 @@ y **Tailwind CSS + Chart.js** para el dashboard. El sitio se publica automática
 
 ---
 
-## 🔥 Etapa 1 (entregable R1)
+## 🔥 Etapas del proyecto
 
-El primer entregable del curso ("Del problema a los datos") vive dentro de la misma app,
-bajo el menú **Etapa 1** (`/etapa-1/...`, 8 submenús obligatorios). Si vas a trabajar en
-esa entrega:
+Cada entregable del curso vive dentro de la misma app, bajo el menú lateral
+**Etapas del proyecto** (submódulo por etapa, con sus páginas obligatorias). La
+**Etapa 1** ("Del problema a los datos") ya está completa — ver `/etapa-1/...`.
 
 - Lee **[`CLAUDE.md`](CLAUDE.md)** — contexto completo del proyecto, estado actual del
-  dataset y estructura de la Etapa 1.
-- Lee tu tarea específica en **[`docs/tareas/`](docs/tareas/)** (una por integrante).
-- El enunciado original del profesor está en `docs/R1MineriaDatos.pdf` y
+  dataset y arquitectura del sidebar/módulos (incluye cómo agregar la siguiente etapa).
+- El enunciado original del profesor de la Etapa 1 está en `docs/R1MineriaDatos.pdf` y
   `docs/entregable-semana-1.txt`.
 
 ---

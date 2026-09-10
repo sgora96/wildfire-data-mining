@@ -89,12 +89,7 @@ def _quality_summary() -> dict:
 
 
 def _render(slug: str, **extra):
-    return render_template(
-        f"etapa1/{slug}.html",
-        submenu=SUBMENU,
-        active_slug=slug,
-        **extra,
-    )
+    return render_template(f"etapa1/{slug}.html", **extra)
 
 
 @etapa1_bp.route("/")
@@ -136,3 +131,8 @@ def calidad():
 @etapa1_bp.route("/limitaciones/")
 def limitaciones():
     return _render("limitaciones")
+
+
+@etapa1_bp.route("/tareas/")
+def tareas():
+    return _render("tareas")

@@ -14,7 +14,8 @@ y **Tailwind CSS + Chart.js** para el dashboard. El sitio se publica automática
 
 Cada entregable del curso vive dentro de la misma app, bajo el menú lateral
 **Etapas del proyecto** (submódulo por etapa, con sus páginas obligatorias). La
-**Etapa 1** ("Del problema a los datos") ya está completa — ver `/etapa-1/...`.
+**Etapa 1** ("Del problema a los datos") ya está completa — ver `/etapa-1/...`. La
+**Etapa 2** ("Calidad de Datos") está en progreso — ver `/etapa-2/...`.
 
 - Lee **[`CLAUDE.md`](CLAUDE.md)** — contexto completo del proyecto, estado actual del
   dataset y arquitectura del sidebar/módulos (incluye cómo agregar la siguiente etapa).

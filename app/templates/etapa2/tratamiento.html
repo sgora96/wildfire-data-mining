@@ -1,0 +1,148 @@
+{% extends "etapa2/_layout.html" %}
+{% block title %}4. Integración, homologación y tratamiento{% endblock %}
+{% block content %}
+
+<p class="text-xs font-semibold uppercase tracking-[0.2em] text-ember-400">Etapa 2 · Submenu 4</p>
+<h1 class="mt-2 text-3xl font-extrabold tracking-tight text-white sm:text-4xl">Integración, homologación y tratamiento</h1>
+<p class="mt-3 max-w-3xl text-sm text-slate-400">
+  Acciones aplicadas para corregir o controlar los problemas del inventario, y la
+  comparación del dataset antes y después de tratarlo.
+</p>
+
+<div class="mt-6 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-slate-400">
+  Responsable de esta página: <span class="font-semibold text-white">Sara Vargas</span>
+</div>
+
+{% if resumen %}
+
+<!-- ===================== INTEGRACION Y HOMOLOGACION ===================== -->
+<section class="mt-8 rounded-2xl border border-white/10 bg-ash-900/60 p-6 shadow-xl">
+  <h2 class="text-base font-bold text-white">Integración y homologación de los datos</h2>
+  <p class="mt-3 text-sm text-slate-300">
+    El dataset se integró originalmente en la Etapa 1 a partir de 5 hojas del IDEAM
+    (2010-2020, 2021, 2022, 2023 y 2024), cada una con pequeñas diferencias de
+    formato entre sí (la hoja 2024 desplaza el orden de columnas y agrega el campo
+    <code class="font-mono">ENTIDAD_REPORTA</code>). En esta etapa se homologaron,
+    además, las categorías de texto que quedaron inconsistentes tras esa integración:
+  </p>
+  <ul class="mt-3 list-disc space-y-1 pl-5 text-sm text-slate-300">
+    <li><strong class="text-white">DEPARTAMENTO</strong>: 45 variantes de texto homologadas a los 33 departamentos oficiales (mayúsculas/minúsculas, con/sin tilde, con/sin coma antes de "D.C.").</li>
+    <li><strong class="text-white">MES</strong>: variantes de mayúsculas/minúsculas homologadas a 12 meses + "Sin reporte".</li>
+    <li><strong class="text-white">Unidades de área</strong>: todas las columnas de área/cobertura están en hectáreas (ha) de forma consistente entre hojas — no fue necesario homologar unidades, solo separar el valor numérico del marcador de texto que a veces lo acompaña.</li>
+  </ul>
+  <p class="mt-3 text-sm text-slate-300">
+    <strong class="text-white">Decisión de alcance:</strong> en esta etapa no se integró
+    ninguna de las 4 fuentes adicionales documentadas en la Etapa 1 (NASA FIRMS, Global
+    Forest Watch Fires, Emergencias UNGRD, CAR-RICV) al dataset tratado. El tratamiento
+    de esta etapa se aplicó únicamente sobre el dataset consolidado del IDEAM. Esta es
+    una decisión de alcance explícita — no un pendiente accidental — porque cada fuente
+    adicional exige un método de homologación distinto (no un simple "pegar columnas"),
+    y resolverlos todos en esta etapa habría significado tratar datos que el grupo aún no
+    perfiló ni evaluó en las 6 dimensiones de calidad. Queda documentado como trabajo
+    pendiente para una etapa posterior:
+  </p>
+  <ul class="mt-3 list-disc space-y-2 pl-5 text-sm text-slate-300">
+    <li>
+      <strong class="text-white">Emergencias UNGRD</strong> (nacional): es la más directa
+      de homologar — ya trae columnas casi equivalentes (<code class="font-mono">DEPARTAMENTO</code>,
+      <code class="font-mono">MUNICIPIO</code>, <code class="font-mono">FECHA</code>,
+      <code class="font-mono">HECTAREAS</code>). Requeriría pasar sus nombres de
+      departamento por la misma tabla de homologación que ya se aplicó aquí
+      (<code class="font-mono">DEPARTAMENTO_NORM</code>), derivar <code class="font-mono">MES_NORM</code>
+      desde su <code class="font-mono">FECHA</code> (ya viene en formato fecha ISO, no en
+      texto como las hojas del IDEAM 2010-2020), y mapear <code class="font-mono">HECTAREAS</code>
+      a <code class="font-mono">AREA_TOTAL_HA_NUM</code>. Al ser otra entidad, la unión
+      sería por departamento/municipio/fecha para contraste, no un join exacto por
+      identificador de evento (no comparten una llave única).
+    </li>
+    <li>
+      <strong class="text-white">NASA FIRMS</strong> (global): sus coordenadas ya vienen
+      en decimal (compatibles en formato con <code class="font-mono">LATITUD_DEC</code>/<code class="font-mono">LONGITUD_DEC</code>),
+      pero es un dato de punto de calor detectado por satélite, no un evento reportado con
+      área quemada — no tiene una columna equivalente a
+      <code class="font-mono">AREA_TOTAL_HA_NUM</code>. Homologarla implicaría, además de
+      alinear fecha/hora UTC al mismo formato, filtrar solo las detecciones dentro del
+      territorio colombiano (o de Cundinamarca) y decidir un criterio de agregación
+      espacio-temporal (ej. detecciones por municipio-mes) para poder compararla con los
+      conteos de eventos del IDEAM, en vez de intentar una fila por fila.
+    </li>
+    <li>
+      <strong class="text-white">Global Forest Watch Fires</strong> (global): es un dato
+      ráster agregado por país-año, no un registro por evento — no es homologable a nivel
+      de fila con este dataset. Su integración futura sería a nivel de análisis
+      comparativo agregado (ej. hectáreas de pérdida forestal por incendio en Colombia
+      por año, contra la suma de <code class="font-mono">AREA_TOTAL_HA_NUM</code> del
+      IDEAM por año), no una unión de tablas.
+    </li>
+    <li>
+      <strong class="text-white">CAR-RICV</strong> (regional): es una capa geográfica de
+      zonas de amenaza (polígonos), no una tabla de eventos, por lo que no tiene columnas
+      que homologar contra este esquema. Integrarla requeriría un cruce espacial
+      (point-in-polygon) usando <code class="font-mono">LATITUD_DEC</code>/<code class="font-mono">LONGITUD_DEC</code>
+      para asignarle a cada evento del IDEAM la categoría de amenaza física de la zona
+      donde cayó — un método distinto a la homologación por nombre de columna usada en
+      esta etapa.
+    </li>
+  </ul>
+</section>
+
+<!-- ===================== PLAN DE TRATAMIENTO ===================== -->
+<section class="mt-6 rounded-2xl border border-white/10 bg-ash-900/60 p-6 shadow-xl">
+  <h2 class="text-base font-bold text-white">Plan de tratamiento aplicado</h2>
+  <div class="mt-4 space-y-4">
+    {% for accion in resumen.plan_tratamiento %}
+    <div class="rounded-xl border border-white/10 bg-white/5 p-4">
+      <h3 class="text-sm font-bold text-white">{{ accion.accion }}</h3>
+      <p class="mt-1 text-sm text-slate-300">{{ accion.detalle }}</p>
+      <p class="mt-2 text-xs text-slate-500"><span class="font-semibold text-slate-400">Justificación:</span> {{ accion.justificacion }}</p>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+
+<!-- ===================== ANTES / DESPUES ===================== -->
+<section class="mt-6 rounded-2xl border border-white/10 bg-ash-900/60 p-6 shadow-xl">
+  <h2 class="text-base font-bold text-white">Comparación antes / después</h2>
+  <div class="mt-4 overflow-x-auto">
+    <table class="min-w-[500px] w-full text-left text-sm">
+      <thead class="bg-white/5 text-slate-400">
+        <tr><th class="px-3 py-2">Indicador</th><th class="px-3 py-2">Antes</th><th class="px-3 py-2">Después</th></tr>
+      </thead>
+      <tbody class="divide-y divide-white/5 text-slate-300">
+        <tr><td class="px-3 py-2">Registros</td><td class="px-3 py-2 font-mono">{{ "{:,}".format(resumen.comparacion_antes_despues.registros.antes) }}</td><td class="px-3 py-2 font-mono text-emerald-400">{{ "{:,}".format(resumen.comparacion_antes_despues.registros.despues) }}</td></tr>
+        <tr><td class="px-3 py-2">Departamentos distintos (texto)</td><td class="px-3 py-2 font-mono">{{ resumen.comparacion_antes_despues.departamentos_distintos.antes }}</td><td class="px-3 py-2 font-mono text-emerald-400">{{ resumen.comparacion_antes_despues.departamentos_distintos.despues }}</td></tr>
+        <tr><td class="px-3 py-2">Meses distintos (texto)</td><td class="px-3 py-2 font-mono">{{ resumen.comparacion_antes_despues.meses_distintos.antes }}</td><td class="px-3 py-2 font-mono text-emerald-400">{{ resumen.comparacion_antes_despues.meses_distintos.despues }}</td></tr>
+        <tr><td class="px-3 py-2">Coordenadas utilizables</td><td class="px-3 py-2 font-mono">{{ resumen.comparacion_antes_despues.coordenadas_utilizables.antes }}</td><td class="px-3 py-2 font-mono">{{ resumen.comparacion_antes_despues.coordenadas_utilizables.despues }}</td></tr>
+        <tr><td class="px-3 py-2">Elevaciones inválidas</td><td class="px-3 py-2 font-mono">{{ resumen.comparacion_antes_despues.elevaciones_invalidas.antes }}</td><td class="px-3 py-2 font-mono text-emerald-400">{{ resumen.comparacion_antes_despues.elevaciones_invalidas.despues }}</td></tr>
+        <tr><td class="px-3 py-2">Duplicados exactos</td><td class="px-3 py-2 font-mono">{{ resumen.comparacion_antes_despues.duplicados_exactos.antes }}</td><td class="px-3 py-2 font-mono text-emerald-400">{{ resumen.comparacion_antes_despues.duplicados_exactos.despues }}</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="mt-4 text-xs text-slate-500">
+    Nota sobre "coordenadas utilizables": no aumentó respecto al original porque el
+    tratamiento no inventa coordenadas nuevas, solo estandariza el formato de las que
+    ya eran convertibles (ver hallazgo de sistemas de referencia mixtos en
+    <a href="{{ url_for('etapa2.dimensiones') }}" class="text-ember-400 hover:underline">Dimensiones e inventario de problemas</a>).
+  </p>
+</section>
+
+<!-- ===================== DATASET TRATADO ===================== -->
+<section class="mt-6 rounded-2xl border border-white/10 bg-ash-900/60 p-6 shadow-xl">
+  <h2 class="text-sm font-bold uppercase tracking-wider text-white">Dataset tratado</h2>
+  <p class="mt-3 text-sm text-slate-300">
+    Archivo: <code class="font-mono text-ember-300">{{ resumen.dataset_tratado.archivo }}</code>
+    — {{ "{:,}".format(resumen.dataset_tratado.registros) }} registros, con las
+    columnas originales conservadas (para trazabilidad) más
+    {{ resumen.dataset_tratado.columnas_nuevas|length }} columnas nuevas de apoyo
+    (normalizadas, numéricas limpias, y banderas de calidad).
+  </p>
+  <div class="mt-3 flex flex-wrap gap-1.5">
+    {% for col in resumen.dataset_tratado.columnas_nuevas %}
+    <span class="rounded-md bg-white/5 px-2 py-1 font-mono text-[11px] text-slate-400">{{ col }}</span>
+    {% endfor %}
+  </div>
+</section>
+
+{% endif %}
+
+{% endblock %}

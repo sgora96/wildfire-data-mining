@@ -83,11 +83,23 @@
 <section class="mt-6 rounded-2xl border border-white/10 bg-ash-900/60 p-6 shadow-xl">
   <h2 class="text-base font-bold text-white">Lectura del perfilamiento</h2>
   <p class="mt-3 text-sm text-slate-300">
-    <!-- TODO: interpretar en 4-6 lineas los hallazgos mas relevantes de la tabla de
-         arriba: que variables estan mas completas, cuales tienen mas "no numericos"
-         (columnas de area/cobertura), que variables tienen alta cardinalidad
-         (MUNICIPIO, VEREDA), y que implica esto para el analisis posterior. -->
-    TODO: interpretación de los hallazgos del perfilamiento.
+    Las variables mejor diligenciadas son las estructurales del reporte: FUENTE_HOJA no
+    tiene nulos, y ANIO, MES, DEPARTAMENTO, MUNICIPIO y FECHA_REGISTRO rondan apenas el
+    10%. En el extremo opuesto, CAUSA_REACTIVACION_FOCOS (99,9%), AREA_SUBTERRANEO_HA
+    (99,7%) y AREA_PROTEGIDA_NACIONAL (98,6%) están casi vacías, y LATITUD/LONGITUD
+    faltan en 9 de cada 10 registros. Las columnas de área por tipo de incendio
+    (AREA_*_HA) y de cobertura (COB_*) son las que más mezclan texto con números:
+    AREA_SUPERFICIAL_HA es el caso extremo, con 7.216 valores no numéricos sobre solo
+    7.267 registros no vacíos (menos del 1% queda como número usable), y
+    AREA_OTRO_TIPO_HA (1.257) y COB_RASTROJO (637) repiten el mismo patrón — cualquier
+    suma o promedio sobre esas columnas exige primero separar y limpiar esos
+    marcadores. MUNICIPIO (1.997 valores únicos) y sobre todo VEREDA_CORREGIMIENTO
+    (9.914) tienen una cardinalidad demasiado alta para texto libre sin catálogo
+    oficial detrás, por lo que homologarlas por completo a mano es inviable: variantes
+    de tildes, mayúsculas y ortografía inflan artificialmente el número de valores
+    distintos. Por último, los 4.655 duplicados exactos equivalen al 11,6% del total de
+    registros, una proporción demasiado alta para dejarla fuera del plan de
+    tratamiento.
   </p>
 </section>
 

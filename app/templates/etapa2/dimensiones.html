@@ -80,25 +80,47 @@
 <!-- ===================== ANALISIS DE CAUSAS ===================== -->
 <section class="mt-6 rounded-2xl border border-white/10 bg-ash-900/60 p-6 shadow-xl">
   <h2 class="text-base font-bold text-white">Análisis de causas</h2>
-  <p class="mt-3 text-sm text-slate-300">
-    <!-- TODO: analizar las causas de los problemas principales del inventario de arriba.
-         Pistas ya identificadas a partir del perfilamiento:
-         - El dataset se arma a partir de 5 hojas/anios con plantillas de captura
-           distintas (la de 2024 cambia el orden de columnas y agrega un campo nuevo),
-           lo que explica buena parte de las inconsistencias de formato.
-         - La captura de DEPARTAMENTO/MES es manual (texto libre), sin una lista
-           desplegable validada, lo que explica las variantes de mayusculas/tildes.
-         - Los campos de causa, cobertura, coordenadas y elevacion son opcionales en el
-           formulario de campo (no siempre se diligencian), lo que explica su alto
-           porcentaje de nulos, mas que un error de captura.
-         - Las coordenadas mezclan formatos porque distintas oficinas/anios capturaron
-           con herramientas distintas (GPS en grados-minutos-segundos vs. sistemas
-           MAGNA-SIRGAS de otras entidades), sin una validacion de formato comun.
-         - Los duplicados sugieren que un mismo evento pudo reportarse mas de una vez
-           entre distintos canales o entidades territoriales, sin una verificacion de
-           unicidad en el proceso de consolidacion. -->
-    TODO: análisis de causas de los principales problemas.
-  </p>
+  <div class="mt-3 space-y-3 text-sm text-slate-300">
+    <p>
+      La mayoría de los problemas del inventario vienen de cómo se consolidó el dataset,
+      no de errores puntuales de digitación. El archivo del IDEAM junta 5 hojas (una por
+      rango de años) capturadas con plantillas distintas —la de 2024 cambia el orden de
+      columnas y agrega un campo nuevo— y eso ya explica buena parte de las
+      inconsistencias de formato que aparecen al unir todo en una sola tabla.
+    </p>
+    <p>
+      Las variantes de <span class="font-mono text-xs text-ember-300">DEPARTAMENTO</span>
+      y <span class="font-mono text-xs text-ember-300">MES</span> (45 formas de texto para
+      33 departamentos reales, mayúsculas/minúsculas mezcladas, el valor "SIN REPORTE" sin
+      documentar) se deben a que esos campos se diligencian como texto libre en el
+      formulario de campo, sin una lista desplegable que obligue a un valor estándar.
+    </p>
+    <p>
+      Las columnas de área quemada y cobertura vegetal mezclan números con marcadores de
+      texto ("SUP", "X", nombres de ciudad) porque el formulario permite dejar una
+      observación en el mismo campo pensado para un valor numérico, en lugar de tener un
+      campo de notas aparte. Por la misma razón —campos opcionales que no siempre se
+      diligencian en terreno— coordenadas, elevación y cobertura concentran la mayoría de
+      sus vacíos: no es que el dato se haya perdido, es que nunca se registró.
+    </p>
+    <p>
+      En latitud/longitud, además del vacío, conviven al menos tres formatos de
+      coordenada (grados-minutos-segundos con coma decimal, el mismo formato con
+      símbolos °'" y coordenadas planas en MAGNA-SIRGAS medidas en metros) porque
+      distintas oficinas y años capturaron con herramientas GPS distintas, sin que la
+      consolidación haya definido un sistema de referencia único ni validado el formato
+      de entrada.
+    </p>
+    <p>
+      Los 4.655 registros duplicados exactos y el caso donde
+      <span class="font-mono text-xs text-ember-300">ANIO</span> no coincide con el año de
+      <span class="font-mono text-xs text-ember-300">FECHA_REGISTRO</span> apuntan a que un
+      mismo evento pudo reportarse más de una vez desde distintos canales o entidades
+      territoriales, sin un cruce de unicidad antes de consolidar los archivos. Los
+      valores atípicos de área total y el -1 en elevación, en cambio, son más consistentes
+      con errores puntuales de digitación que con un problema estructural del proceso.
+    </p>
+  </div>
 </section>
 
 {% endif %}

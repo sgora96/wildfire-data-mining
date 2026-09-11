@@ -31,13 +31,59 @@
     <li><strong class="text-white">Unidades de área</strong>: todas las columnas de área/cobertura están en hectáreas (ha) de forma consistente entre hojas — no fue necesario homologar unidades, solo separar el valor numérico del marcador de texto que a veces lo acompaña.</li>
   </ul>
   <p class="mt-3 text-sm text-slate-300">
-    <!-- TODO: si se integra una fuente adicional (ej. alguna de las globales/nacionales/
-         regionales documentadas en la Etapa 1) en esta etapa, documentar aqui como se
-         homologaron sus campos contra el esquema de este dataset (nombres de columna,
-         unidades, formato de fecha). Si no se integra ninguna todavia, dejarlo indicado
-         como trabajo pendiente para una etapa posterior. -->
-    TODO: integración de fuentes adicionales (si aplica) o nota de alcance.
+    <strong class="text-white">Decisión de alcance:</strong> en esta etapa no se integró
+    ninguna de las 4 fuentes adicionales documentadas en la Etapa 1 (NASA FIRMS, Global
+    Forest Watch Fires, Emergencias UNGRD, CAR-RICV) al dataset tratado. El tratamiento
+    de esta etapa se aplicó únicamente sobre el dataset consolidado del IDEAM. Esta es
+    una decisión de alcance explícita — no un pendiente accidental — porque cada fuente
+    adicional exige un método de homologación distinto (no un simple "pegar columnas"),
+    y resolverlos todos en esta etapa habría significado tratar datos que el grupo aún no
+    perfiló ni evaluó en las 6 dimensiones de calidad. Queda documentado como trabajo
+    pendiente para una etapa posterior:
   </p>
+  <ul class="mt-3 list-disc space-y-2 pl-5 text-sm text-slate-300">
+    <li>
+      <strong class="text-white">Emergencias UNGRD</strong> (nacional): es la más directa
+      de homologar — ya trae columnas casi equivalentes (<code class="font-mono">DEPARTAMENTO</code>,
+      <code class="font-mono">MUNICIPIO</code>, <code class="font-mono">FECHA</code>,
+      <code class="font-mono">HECTAREAS</code>). Requeriría pasar sus nombres de
+      departamento por la misma tabla de homologación que ya se aplicó aquí
+      (<code class="font-mono">DEPARTAMENTO_NORM</code>), derivar <code class="font-mono">MES_NORM</code>
+      desde su <code class="font-mono">FECHA</code> (ya viene en formato fecha ISO, no en
+      texto como las hojas del IDEAM 2010-2020), y mapear <code class="font-mono">HECTAREAS</code>
+      a <code class="font-mono">AREA_TOTAL_HA_NUM</code>. Al ser otra entidad, la unión
+      sería por departamento/municipio/fecha para contraste, no un join exacto por
+      identificador de evento (no comparten una llave única).
+    </li>
+    <li>
+      <strong class="text-white">NASA FIRMS</strong> (global): sus coordenadas ya vienen
+      en decimal (compatibles en formato con <code class="font-mono">LATITUD_DEC</code>/<code class="font-mono">LONGITUD_DEC</code>),
+      pero es un dato de punto de calor detectado por satélite, no un evento reportado con
+      área quemada — no tiene una columna equivalente a
+      <code class="font-mono">AREA_TOTAL_HA_NUM</code>. Homologarla implicaría, además de
+      alinear fecha/hora UTC al mismo formato, filtrar solo las detecciones dentro del
+      territorio colombiano (o de Cundinamarca) y decidir un criterio de agregación
+      espacio-temporal (ej. detecciones por municipio-mes) para poder compararla con los
+      conteos de eventos del IDEAM, en vez de intentar una fila por fila.
+    </li>
+    <li>
+      <strong class="text-white">Global Forest Watch Fires</strong> (global): es un dato
+      ráster agregado por país-año, no un registro por evento — no es homologable a nivel
+      de fila con este dataset. Su integración futura sería a nivel de análisis
+      comparativo agregado (ej. hectáreas de pérdida forestal por incendio en Colombia
+      por año, contra la suma de <code class="font-mono">AREA_TOTAL_HA_NUM</code> del
+      IDEAM por año), no una unión de tablas.
+    </li>
+    <li>
+      <strong class="text-white">CAR-RICV</strong> (regional): es una capa geográfica de
+      zonas de amenaza (polígonos), no una tabla de eventos, por lo que no tiene columnas
+      que homologar contra este esquema. Integrarla requeriría un cruce espacial
+      (point-in-polygon) usando <code class="font-mono">LATITUD_DEC</code>/<code class="font-mono">LONGITUD_DEC</code>
+      para asignarle a cada evento del IDEAM la categoría de amenaza física de la zona
+      donde cayó — un método distinto a la homologación por nombre de columna usada en
+      esta etapa.
+    </li>
+  </ul>
 </section>
 
 <!-- ===================== PLAN DE TRATAMIENTO ===================== -->

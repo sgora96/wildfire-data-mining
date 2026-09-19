@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Etapa 2 - Calidad de datos. Perfilamiento, dimensiones de calidad, inventario de problemas y tratamiento del dataset de incendios forestales.">
+  <title>3. Dimensiones e inventario de problemas · Wildfire Data Mining</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            ember: { 400: '#fb923c', 500: '#f97316', 600: '#ea580c', 700: '#c2410c' },
+            ash:   { 800: '#1e293b', 900: '#0f172a', 950: '#020617' }
+          },
+          fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] },
+          keyframes: {
+            'fade-up': { '0%': { opacity: 0, transform: 'translateY(8px)' }, '100%': { opacity: 1, transform: 'translateY(0)' } }
+          },
+          animation: { 'fade-up': 'fade-up .4s ease-out both' }
+        }
+      }
+    };
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../static/css/styles.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔥</text></svg>">
+  <style>
+    details > summary { list-style: none; cursor: pointer; }
+    details > summary::-webkit-details-marker { display: none; }
+    details[open] > summary .nav-chevron { transform: rotate(90deg); }
+    .nav-chevron { transition: transform .15s ease; }
+    #sidebar { transition: transform .2s ease; }
+  </style>
+</head>
+
+<body class="min-h-screen bg-ash-950 font-sans text-slate-200 antialiased selection:bg-ember-500/30">
+
+  <!-- ===================== SIDEBAR OVERLAY (movil) ===================== -->
+  <div id="sidebar-overlay" class="fixed inset-0 z-30 hidden bg-black/60 lg:hidden"></div>
+
+  <!-- ===================== SIDEBAR ===================== -->
+  <aside id="sidebar"
+         class="fixed inset-y-0 left-0 z-40 flex w-72 -translate-x-full flex-col border-r border-white/5 bg-ash-900/95 backdrop-blur-xl lg:translate-x-0">
+    <div class="flex h-16 shrink-0 items-center gap-3 border-b border-white/5 px-5">
+      <a href="../../index.html" class="flex items-center gap-3">
+        <span class="grid h-9 w-9 place-items-center rounded-xl bg-gradient-to-br from-ember-500 to-red-600 shadow-lg shadow-ember-600/30">
+          <svg class="h-5 w-5 text-white" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M12 2s4.5 4.2 4.5 8.2A4.5 4.5 0 0 1 12 15a4.5 4.5 0 0 1-4.5-4.8C7.5 6.2 12 2 12 2Zm0 20c-3.9 0-7-2.6-7-6 0 0 1.6 1.6 3.1 1.6 0 0-1-3.4 1.4-6.3 0 2.4 1.6 3.4 2.5 4.3 1.2 1.2 1.5 2.6 1.1 4.1 1.4-.3 2.6-1.6 2.9-3.2 1 1.1 1.5 2.4 1.5 3.5 0 3.4-3.1 6-6.5 6Z"/>
+          </svg>
+        </span>
+        <span class="leading-tight">
+          <span class="block text-sm font-extrabold tracking-tight text-white">Wildfire Data Mining</span>
+          <span class="block text-[11px] text-slate-500">Analisis predictivo de incendios forestales</span>
+        </span>
+      </a>
+    </div>
+
+    <nav class="flex-1 space-y-1 overflow-y-auto px-3 py-4" aria-label="Modulos del proyecto">
+      <a href="../../index.html"
+         class="flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-medium transition
+                text-slate-300 hover:bg-white/5 hover:text-white">
+        <svg class="h-4 w-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M3 11.5 12 4l9 7.5"/><path d="M5 10v9a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1v-9"/>
+        </svg>
+        Inicio
+      </a>
+
+      
+      <details class="mt-2 group" open>
+        <summary class="flex items-center justify-between gap-2 rounded-lg px-3 py-2 text-xs font-bold uppercase tracking-wider text-slate-400 hover:bg-white/5 hover:text-white">
+          <span class="flex items-center gap-2.5">
+            <svg class="h-4 w-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/>
+              <rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>
+            </svg>
+            Etapas del proyecto
+          </span>
+          <svg class="nav-chevron h-3.5 w-3.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m9 6 6 6-6 6"/></svg>
+        </summary>
+
+        <div class="mt-1 space-y-1 pl-2">
+          
+          <details class="group/sub" >
+            <summary class="flex items-center justify-between gap-2 rounded-lg py-1.5 pl-4 pr-3 text-sm font-semibold text-slate-200 hover:bg-white/5">
+              <span class="flex flex-col">
+                <span class="flex items-center gap-1.5">
+                  Etapa 1
+                  
+                  <span class="rounded-full bg-emerald-500/15 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-emerald-400">Completa</span>
+                  
+                </span>
+                <span class="text-[11px] font-normal text-slate-500">Del problema a los datos</span>
+              </span>
+              <svg class="nav-chevron h-3.5 w-3.5 shrink-0 text-slate-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m9 6 6 6-6 6"/></svg>
+            </summary>
+            <div class="ml-4 mt-1 space-y-0.5 border-l border-white/5 pl-3">
+              
+              
+              <a href="../../etapa-1/problema/index.html"
+                 class="block rounded-lg px-3 py-1.5 text-[13px] font-medium transition
+                        text-slate-400 hover:bg-white/5 hover:text-white">
+                1. Problema y contexto
+              </a>
+              
+              
+              <a href="../../etapa-1/preguntas/index.html"
+                 class="block rounded-lg px-3 py-1.5 text-[13px] font-medium transition
+                        text-slate-400 hover:bg-white/5 hover:text-white">
+                2. Pregunta principal y secundarias
+              </a>
+              
+              
+              <a href="../../etapa-1/necesidades/index.html"
+                 class="block rounded-lg px-3 py-1.5 text-[13px] font-medium transition
+                        text-slate-400 hover:bg-white/5 hover:text-white">
+                3. Necesidades de informacion
+              </a>
+              
+              
+              <a href="../../etapa-1/fuentes/index.html"
+                 class="block rounded-lg px-3 py-1.5 text-[13px] font-medium transition
+                        text-slate-400 hover:bg-white/5 hover:text-white">
+                4. Fuentes de datos
+              </a>
+              
+              
+              <a href="../../etapa-1/dataset/index.html"
+                 class="block rounded-lg px-3 py-1.5 text-[13px] font-medium transition
+                        text-slate-400 hover:bg-white/5 hover:text-white">
+                5. Dataset
+              </a>
+              
+              
+              <a href="../../etapa-1/diccionario/index.html"
+                 class="block rounded-lg px-3 py-1.5 text-[13px] font-medium transition
+                        text-slate-400 hover:bg-white/5 hover:text-white">
+                6. Diccionario de datos
+              </a>
+              
+              
+              <a href="../../etapa-1/calidad/index.html"
+                 class="block rounded-lg px-3 py-1.5 text-[13px] font-medium transition
+                        text-slate-400 hover:bg-white/5 hover:text-white">
+                7. Calidad inicial de los datos
+              </a>
+              
+              
+              <a href="../../etapa-1/limitaciones/index.html"
+                 class="block rounded-lg px-3 py-1.5 text-[13px] font-medium transition
+                        text-slate-400 hover:bg-white/5 hover:text-white">
+                8. Limitaciones y consideraciones
+              </a>
+              
+              <div class="my-1.5 border-t border-dashed border-white/10"></div>
+              <a href="../../etapa-1/tareas/index.html"
+                 class="block rounded-lg px-3 py-1.5 text-[13px] font-medium transition
+                        text-slate-400 hover:bg-white/5 hover:text-white">
+                Equipo y tareas
+              </a>
+              
+            </div>
+          </details>
+          
+          <details class="group/sub" open>
+            <summary class="flex items-center justify-between gap-2 rounded-lg py-1.5 pl-4 pr-3 text-sm font-semibold text-slate-200 hover:bg-white/5">
+              <span class="flex flex-col">
+                <span class="flex items-center gap-1.5">
+                  Etapa 2
+                  
+                  <span class="rounded-full bg-emerald-500/15 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-emerald-400">Completa</span>
+                  
+                </span>
+                <span class="text-[11px] font-normal text-slate-500">Calidad de datos</span>
+              </span>
+              <svg class="nav-chevron h-3.5 w-3.5 shrink-0 text-slate-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m9 6 6 6-6 6"/></svg>
+            </summary>
+            <div class="ml-4 mt-1 space-y-0.5 border-l border-white/5 pl-3">
+              
+              
+              <a href="../descripcion/index.html"
+                 class="block rounded-lg px-3 py-1.5 text-[13px] font-medium transition
+                        text-slate-400 hover:bg-white/5 hover:text-white">
+                1. Descripción y requisitos de calidad
+              </a>
+              
+              
+              <a href="../perfilamiento/index.html"
+                 class="block rounded-lg px-3 py-1.5 text-[13px] font-medium transition
+                        text-slate-400 hover:bg-white/5 hover:text-white">
+                2. Perfilamiento de datos
+              </a>
+              
+              
+              <a href="index.html"
+                 class="block rounded-lg px-3 py-1.5 text-[13px] font-medium transition
+                        bg-ember-600 text-white shadow shadow-ember-600/20">
+                3. Dimensiones e inventario de problemas
+              </a>
+              
+              
+              <a href="../tratamiento/index.html"
+                 class="block rounded-lg px-3 py-1.5 text-[13px] font-medium transition
+                        text-slate-400 hover:bg-white/5 hover:text-white">
+                4. Integración, homologación y tratamiento
+              </a>
+              
+            </div>
+          </details>
+          
+        </div>
+      </details>
+      
+    </nav>
+
+    <div class="shrink-0 border-t border-white/5 p-4">
+      <p class="text-[11px] leading-relaxed text-slate-600">
+        Wildfire Data Mining · v0.1.0<br>Proyecto academico de Mineria de Datos
+      </p>
+    </div>
+  </aside>
+
+  <!-- ===================== COLUMNA PRINCIPAL ===================== -->
+  <div class="flex min-h-screen flex-col lg:pl-72">
+
+    <!-- Header -->
+    <header class="sticky top-0 z-20 flex h-16 shrink-0 items-center gap-3 border-b border-white/5 bg-ash-950/80 px-4 backdrop-blur-xl sm:px-6 lg:px-8">
+      <button id="btn-sidebar-toggle" type="button" aria-label="Abrir menu"
+              class="grid h-9 w-9 shrink-0 place-items-center rounded-lg text-slate-300 hover:bg-white/5 lg:hidden">
+        <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      </button>
+
+      
+      <nav aria-label="Breadcrumb" class="min-w-0 flex-1">
+        
+        <ol class="flex flex-wrap items-center gap-1.5 text-xs text-slate-500">
+          <li>Etapas del proyecto</li>
+          <li class="text-slate-700">/</li>
+          <li>Etapa 2</li>
+          <li class="text-slate-700">/</li>
+          <li class="font-semibold text-white">3. Dimensiones e inventario de problemas</li>
+        </ol>
+        
+      </nav>
+    </header>
+
+    <!-- Contenido -->
+    <main class="flex-1">
+      <div class="mx-auto max-w-5xl px-4 py-10 sm:px-6 lg:px-8">
+        
+
+<p class="text-xs font-semibold uppercase tracking-[0.2em] text-ember-400">Etapa 2 · Submenu 3</p>
+<h1 class="mt-2 text-3xl font-extrabold tracking-tight text-white sm:text-4xl">Dimensiones de calidad e inventario de problemas</h1>
+<p class="mt-3 max-w-3xl text-sm text-slate-400">
+  Las 6 dimensiones evaluadas, con su métrica y resultado, y el inventario detallado
+  de los problemas encontrados durante el perfilamiento.
+</p>
+
+<div class="mt-6 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-slate-400">
+  Responsable de esta página: <span class="font-semibold text-white">Camila</span>
+</div>
+
+
+
+<!-- ===================== DIMENSIONES ===================== -->
+<section class="mt-8">
+  <h2 class="text-sm font-bold uppercase tracking-wider text-white">Dimensiones de calidad</h2>
+  <div class="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+
+    
+    <article class="rounded-2xl border border-white/10 bg-ash-900/60 p-5 shadow-xl">
+      <div class="flex items-start justify-between gap-2">
+        <h3 class="text-sm font-bold capitalize text-white">completitud</h3>
+        
+        <span class="rounded-full px-2.5 py-1 text-xs font-bold bg-amber-500/15 text-amber-400">
+          89.78%
+        </span>
+        
+      </div>
+      <p class="mt-2 text-xs text-slate-400">Proporcion de valores presentes (no nulos) sobre el total de registros.</p>
+      <p class="mt-2 text-[11px] font-mono text-slate-500">1 - (nulos / total), promediado sobre los campos clave</p>
+      
+    </article>
+    
+    <article class="rounded-2xl border border-white/10 bg-ash-900/60 p-5 shadow-xl">
+      <div class="flex items-start justify-between gap-2">
+        <h3 class="text-sm font-bold capitalize text-white">exactitud</h3>
+        
+        <span class="rounded-full px-2.5 py-1 text-xs font-bold bg-emerald-500/15 text-emerald-400">
+          98.36%
+        </span>
+        
+      </div>
+      <p class="mt-2 text-xs text-slate-400">Proporcion de valores que representan correctamente el dato real esperado (no marcadores de texto en campos numericos, ni valores fuera de rango fisico).</p>
+      <p class="mt-2 text-[11px] font-mono text-slate-500">1 - (valores_no_numericos_en_campos_de_area + elevaciones_fuera_de_rango) / total_de_celdas_evaluadas</p>
+      
+    </article>
+    
+    <article class="rounded-2xl border border-white/10 bg-ash-900/60 p-5 shadow-xl">
+      <div class="flex items-start justify-between gap-2">
+        <h3 class="text-sm font-bold capitalize text-white">consistencia</h3>
+        
+        <span class="rounded-full px-2.5 py-1 text-xs font-bold bg-emerald-500/15 text-emerald-400">
+          100.0%
+        </span>
+        
+      </div>
+      <p class="mt-2 text-xs text-slate-400">Proporcion de registros donde campos relacionados entre si no se contradicen (ej. el año de ANIO coincide con el año de FECHA_REGISTRO).</p>
+      <p class="mt-2 text-[11px] font-mono text-slate-500">1 - (registros_inconsistentes / registros_con_ambos_campos_diligenciados)</p>
+      
+    </article>
+    
+    <article class="rounded-2xl border border-white/10 bg-ash-900/60 p-5 shadow-xl">
+      <div class="flex items-start justify-between gap-2">
+        <h3 class="text-sm font-bold capitalize text-white">unicidad</h3>
+        
+        <span class="rounded-full px-2.5 py-1 text-xs font-bold bg-amber-500/15 text-amber-400">
+          88.37%
+        </span>
+        
+      </div>
+      <p class="mt-2 text-xs text-slate-400">Proporcion de registros que no estan duplicados exactamente.</p>
+      <p class="mt-2 text-[11px] font-mono text-slate-500">1 - (registros_duplicados / total_de_registros)</p>
+      
+    </article>
+    
+    <article class="rounded-2xl border border-white/10 bg-ash-900/60 p-5 shadow-xl">
+      <div class="flex items-start justify-between gap-2">
+        <h3 class="text-sm font-bold capitalize text-white">validez</h3>
+        
+        <span class="rounded-full px-2.5 py-1 text-xs font-bold bg-emerald-500/15 text-emerald-400">
+          98.14%
+        </span>
+        
+      </div>
+      <p class="mt-2 text-xs text-slate-400">Proporcion de valores que pertenecen al dominio esperado de la variable (departamento dentro de la lista oficial de 33, mes dentro de los 12 meses, coordenadas dentro del territorio colombiano).</p>
+      <p class="mt-2 text-[11px] font-mono text-slate-500">promedio de (valores_en_dominio / valores_no_nulos) para DEPARTAMENTO, MES y coordenadas</p>
+      
+    </article>
+    
+    <article class="rounded-2xl border border-white/10 bg-ash-900/60 p-5 shadow-xl">
+      <div class="flex items-start justify-between gap-2">
+        <h3 class="text-sm font-bold capitalize text-white">actualidad</h3>
+        
+      </div>
+      <p class="mt-2 text-xs text-slate-400">Que tan reciente es la informacion disponible respecto a la fecha de analisis.</p>
+      <p class="mt-2 text-[11px] font-mono text-slate-500">hoy - fecha_del_registro_mas_reciente (en anios)</p>
+      
+      <p class="mt-3 text-xs text-slate-300">Año más reciente: <strong class="text-white">2024</strong> · Brecha: <strong class="text-white">2 años</strong></p>
+      <p class="mt-1 text-[11px] text-slate-500">Es un registro administrativo historico (no un feed en tiempo real); una brecha de 1-2 anios es esperable mientras el IDEAM consolida y publica el reporte del ultimo anio.</p>
+      
+    </article>
+    
+
+  </div>
+</section>
+
+<!-- ===================== INVENTARIO DE PROBLEMAS ===================== -->
+<section class="mt-8 rounded-2xl border border-white/10 bg-ash-900/60 p-6 shadow-xl">
+  <h2 class="text-sm font-bold uppercase tracking-wider text-white">Inventario de problemas</h2>
+  <div class="mt-4 overflow-x-auto">
+    <table class="min-w-[800px] w-full text-left text-xs">
+      <thead class="bg-white/5 text-slate-400">
+        <tr>
+          <th class="px-3 py-2">Variable</th>
+          <th class="px-3 py-2">Descripción</th>
+          <th class="px-3 py-2">Registros afectados</th>
+          <th class="px-3 py-2">Dimensión</th>
+          <th class="px-3 py-2">Impacto</th>
+          <th class="px-3 py-2">Evidencia</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-white/5 text-slate-300">
+        
+        <tr class="align-top hover:bg-white/[0.03]">
+          <td class="px-3 py-2 font-mono text-[11px] font-semibold text-ember-300 whitespace-nowrap">DEPARTAMENTO</td>
+          <td class="px-3 py-2 max-w-sm">El mismo departamento aparece escrito de formas distintas entre hojas (con/sin tilde, mayusculas/minusculas, con/sin coma antes de D.C.): 45 valores de texto para 33 departamentos reales.</td>
+          <td class="px-3 py-2 whitespace-nowrap">35,970</td>
+          <td class="px-3 py-2 whitespace-nowrap">Validez / Consistencia</td>
+          <td class="px-3 py-2">
+            <span class="rounded-full px-2 py-0.5 text-[10px] font-bold uppercase bg-red-500/15 text-red-400">
+              Alto
+            </span>
+          </td>
+          <td class="px-3 py-2 max-w-xs text-slate-400">45 valores de texto distintos -&gt; homologados a 33 despues del tratamiento.</td>
+        </tr>
+        
+        <tr class="align-top hover:bg-white/[0.03]">
+          <td class="px-3 py-2 font-mono text-[11px] font-semibold text-ember-300 whitespace-nowrap">MES</td>
+          <td class="px-3 py-2 max-w-sm">Mayusculas/minusculas inconsistentes entre hojas, mas el valor &#39;SIN REPORTE&#39; sin documentar.</td>
+          <td class="px-3 py-2 whitespace-nowrap">36,072</td>
+          <td class="px-3 py-2 whitespace-nowrap">Validez</td>
+          <td class="px-3 py-2">
+            <span class="rounded-full px-2 py-0.5 text-[10px] font-bold uppercase bg-amber-500/15 text-amber-400">
+              Medio
+            </span>
+          </td>
+          <td class="px-3 py-2 max-w-xs text-slate-400">25 valores distintos -&gt; 13 despues de homologar.</td>
+        </tr>
+        
+        <tr class="align-top hover:bg-white/[0.03]">
+          <td class="px-3 py-2 font-mono text-[11px] font-semibold text-ember-300 whitespace-nowrap">AREA_*_HA (5 columnas por tipo de incendio)</td>
+          <td class="px-3 py-2 max-w-sm">Columnas pensadas como numericas (hectareas) que mezclan marcadores de texto (ej. &#39;SUP&#39;, &#39;X&#39;, nombres de ciudad) con numeros.</td>
+          <td class="px-3 py-2 whitespace-nowrap">9,784</td>
+          <td class="px-3 py-2 whitespace-nowrap">Exactitud</td>
+          <td class="px-3 py-2">
+            <span class="rounded-full px-2 py-0.5 text-[10px] font-bold uppercase bg-red-500/15 text-red-400">
+              Alto
+            </span>
+          </td>
+          <td class="px-3 py-2 max-w-xs text-slate-400">Ver columna &#39;valores_no_numericos&#39; del perfilamiento para cada campo.</td>
+        </tr>
+        
+        <tr class="align-top hover:bg-white/[0.03]">
+          <td class="px-3 py-2 font-mono text-[11px] font-semibold text-ember-300 whitespace-nowrap">COB_* (11 columnas de cobertura vegetal)</td>
+          <td class="px-3 py-2 max-w-sm">Columnas mayoritariamente numericas con un porcentaje menor de texto residual (marcadores o nombres de cobertura sueltos).</td>
+          <td class="px-3 py-2 whitespace-nowrap">1,807</td>
+          <td class="px-3 py-2 whitespace-nowrap">Exactitud</td>
+          <td class="px-3 py-2">
+            <span class="rounded-full px-2 py-0.5 text-[10px] font-bold uppercase bg-amber-500/15 text-amber-400">
+              Medio
+            </span>
+          </td>
+          <td class="px-3 py-2 max-w-xs text-slate-400">Ver columna &#39;valores_no_numericos&#39; del perfilamiento para cada campo COB_*.</td>
+        </tr>
+        
+        <tr class="align-top hover:bg-white/[0.03]">
+          <td class="px-3 py-2 font-mono text-[11px] font-semibold text-ember-300 whitespace-nowrap">LATITUD / LONGITUD</td>
+          <td class="px-3 py-2 max-w-sm">Formato de texto grados.minutos.segundos con separador decimal de coma, con variantes (a veces sin segundos); ademas ausentes en la gran mayoria de registros.</td>
+          <td class="px-3 py-2 whitespace-nowrap">3,357</td>
+          <td class="px-3 py-2 whitespace-nowrap">Completitud / Validez</td>
+          <td class="px-3 py-2">
+            <span class="rounded-full px-2 py-0.5 text-[10px] font-bold uppercase bg-red-500/15 text-red-400">
+              Alto
+            </span>
+          </td>
+          <td class="px-3 py-2 max-w-xs text-slate-400">91.61% nulos; de las presentes, 40 quedaron fuera del rango geografico de Colombia al convertir.</td>
+        </tr>
+        
+        <tr class="align-top hover:bg-white/[0.03]">
+          <td class="px-3 py-2 font-mono text-[11px] font-semibold text-ember-300 whitespace-nowrap">LATITUD / LONGITUD</td>
+          <td class="px-3 py-2 max-w-sm">Ademas del formato dominante, una parte de los registros usa sistemas de referencia distintos sin documentarlo: grados-minutos-segundos con simbolos (°, &#39;, &#34;) -a veces con latitud y longitud concatenadas en una sola celda-, y coordenadas planas en el sistema MAGNA-SIRGAS (proyectado en metros, no en grados). Estos formatos no son convertibles con una formula de grados/minutos/segundos: requieren una transformacion geodesica con el EPSG correcto.</td>
+          <td class="px-3 py-2 whitespace-nowrap">1,768</td>
+          <td class="px-3 py-2 whitespace-nowrap">Validez / Consistencia</td>
+          <td class="px-3 py-2">
+            <span class="rounded-full px-2 py-0.5 text-[10px] font-bold uppercase bg-amber-500/15 text-amber-400">
+              Medio
+            </span>
+          </td>
+          <td class="px-3 py-2 max-w-xs text-slate-400">1768 registros con coordenada presente en un formato no numerico simple; no se convirtieron en esta etapa (se documentan como limitacion, ver plan de tratamiento).</td>
+        </tr>
+        
+        <tr class="align-top hover:bg-white/[0.03]">
+          <td class="px-3 py-2 font-mono text-[11px] font-semibold text-ember-300 whitespace-nowrap">ELEVACION_MSNM</td>
+          <td class="px-3 py-2 max-w-sm">Incluye al menos un valor -1, fisicamente invalido como elevacion sobre el nivel del mar en Colombia.</td>
+          <td class="px-3 py-2 whitespace-nowrap">2</td>
+          <td class="px-3 py-2 whitespace-nowrap">Exactitud</td>
+          <td class="px-3 py-2">
+            <span class="rounded-full px-2 py-0.5 text-[10px] font-bold uppercase bg-slate-500/15 text-slate-400">
+              Bajo
+            </span>
+          </td>
+          <td class="px-3 py-2 max-w-xs text-slate-400">2 registros fuera del rango plausible 0-5800 msnm.</td>
+        </tr>
+        
+        <tr class="align-top hover:bg-white/[0.03]">
+          <td class="px-3 py-2 font-mono text-[11px] font-semibold text-ember-300 whitespace-nowrap">(registro completo)</td>
+          <td class="px-3 py-2 max-w-sm">Registros duplicados exactamente en todas las columnas.</td>
+          <td class="px-3 py-2 whitespace-nowrap">4,655</td>
+          <td class="px-3 py-2 whitespace-nowrap">Unicidad</td>
+          <td class="px-3 py-2">
+            <span class="rounded-full px-2 py-0.5 text-[10px] font-bold uppercase bg-red-500/15 text-red-400">
+              Alto
+            </span>
+          </td>
+          <td class="px-3 py-2 max-w-xs text-slate-400">4655 de 40010 registros (11.6%) son duplicados exactos.</td>
+        </tr>
+        
+        <tr class="align-top hover:bg-white/[0.03]">
+          <td class="px-3 py-2 font-mono text-[11px] font-semibold text-ember-300 whitespace-nowrap">ANIO / MES / FECHA_REGISTRO / DEPARTAMENTO</td>
+          <td class="px-3 py-2 max-w-sm">Registros sin ninguno de los campos de fecha ni ubicacion diligenciados; no permiten analisis temporal ni geografico.</td>
+          <td class="px-3 py-2 whitespace-nowrap">3</td>
+          <td class="px-3 py-2 whitespace-nowrap">Completitud</td>
+          <td class="px-3 py-2">
+            <span class="rounded-full px-2 py-0.5 text-[10px] font-bold uppercase bg-amber-500/15 text-amber-400">
+              Medio
+            </span>
+          </td>
+          <td class="px-3 py-2 max-w-xs text-slate-400">3 registros sin fecha ni ubicacion.</td>
+        </tr>
+        
+        <tr class="align-top hover:bg-white/[0.03]">
+          <td class="px-3 py-2 font-mono text-[11px] font-semibold text-ember-300 whitespace-nowrap">ANIO vs FECHA_REGISTRO</td>
+          <td class="px-3 py-2 max-w-sm">El año del campo ANIO no coincide con el año contenido en FECHA_REGISTRO para el mismo registro.</td>
+          <td class="px-3 py-2 whitespace-nowrap">1</td>
+          <td class="px-3 py-2 whitespace-nowrap">Consistencia</td>
+          <td class="px-3 py-2">
+            <span class="rounded-full px-2 py-0.5 text-[10px] font-bold uppercase bg-slate-500/15 text-slate-400">
+              Bajo
+            </span>
+          </td>
+          <td class="px-3 py-2 max-w-xs text-slate-400">1 registros con año inconsistente entre ambos campos.</td>
+        </tr>
+        
+        <tr class="align-top hover:bg-white/[0.03]">
+          <td class="px-3 py-2 font-mono text-[11px] font-semibold text-ember-300 whitespace-nowrap">AREA_TOTAL_HA</td>
+          <td class="px-3 py-2 max-w-sm">Valores atipicos (muy por encima del resto de la distribucion) segun el criterio de rango intercuartilico (IQR).</td>
+          <td class="px-3 py-2 whitespace-nowrap">5,731</td>
+          <td class="px-3 py-2 whitespace-nowrap">Exactitud</td>
+          <td class="px-3 py-2">
+            <span class="rounded-full px-2 py-0.5 text-[10px] font-bold uppercase bg-slate-500/15 text-slate-400">
+              Bajo
+            </span>
+          </td>
+          <td class="px-3 py-2 max-w-xs text-slate-400">Limite superior IQR = 18.5 ha; 5731 registros lo superan (no se eliminaron: se marcaron, ver plan de tratamiento).</td>
+        </tr>
+        
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ===================== ANALISIS DE CAUSAS ===================== -->
+<section class="mt-6 rounded-2xl border border-white/10 bg-ash-900/60 p-6 shadow-xl">
+  <h2 class="text-base font-bold text-white">Análisis de causas</h2>
+  <div class="mt-3 space-y-3 text-sm text-slate-300">
+    <p>
+      La mayoría de los problemas del inventario vienen de cómo se consolidó el dataset,
+      no de errores puntuales de digitación. El archivo del IDEAM junta 5 hojas (una por
+      rango de años) capturadas con plantillas distintas —la de 2024 cambia el orden de
+      columnas y agrega un campo nuevo— y eso ya explica buena parte de las
+      inconsistencias de formato que aparecen al unir todo en una sola tabla.
+    </p>
+    <p>
+      Las variantes de <span class="font-mono text-xs text-ember-300">DEPARTAMENTO</span>
+      y <span class="font-mono text-xs text-ember-300">MES</span> (45 formas de texto para
+      33 departamentos reales, mayúsculas/minúsculas mezcladas, el valor "SIN REPORTE" sin
+      documentar) se deben a que esos campos se diligencian como texto libre en el
+      formulario de campo, sin una lista desplegable que obligue a un valor estándar.
+    </p>
+    <p>
+      Las columnas de área quemada y cobertura vegetal mezclan números con marcadores de
+      texto ("SUP", "X", nombres de ciudad) porque el formulario permite dejar una
+      observación en el mismo campo pensado para un valor numérico, en lugar de tener un
+      campo de notas aparte. Por la misma razón —campos opcionales que no siempre se
+      diligencian en terreno— coordenadas, elevación y cobertura concentran la mayoría de
+      sus vacíos: no es que el dato se haya perdido, es que nunca se registró.
+    </p>
+    <p>
+      En latitud/longitud, además del vacío, conviven al menos tres formatos de
+      coordenada (grados-minutos-segundos con coma decimal, el mismo formato con
+      símbolos °'" y coordenadas planas en MAGNA-SIRGAS medidas en metros) porque
+      distintas oficinas y años capturaron con herramientas GPS distintas, sin que la
+      consolidación haya definido un sistema de referencia único ni validado el formato
+      de entrada.
+    </p>
+    <p>
+      Los 4.655 registros duplicados exactos y el caso donde
+      <span class="font-mono text-xs text-ember-300">ANIO</span> no coincide con el año de
+      <span class="font-mono text-xs text-ember-300">FECHA_REGISTRO</span> apuntan a que un
+      mismo evento pudo reportarse más de una vez desde distintos canales o entidades
+      territoriales, sin un cruce de unicidad antes de consolidar los archivos. Los
+      valores atípicos de área total y el -1 en elevación, en cambio, son más consistentes
+      con errores puntuales de digitación que con un problema estructural del proceso.
+    </p>
+  </div>
+</section>
+
+
+
+
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-white/5 bg-ash-950">
+      <div class="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
+        <div class="flex flex-col items-center justify-between gap-3 sm:flex-row">
+          <div class="flex items-center gap-2.5">
+            <span class="grid h-7 w-7 place-items-center rounded-lg bg-gradient-to-br from-ember-500 to-red-600">
+              <svg class="h-4 w-4 text-white" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2s4.5 4.2 4.5 8.2A4.5 4.5 0 0 1 12 15a4.5 4.5 0 0 1-4.5-4.8C7.5 6.2 12 2 12 2Z"/></svg>
+            </span>
+            <span class="text-sm font-bold text-white">Wildfire Data Mining</span>
+          </div>
+          <p class="text-xs text-slate-500">© <span id="year">2026</span> · Proyecto academico de Mineria de Datos · Uso investigativo</p>
+          <p class="text-xs text-slate-600">v0.1.0</p>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    (function () {
+      var sidebar = document.getElementById('sidebar');
+      var overlay = document.getElementById('sidebar-overlay');
+      var toggle = document.getElementById('btn-sidebar-toggle');
+
+      function openSidebar() {
+        sidebar.classList.remove('-translate-x-full');
+        overlay.classList.remove('hidden');
+      }
+      function closeSidebar() {
+        sidebar.classList.add('-translate-x-full');
+        overlay.classList.add('hidden');
+      }
+      toggle && toggle.addEventListener('click', function () {
+        sidebar.classList.contains('-translate-x-full') ? openSidebar() : closeSidebar();
+      });
+      overlay && overlay.addEventListener('click', closeSidebar);
+
+      var yearEl = document.getElementById('year');
+      if (yearEl) { yearEl.textContent = new Date().getFullYear(); }
+    })();
+  </script>
+  
+</body>
+</html>

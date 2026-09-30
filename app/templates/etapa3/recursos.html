@@ -20,12 +20,7 @@
       Diagnóstico, diseño del Control Flow y Data Flow, configuración de cada
       componente, resultados de las 3 iteraciones y evidencia de idempotencia.
     </p>
-    <!--
-      TODO (Sergio): reemplazar el href por el enlace real del PDF una vez publicado
-      (ej. subido al propio repositorio en /docs/ y enlazado con url_for, o a un
-      servicio externo con permisos de visualización).
-    -->
-    <a href="#" class="mt-4 inline-flex items-center gap-2 rounded-lg bg-ember-600 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-ember-600/20 transition hover:bg-ember-500">
+    <a href="{{ url_for('static', filename='docs/Informe_Etapa3_ETL_SSIS.pdf') }}" class="mt-4 inline-flex items-center gap-2 rounded-lg bg-ember-600 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-ember-600/20 transition hover:bg-ember-500">
       Ver informe técnico
       <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
     </a>
@@ -41,8 +36,7 @@
       presentación del paquete, ejecución del tratamiento, resultados de las 3
       iteraciones, un dato corregido y un registro enviado a revisión.
     </p>
-    <!-- TODO (Sergio): reemplazar por el enlace real del video, con permisos de visualización habilitados. -->
-    <a href="#" class="mt-4 inline-flex items-center gap-2 rounded-lg bg-sky-600 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-sky-600/20 transition hover:bg-sky-500">
+    <a href="https://youtu.be/fWqG2Dx0dDk" target="_blank" rel="noopener" class="mt-4 inline-flex items-center gap-2 rounded-lg bg-sky-600 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-sky-600/20 transition hover:bg-sky-500">
       Ver video
       <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
     </a>
@@ -51,15 +45,17 @@
 </div>
 
 <section class="mt-6 rounded-2xl border border-white/10 bg-ash-900/60 p-6 shadow-xl">
-  <h2 class="text-base font-bold text-white">Repositorio y recursos reproducibles</h2>
+  <h2 class="text-base font-bold text-white">Aplicación y repositorio</h2>
   <p class="mt-3 text-sm text-slate-300">
     El repositorio incluye los paquetes <code class="font-mono">.dtsx</code>, los
     scripts SQL (<code class="font-mono">sql/</code>: staging, catálogo de
     homologación, destinos, control de lote) y el catálogo de departamentos ya
     verificado — sin contraseñas ni credenciales embebidas.
   </p>
-  <!-- TODO (Sergio): reemplazar por la URL real del repositorio (el duplicado donde se sube el codigo). -->
-  <a href="#" class="mt-3 inline-block text-sm text-ember-400 hover:underline">Ver repositorio en GitHub →</a>
+  <div class="mt-4 flex flex-col gap-2 sm:flex-row sm:gap-6">
+    <a href="https://sgora96.github.io/wildfire-data-mining/" target="_blank" rel="noopener" class="text-sm text-ember-400 hover:underline">Ver aplicación publicada →</a>
+    <a href="https://github.com/sgora96/wildfire-data-mining" target="_blank" rel="noopener" class="text-sm text-ember-400 hover:underline">Ver repositorio en GitHub →</a>
+  </div>
 </section>
 
 {% endblock %}

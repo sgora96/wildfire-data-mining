@@ -17,10 +17,7 @@ Cada entregable del curso vive dentro de la misma app, bajo el menú lateral
 **Etapa 1** ("Del problema a los datos") ya está completa — ver `/etapa-1/...`. La
 **Etapa 2** ("Calidad de Datos") está en progreso — ver `/etapa-2/...`.
 
-- Lee **[`CLAUDE.md`](CLAUDE.md)** — contexto completo del proyecto, estado actual del
-  dataset y arquitectura del sidebar/módulos (incluye cómo agregar la siguiente etapa).
-- El enunciado original del profesor de la Etapa 1 está en `docs/R1MineriaDatos.pdf` y
-  `docs/entregable-semana-1.txt`.
+
 
 ---
 

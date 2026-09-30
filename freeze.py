@@ -50,6 +50,8 @@ def dashboard_pages():
         "etapa2.perfilamiento",
         "etapa2.dimensiones",
         "etapa2.tratamiento",
+        "etapa3.resultados",
+        "etapa3.recursos",
     ):
         yield endpoint, {}
 

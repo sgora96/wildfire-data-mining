@@ -1,0 +1,137 @@
+{% extends "etapa3/_layout.html" %}
+{% block title %}1. Resultados de las 3 iteraciones{% endblock %}
+{% block content %}
+
+<p class="text-xs font-semibold uppercase tracking-[0.2em] text-ember-400">Etapa 3 · Submenu 1</p>
+<h1 class="mt-2 text-3xl font-extrabold tracking-tight text-white sm:text-4xl">Resultados de las 3 iteraciones</h1>
+<p class="mt-3 max-w-3xl text-sm text-slate-400">
+  Paquete SSIS ejecutado sobre el dataset consolidado de la Etapa 1
+  ({{ "{:,}".format(resumen.resultados_por_iteracion.iteracion_1.filas_recibidas) if resumen else "40.010" }}
+  registros). Cada iteración ajusta las reglas según los hallazgos de la anterior — ver
+  el detalle de cada regla en
+  <a href="{{ url_for('etapa2.dimensiones') }}" class="text-ember-400 hover:underline">Etapa 2</a>.
+</p>
+
+{% if not resumen %}
+<div class="mt-8 rounded-2xl border border-amber-500/30 bg-amber-500/5 p-6 text-sm text-amber-300">
+  No se encontró <code>data/processed/calidad_r3_resumen.json</code>.
+</div>
+{% else %}
+
+<!-- ===================== TABLA COMPARATIVA ===================== -->
+<section class="mt-8 rounded-2xl border border-white/10 bg-ash-900/60 p-6 shadow-xl">
+  <h2 class="text-sm font-bold uppercase tracking-wider text-white">Comparación por iteración</h2>
+  <div class="mt-4 overflow-x-auto">
+    <table class="min-w-[700px] w-full text-left text-sm">
+      <thead class="bg-white/5 text-slate-400">
+        <tr>
+          <th class="px-3 py-2">Iteración</th>
+          <th class="px-3 py-2">Recibidas</th>
+          <th class="px-3 py-2">Aceptadas</th>
+          <th class="px-3 py-2">Duplicadas</th>
+          <th class="px-3 py-2">Revisión</th>
+          <th class="px-3 py-2">Balance</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-white/5 text-slate-300">
+        {% for clave in ["iteracion_1", "iteracion_2", "iteracion_3"] %}
+        {% set it = resumen.resultados_por_iteracion[clave] %}
+        <tr class="hover:bg-white/[0.03]">
+          <td class="px-3 py-2 font-semibold text-white">{{ loop.index }}</td>
+          <td class="px-3 py-2 font-mono">{{ "{:,}".format(it.filas_recibidas) }}</td>
+          <td class="px-3 py-2 font-mono text-emerald-400">{{ "{:,}".format(it.filas_aceptadas) }}</td>
+          <td class="px-3 py-2 font-mono text-amber-400">{{ "{:,}".format(it.filas_duplicadas) }}</td>
+          <td class="px-3 py-2 font-mono">{{ "{:,}".format(it.filas_revision) }}</td>
+          <td class="px-3 py-2">
+            <span class="rounded-full px-2 py-0.5 text-[10px] font-bold uppercase {{ 'bg-emerald-500/15 text-emerald-400' if it.balance_ok else 'bg-red-500/15 text-red-400' }}">
+              {{ 'OK' if it.balance_ok else 'Revisar' }}
+            </span>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <p class="mt-3 text-xs text-slate-500">
+    "Revisión" incluye tanto los duplicados como las filas separadas por regla de
+    negocio (ver detalle de motivos abajo). Balance = recibidas = aceptadas + revisión.
+  </p>
+</section>
+
+<!-- ===================== MOTIVOS POR ITERACION ===================== -->
+<section class="mt-6 grid grid-cols-1 gap-4 md:grid-cols-3">
+  {% for clave in ["iteracion_1", "iteracion_2", "iteracion_3"] %}
+  {% set it = resumen.resultados_por_iteracion[clave] %}
+  <article class="rounded-2xl border border-white/10 bg-ash-900/60 p-5 shadow-xl">
+    <h3 class="text-sm font-bold text-white">Iteración {{ loop.index }} — motivos de revisión</h3>
+    <ul class="mt-3 space-y-1.5 text-xs text-slate-300">
+      {% for motivo, cantidad in it.motivos_revision.items() %}
+      <li class="flex items-center justify-between">
+        <span class="font-mono">{{ motivo }}</span>
+        <span class="font-semibold text-white">{{ "{:,}".format(cantidad) }}</span>
+      </li>
+      {% endfor %}
+    </ul>
+  </article>
+  {% endfor %}
+</section>
+
+<!-- ===================== IDEMPOTENCIA ===================== -->
+<section class="mt-6 rounded-2xl border border-white/10 bg-ash-900/60 p-6 shadow-xl">
+  <h2 class="text-base font-bold text-white">Verificación de idempotencia</h2>
+  <p class="mt-3 text-sm text-slate-300">
+    Reejecutar el mismo lote (mismo archivo de origen) no debe crear eventos duplicados
+    nuevos.
+  </p>
+  <div class="mt-3 grid grid-cols-2 gap-4 sm:grid-cols-3">
+    <div class="rounded-xl border border-white/10 bg-white/5 p-4 text-center">
+      <p class="text-2xl font-extrabold text-white">{{ "{:,}".format(resumen.resultados_por_iteracion.idempotencia.filas_en_incendios_limpios_tras_1a_ejecucion) }}</p>
+      <p class="mt-1 text-[11px] uppercase tracking-wider text-slate-500">Filas tras 1ª ejecución</p>
+    </div>
+    <div class="rounded-xl border border-white/10 bg-white/5 p-4 text-center">
+      <p class="text-2xl font-extrabold text-emerald-400">{{ resumen.resultados_por_iteracion.idempotencia.filas_nuevas_si_se_reejecuta_el_mismo_archivo }}</p>
+      <p class="mt-1 text-[11px] uppercase tracking-wider text-slate-500">Filas nuevas en 2ª ejecución</p>
+    </div>
+  </div>
+  <p class="mt-3 text-xs text-slate-500">{{ resumen.resultados_por_iteracion.idempotencia.nota }}</p>
+</section>
+
+<!-- ===================== INDICADORES ===================== -->
+<section class="mt-6 rounded-2xl border border-white/10 bg-ash-900/60 p-6 shadow-xl">
+  <h2 class="text-base font-bold text-white">Indicadores antes / después</h2>
+  <div class="mt-4 overflow-x-auto">
+    <table class="min-w-[600px] w-full text-left text-sm">
+      <thead class="bg-white/5 text-slate-400">
+        <tr><th class="px-3 py-2">Momento</th><th class="px-3 py-2">Departamentos distintos</th><th class="px-3 py-2">Área promedio (ha)</th></tr>
+      </thead>
+      <tbody class="divide-y divide-white/5 text-slate-300">
+        <tr>
+          <td class="px-3 py-2 font-semibold text-white">Antes (crudo)</td>
+          <td class="px-3 py-2 font-mono">{{ resumen.indicadores_antes_despues.antes.departamentos_distintos_texto }}</td>
+          <td class="px-3 py-2 font-mono">—</td>
+        </tr>
+        {% for clave in ["iteracion_1", "iteracion_2", "iteracion_3"] %}
+        <tr>
+          <td class="px-3 py-2">Iteración {{ loop.index }}</td>
+          <td class="px-3 py-2 font-mono">{{ resumen.indicadores_antes_despues[clave].departamentos_distintos_en_limpios }}</td>
+          <td class="px-3 py-2 font-mono">{{ resumen.indicadores_antes_despues[clave].area_promedio_ha }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <p class="mt-3 text-xs text-slate-500">
+    Los departamentos distintos deberían acercarse a 33 (el total oficial) a partir de
+    la iteración 2, una vez se aplica el catálogo completo de homologación.
+  </p>
+</section>
+
+<div class="mt-6 rounded-2xl border border-dashed border-white/20 bg-ash-900/40 p-6 text-sm text-slate-400">
+  Estos números son el resultado de referencia (simulación en Python de la misma lógica
+  del paquete SSIS). Reemplazar por los conteos reales una vez ejecutado el paquete en
+  Visual Studio — ver <code class="font-mono">docs/tareas/camila.md</code>.
+</div>
+
+{% endif %}
+
+{% endblock %}

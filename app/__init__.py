@@ -1,8 +1,7 @@
 """Application Factory de Wildfire Data Mining.
 
 Mantiene la app desacoplada de la configuracion y de los blueprints,
-de modo que se puedan crear instancias distintas para desarrollo,
-testing, produccion o congelado estatico.
+de modo que se puedan crear instancias distintas para desarrollo.
 """
 
 import os
@@ -35,11 +34,13 @@ def create_app(config_name: str | None = None) -> Flask:
     from app.routes import main_bp, api_bp
     from app.etapa1 import etapa1_bp
     from app.etapa2 import etapa2_bp
+    from app.etapa3 import etapa3_bp
 
     app.register_blueprint(main_bp)
     app.register_blueprint(api_bp, url_prefix="/api")
     app.register_blueprint(etapa1_bp)
     app.register_blueprint(etapa2_bp)
+    app.register_blueprint(etapa3_bp)
 
     # --- Manejo de errores en formato JSON para el prefijo /api -------------
     from flask import jsonify, request

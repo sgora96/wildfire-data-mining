@@ -1,15 +1,11 @@
 """Estructura del menu lateral: modulos > submodulos > paginas.
-
-Un solo lugar para construir el sidebar compartido (`templates/_shell.html`)
-y el breadcrumb de cada pagina. Para agregar una nueva etapa del proyecto,
-se agrega aqui un nuevo submodulo dentro de "etapas" con su propia lista
-de paginas; el sidebar y el breadcrumb se actualizan solos.
 """
 
 from __future__ import annotations
 
 from app.etapa1 import SUBMENU as _ETAPA1_PAGINAS
 from app.etapa2 import SUBMENU as _ETAPA2_PAGINAS
+from app.etapa3 import SUBMENU as _ETAPA3_PAGINAS
 
 MODULOS: list[dict] = [
     {
@@ -43,6 +39,16 @@ MODULOS: list[dict] = [
                 "paginas": [
                     {"endpoint": f"etapa2.{p['slug']}", "label": p["label"]}
                     for p in _ETAPA2_PAGINAS
+                ],
+            },
+            {
+                "id": "etapa-3",
+                "label": "Etapa 3",
+                "sublabel": "ETL y limpieza con SSIS",
+                "estado": "Completa",
+                "paginas": [
+                    {"endpoint": f"etapa3.{p['slug']}", "label": p["label"]}
+                    for p in _ETAPA3_PAGINAS
                 ],
             },
             # Las siguientes etapas del semestre se agregan aqui, con la

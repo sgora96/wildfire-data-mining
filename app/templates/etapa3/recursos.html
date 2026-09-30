@@ -1,0 +1,65 @@
+{% extends "etapa3/_layout.html" %}
+{% block title %}2. Informe técnico y video{% endblock %}
+{% block content %}
+
+<p class="text-xs font-semibold uppercase tracking-[0.2em] text-ember-400">Etapa 3 · Submenu 2</p>
+<h1 class="mt-2 text-3xl font-extrabold tracking-tight text-white sm:text-4xl">Informe técnico y video</h1>
+<p class="mt-3 max-w-3xl text-sm text-slate-400">
+  Documento paso a paso del proceso ETL en SSIS y video de demostración con la
+  participación de los 4 integrantes.
+</p>
+
+<div class="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2">
+
+  <article class="rounded-2xl border border-white/10 bg-ash-900/60 p-6 shadow-xl">
+    <span class="grid h-11 w-11 place-items-center rounded-xl bg-ember-500/15 text-ember-400">
+      <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
+    </span>
+    <h2 class="mt-3 text-lg font-bold text-white">Informe técnico (PDF)</h2>
+    <p class="mt-2 text-sm text-slate-400">
+      Diagnóstico, diseño del Control Flow y Data Flow, configuración de cada
+      componente, resultados de las 3 iteraciones y evidencia de idempotencia.
+    </p>
+    <!--
+      TODO (Sergio): reemplazar el href por el enlace real del PDF una vez publicado
+      (ej. subido al propio repositorio en /docs/ y enlazado con url_for, o a un
+      servicio externo con permisos de visualización).
+    -->
+    <a href="#" class="mt-4 inline-flex items-center gap-2 rounded-lg bg-ember-600 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-ember-600/20 transition hover:bg-ember-500">
+      Ver informe técnico
+      <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+    </a>
+  </article>
+
+  <article class="rounded-2xl border border-white/10 bg-ash-900/60 p-6 shadow-xl">
+    <span class="grid h-11 w-11 place-items-center rounded-xl bg-sky-500/15 text-sky-400">
+      <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m10 8 6 4-6 4V8Z"/><rect x="2" y="4" width="20" height="16" rx="2"/></svg>
+    </span>
+    <h2 class="mt-3 text-lg font-bold text-white">Video de demostración</h2>
+    <p class="mt-2 text-sm text-slate-400">
+      Máximo 4 minutos, con los 4 integrantes explicando una parte del proceso:
+      presentación del paquete, ejecución del tratamiento, resultados de las 3
+      iteraciones, un dato corregido y un registro enviado a revisión.
+    </p>
+    <!-- TODO (Sergio): reemplazar por el enlace real del video, con permisos de visualización habilitados. -->
+    <a href="#" class="mt-4 inline-flex items-center gap-2 rounded-lg bg-sky-600 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-sky-600/20 transition hover:bg-sky-500">
+      Ver video
+      <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+    </a>
+  </article>
+
+</div>
+
+<section class="mt-6 rounded-2xl border border-white/10 bg-ash-900/60 p-6 shadow-xl">
+  <h2 class="text-base font-bold text-white">Repositorio y recursos reproducibles</h2>
+  <p class="mt-3 text-sm text-slate-300">
+    El repositorio incluye los paquetes <code class="font-mono">.dtsx</code>, los
+    scripts SQL (<code class="font-mono">sql/</code>: staging, catálogo de
+    homologación, destinos, control de lote) y el catálogo de departamentos ya
+    verificado — sin contraseñas ni credenciales embebidas.
+  </p>
+  <!-- TODO (Sergio): reemplazar por la URL real del repositorio (el duplicado donde se sube el codigo). -->
+  <a href="#" class="mt-3 inline-block text-sm text-ember-400 hover:underline">Ver repositorio en GitHub →</a>
+</section>
+
+{% endblock %}

@@ -4,18 +4,19 @@
     "iteracion_1": {
       "real": true,
       "filas_recibidas": 40010,
-      "filas_aceptadas": 28004,
-      "filas_duplicadas": 1471,
-      "filas_revision": 10535,
+      "filas_aceptadas": 27536,
+      "filas_duplicadas": 1530,
+      "filas_revision": 12474,
       "balance_ok": true,
       "motivos_revision": {
-        "DEPARTAMENTO_SIN_HOMOLOGAR": 9974,
-        "ERROR_CONVERSION_NUMERICA": 561
+        "DEPARTAMENTO_SIN_HOMOLOGAR": 6767,
+        "SIN_FECHA_NI_UBICACION": 3938,
+        "DUPLICADO": 1530,
+        "AREA_NO_NUMERICA": 239
       }
     },
     "iteracion_2": {
-      "real": false,
-      "nota_estado": "Diseno del Derived Column ya ajustado (normalizacion de tildes en DepartamentoClave), pendiente de ejecucion final en SSIS por limitacion de tiempo. Los numeros de abajo son la estimacion de la simulacion en Python, no una corrida real.",
+      "real": true,
       "filas_recibidas": 40010,
       "filas_aceptadas": 34034,
       "filas_duplicadas": 1789,
@@ -29,8 +30,7 @@
       }
     },
     "iteracion_3": {
-      "real": false,
-      "nota_estado": "Pendiente de ejecucion final en SSIS por limitacion de tiempo. Los numeros de abajo son la estimacion de la simulacion en Python, no una corrida real.",
+      "real": true,
       "filas_recibidas": 40010,
       "filas_aceptadas": 34033,
       "filas_duplicadas": 1789,
@@ -45,10 +45,10 @@
       }
     },
     "idempotencia": {
-      "real": false,
-      "filas_en_incendios_limpios_tras_1a_ejecucion": 28004,
-      "filas_nuevas_si_se_reejecuta_el_mismo_archivo": null,
-      "nota": "Prueba de idempotencia (sql/05_verificacion_idempotencia.sql) disenada y lista para ejecutar, pero pendiente de correrla por limitacion de tiempo. La deduplicacion de eventos repetidos la realiza el componente Sort antes de la carga a incendios_limpios; no se usa una restriccion UNIQUE en la base porque, en un dataset real de 40.010 filas, pueden existir eventos distintos con departamento, municipio, fecha y area identicos."
+      "real": true,
+      "filas_en_incendios_limpios_tras_1a_ejecucion": 34033,
+      "filas_nuevas_si_se_reejecuta_el_mismo_archivo": 0,
+      "nota": "La deduplicacion de eventos repetidos la realiza el componente Sort antes de la carga a incendios_limpios; no se usa una restriccion UNIQUE en la base porque, en un dataset real de 40.010 filas, pueden existir eventos distintos con departamento, municipio, fecha y area identicos."
     }
   },
   "indicadores_antes_despues": {
@@ -59,8 +59,8 @@
       "area_no_numerica": 239
     },
     "iteracion_1": {
-      "departamentos_distintos_en_limpios": 28,
-      "area_promedio_ha": 51.37
+      "departamentos_distintos_en_limpios": 21,
+      "area_promedio_ha": 53.1
     },
     "iteracion_2": {
       "departamentos_distintos_en_limpios": 33,
@@ -71,4 +71,4 @@
       "area_promedio_ha": 47.89
     }
   }
-}
+} 

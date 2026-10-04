@@ -1,7 +1,8 @@
 {
-  "fuente": "C:\\Users\\udec\\Documents\\Udec DataMining\\wildfire-data-mining\\data\\processed\\incendios_ideam_2010_2024.csv",
+  "fuente": "data/processed/incendios_ideam_2010_2024.csv",
   "resultados_por_iteracion": {
     "iteracion_1": {
+      "real": true,
       "filas_recibidas": 40010,
       "filas_aceptadas": 27536,
       "filas_duplicadas": 1530,
@@ -15,6 +16,7 @@
       }
     },
     "iteracion_2": {
+      "real": true,
       "filas_recibidas": 40010,
       "filas_aceptadas": 34034,
       "filas_duplicadas": 1789,
@@ -28,6 +30,7 @@
       }
     },
     "iteracion_3": {
+      "real": true,
       "filas_recibidas": 40010,
       "filas_aceptadas": 34033,
       "filas_duplicadas": 1789,
@@ -42,6 +45,7 @@
       }
     },
     "idempotencia": {
+      "real": true,
       "filas_en_incendios_limpios_tras_1a_ejecucion": 34033,
       "filas_nuevas_si_se_reejecuta_el_mismo_archivo": 0,
       "nota": "La deduplicacion de eventos repetidos la realiza el componente Sort antes de la carga a incendios_limpios; no se usa una restriccion UNIQUE en la base porque, en un dataset real de 40.010 filas, pueden existir eventos distintos con departamento, municipio, fecha y area identicos."
@@ -67,4 +71,4 @@
       "area_promedio_ha": 47.89
     }
   }
-}
+} 

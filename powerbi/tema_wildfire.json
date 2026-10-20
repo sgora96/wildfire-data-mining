@@ -1,0 +1,10 @@
+{
+  "name": "Wildfire",
+  "dataColors": ["#EA580C", "#F97316", "#FB923C", "#C2410C", "#475569", "#94A3B8", "#1E293B", "#FDBA74", "#64748B", "#CBD5E1"],
+  "background": "#FFFFFF",
+  "foreground": "#1E293B",
+  "tableAccent": "#EA580C",
+  "good": "#16A34A",
+  "neutral": "#F59E0B",
+  "bad": "#DC2626"
+}

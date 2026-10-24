@@ -13,9 +13,14 @@ y **Tailwind CSS + Chart.js** para el dashboard. El sitio se publica automática
 ## 🔥 Etapas del proyecto
 
 Cada entregable del curso vive dentro de la misma app, bajo el menú lateral
-**Etapas del proyecto** (submódulo por etapa, con sus páginas obligatorias). La
-**Etapa 1** ("Del problema a los datos") ya está completa — ver `/etapa-1/...`. La
-**Etapa 2** ("Calidad de Datos") está en progreso — ver `/etapa-2/...`.
+**Etapas del proyecto** (submódulo por etapa, con sus páginas obligatorias):
+
+| Etapa | Tema | Estado | Ruta |
+|-------|------|--------|------|
+| 1 | Del problema a los datos | Completa | `/etapa-1/...` |
+| 2 | Calidad de datos | Completa | `/etapa-2/...` |
+| 3 | ETL y limpieza con SSIS | Completa | `/etapa-3/...` |
+| 4 | Conocimiento evidente (Power BI) | Completa | `/etapa-4/` |
 
 
 
@@ -25,6 +30,7 @@ Cada entregable del curso vive dentro de la misma app, bajo el menú lateral
 
 - [Características](#-características)
 - [Estructura del proyecto](#-estructura-del-proyecto)
+- [Etapa 4 — Conocimiento evidente (Power BI)](#-etapa-4--conocimiento-evidente-power-bi)
 - [Inicio rápido](#-inicio-rápido)
 - [API disponible](#-api-disponible)
 - [Datos y modelado](#-datos-y-modelado)
@@ -64,6 +70,8 @@ wildfire-data-mining/
 │   ├── raw/                  # Datasets sin procesar (ignorados por git)
 │   └── processed/            # Datasets limpios listos para modelar
 ├── models/                   # Modelos entrenados (.pkl / .joblib)
+├── powerbi/                  # Informe de Power BI (.pbix) y tema visual (Etapa 4)
+├── docs/powerbi/             # Medidas DAX y conocimientos evidentes (Etapa 4)
 ├── .github/workflows/
 │   └── deploy.yml            # CI/CD: congelado + publicación en gh-pages
 ├── config.py                 # Perfiles de configuración
@@ -76,6 +84,61 @@ wildfire-data-mining/
 > **Nota de arquitectura:** `app/services.py` no aparecía en el diseño inicial; se añadió
 > para mantener `routes.py` delgado y concentrar toda la lógica de minería de datos en un
 > único módulo reutilizable desde notebooks o scripts de entrenamiento.
+
+---
+
+## 📈 Etapa 4 — Conocimiento evidente (Power BI)
+
+Análisis exploratorio del mismo dataset de las etapas anteriores, presentado en un
+informe de Power BI con cuatro tableros (uno por pregunta de análisis) e integrado en
+la app en `/etapa-4/`.
+
+### Datos utilizados
+
+- Archivo: `data/processed/incendios_ideam_tratado_2010_2024.csv` (35.355 eventos, 2010-2024).
+- Fuente: Base de Datos de Incendios de la Cobertura Vegetal (BD-ICV) del IDEAM, ya
+  tratada en la Etapa 2 (ver `/etapa-2/tratamiento/`).
+- Unidad de análisis: cada fila es un evento de incendio de cobertura vegetal reportado.
+- Fuente original: https://ideam.gov.co/nuestra-entidad/ecosistemas-e-informacion-ambiental/incendios-de-la-cobertura-vegetal/base-de-datos-de-eventos-de-incendios-de-la
+
+### Tableros y documentación
+
+| Tablero | Tema | Medidas DAX | Conocimientos evidentes |
+|---------|------|-------------|-------------------------|
+| 1. Composición | Tamaño, cobertura y causa de los incendios | [`dax_p1_composicion.md`](docs/powerbi/dax_p1_composicion.md) | [`conocimientos_p1_composicion.md`](docs/powerbi/conocimientos_p1_composicion.md) |
+| 2. Territorial | Departamentos y tamaño típico | [`dax_p2_territorial.md`](docs/powerbi/dax_p2_territorial.md) | [`conocimientos_camila.md`](docs/powerbi/conocimientos_camila.md) |
+| 3. Temporal | Evolución anual y estacionalidad | [`dax_p3_temporal.md`](docs/powerbi/dax_p3_temporal.md) | [`conocimientos_p3_temporal.md`](docs/powerbi/conocimientos_p3_temporal.md) |
+| 4. Multivariado | Departamento, temporada y tamaño | [`dax_p4_multivariado.md`](docs/powerbi/dax_p4_multivariado.md) | [`conocimientos_p4_multivariado.md`](docs/powerbi/conocimientos_p4_multivariado.md) |
+
+El modelo de datos y las medidas comunes están en [`dax_base.md`](docs/powerbi/dax_base.md).
+El archivo del informe es `powerbi/Wildfire_ConocimientoEvidente.pbix` y el tema visual
+`powerbi/tema_wildfire.json`.
+
+### Abrir y actualizar el informe
+
+1. Instala **Power BI Desktop** (solo Windows) y abre `powerbi/Wildfire_ConocimientoEvidente.pbix`.
+2. En `Inicio > Transformar datos > Editar parámetros`, cambia `RutaCSV` por la ruta local
+   de `data/processed/incendios_ideam_tratado_2010_2024.csv` y pulsa **Cerrar y aplicar**.
+3. Para actualizar con datos nuevos, reemplaza el CSV por otro con el mismo esquema y pulsa
+   **Actualizar** en Power BI Desktop.
+4. En cada página, el botón "Ver conocimientos" abre los tres conocimientos evidentes y
+   "Cerrar" los oculta (en Power BI Desktop se activan con `Ctrl` + clic).
+
+### Cambios realizados en la aplicación web
+
+- `app/etapa4.py`: blueprint de la Etapa 4 (`/etapa-4/`).
+- `app/templates/etapa4/`: página "Conocimiento evidente" con el propósito de la etapa,
+  las cuatro preguntas, la fuente y el periodo, y el informe de Power BI.
+- `app/navigation.py` y `app/__init__.py`: la Etapa 4 se agrega al menú lateral y se registra el blueprint.
+- `freeze.py`: la página se incluye en el sitio estático de GitHub Pages.
+- `app/templates/index.html`: el inicio muestra las tarjetas de las Etapas 1 a 4.
+
+### Enlaces
+
+- Repositorio: https://github.com/sgora96/wildfire-data-mining
+- Aplicación publicada: https://sgora96.github.io/wildfire-data-mining/
+- Página de la etapa: https://sgora96.github.io/wildfire-data-mining/etapa-4/
+- Informe de Power BI: https://app.powerbi.com/view?r=eyJrIjoiNDBjZTk3MjItNTQ4NS00NjNkLTk4YTAtODEzOWY4M2Y5MTdiIiwidCI6IjA3ZGE2N2EwLTFmNDMtNGU4Yy05NzdmLTVmODhiNjQ3MGVlNiIsImMiOjR9
 
 ---
 

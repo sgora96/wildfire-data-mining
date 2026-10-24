@@ -52,6 +52,7 @@ def dashboard_pages():
         "etapa2.tratamiento",
         "etapa3.resultados",
         "etapa3.recursos",
+        "etapa4.conocimiento",
     ):
         yield endpoint, {}
 

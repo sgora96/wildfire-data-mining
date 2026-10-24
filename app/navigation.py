@@ -6,6 +6,7 @@ from __future__ import annotations
 from app.etapa1 import SUBMENU as _ETAPA1_PAGINAS
 from app.etapa2 import SUBMENU as _ETAPA2_PAGINAS
 from app.etapa3 import SUBMENU as _ETAPA3_PAGINAS
+from app.etapa4 import SUBMENU as _ETAPA4_PAGINAS
 
 MODULOS: list[dict] = [
     {
@@ -51,6 +52,17 @@ MODULOS: list[dict] = [
                     for p in _ETAPA3_PAGINAS
                 ],
             },
+            {
+                "id": "etapa-4",
+                "label": "Etapa 4",
+                "sublabel": "Conocimiento evidente",
+                "estado": "Completa",
+                "paginas": [
+                    {"endpoint": f"etapa4.{p['slug']}", "label": p["label"]}
+                    for p in _ETAPA4_PAGINAS
+                ],
+            },
+          
             # Las siguientes etapas del semestre se agregan aqui, con la
             # misma forma: {"id", "label", "sublabel", "estado", "paginas"}.
         ],

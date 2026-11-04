@@ -1,0 +1,72 @@
+{
+  "hechos": { "tabla": "fact_incendio", "alias": "f" },
+  "dimensiones": {
+    "tiempo": { "tabla": "dim_tiempo", "alias": "t", "clave": "tiempo_key", "etiqueta": "Tiempo" },
+    "territorio": { "tabla": "dim_territorio", "alias": "r", "clave": "territorio_key", "etiqueta": "Territorio" },
+    "tamano": { "tabla": "dim_tamano", "alias": "z", "clave": "tamano_key", "etiqueta": "Tamano" },
+    "causa": { "tabla": "dim_causa", "alias": "c", "clave": "causa_key", "etiqueta": "Causa" },
+    "cobertura": { "tabla": "dim_cobertura", "alias": "b", "clave": "cobertura_key", "etiqueta": "Cobertura" },
+    "fuente": { "tabla": "dim_fuente", "alias": "u", "clave": "fuente_key", "etiqueta": "Fuente" }
+  },
+  "niveles": {
+    "tiempo.anio": { "dimension": "tiempo", "columna": "t.h_anio", "etiqueta": "Anio" },
+    "tiempo.trimestre": { "dimension": "tiempo", "columna": "t.h_trimestre", "etiqueta": "Trimestre" },
+    "tiempo.mes": { "dimension": "tiempo", "columna": "t.h_mes", "etiqueta": "Mes" },
+    "tiempo.temporada": { "dimension": "tiempo", "columna": "t.temporada", "etiqueta": "Temporada" },
+    "territorio.region": { "dimension": "territorio", "columna": "r.h_region", "etiqueta": "Region" },
+    "territorio.departamento": { "dimension": "territorio", "columna": "r.h_departamento", "etiqueta": "Departamento" },
+    "territorio.municipio": { "dimension": "territorio", "columna": "r.h_municipio", "etiqueta": "Municipio" },
+    "tamano.clase": { "dimension": "tamano", "columna": "z.clase", "orden": "z.orden", "etiqueta": "Clase de tamano" },
+    "causa.registro": { "dimension": "causa", "columna": "c.registro", "etiqueta": "Registro de causa" },
+    "causa.causa": { "dimension": "causa", "columna": "c.causa", "etiqueta": "Causa" },
+    "cobertura.grupo": { "dimension": "cobertura", "columna": "b.grupo_cobertura", "etiqueta": "Grupo de cobertura" },
+    "cobertura.tipo": { "dimension": "cobertura", "columna": "b.tipo_cobertura", "etiqueta": "Tipo de cobertura" },
+    "fuente.hoja": { "dimension": "fuente", "columna": "u.h_hoja", "etiqueta": "Hoja de origen" },
+    "fuente.entidad": { "dimension": "fuente", "columna": "u.h_entidad", "etiqueta": "Entidad que reporta" }
+  },
+  "jerarquias": {
+    "tiempo": ["tiempo.anio", "tiempo.trimestre", "tiempo.mes"],
+    "territorio": ["territorio.region", "territorio.departamento", "territorio.municipio"],
+    "cobertura": ["cobertura.grupo", "cobertura.tipo"],
+    "causa": ["causa.registro", "causa.causa"],
+    "fuente": ["fuente.hoja", "fuente.entidad"]
+  },
+  "medidas": {
+    "eventos": {
+      "expresion": "SUM(f.n_eventos)",
+      "unidad": "eventos",
+      "aditiva": true,
+      "descripcion": "Conteo de eventos de incendio reportados."
+    },
+    "eventos_con_area": {
+      "expresion": "SUM(f.con_area)",
+      "unidad": "eventos",
+      "aditiva": true,
+      "descripcion": "Conteo de eventos que tienen area registrada."
+    },
+    "hectareas": {
+      "expresion": "SUM(f.area_total_ha)",
+      "unidad": "ha",
+      "aditiva": true,
+      "descripcion": "Suma del area total de los eventos; ignora los valores nulos."
+    },
+    "ha_por_evento": {
+      "expresion": "SUM(f.area_total_ha) * 1.0 / NULLIF(SUM(f.con_area), 0)",
+      "unidad": "ha/evento",
+      "aditiva": false,
+      "descripcion": "Hectareas promedio por evento con area; se recalcula en cada nivel."
+    },
+    "pct_grandes": {
+      "expresion": "100.0 * SUM(CASE WHEN f.tamano_key = 4 THEN f.n_eventos ELSE 0 END) / NULLIF(SUM(f.con_area), 0)",
+      "unidad": "%",
+      "aditiva": false,
+      "descripcion": "Porcentaje de eventos de mas de 100 ha; el denominador son los eventos con area del grupo."
+    },
+    "pct_total": {
+      "expresion": "100.0 * SUM(f.n_eventos) / SUM(SUM(f.n_eventos)) OVER ()",
+      "unidad": "%",
+      "aditiva": false,
+      "descripcion": "Participacion de eventos del grupo sobre el total de la consulta."
+    }
+  }
+}

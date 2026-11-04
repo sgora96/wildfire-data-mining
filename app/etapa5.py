@@ -2,9 +2,14 @@
 """
 from __future__ import annotations
 
-from flask import Blueprint, render_template
+import json
+
+from flask import Blueprint, jsonify, render_template, request
+
+from app.olap import ErrorConsulta, ejecutar
 
 etapa5_bp = Blueprint("etapa5", __name__, url_prefix="/etapa-5")
+olap_api_bp = Blueprint("olap_api", __name__, url_prefix="/api/olap")
 
 SUBMENU = [
     {"slug": "multidimensional", "label": "Analisis multidimensional"},
@@ -38,3 +43,16 @@ def vista3():
 @etapa5_bp.route("/vista-4/")
 def vista4():
     return render_template("etapa5/vista4.html")
+
+
+@olap_api_bp.route("/consulta")
+def consulta():
+    texto = request.args.get("spec")
+    if not texto:
+        return jsonify(ok=False, error="Falta el parametro 'spec'."), 400
+    try:
+        return jsonify(ejecutar(json.loads(texto)))
+    except json.JSONDecodeError:
+        return jsonify(ok=False, error="'spec' no es un JSON valido."), 400
+    except ErrorConsulta as error:
+        return jsonify(ok=False, error=str(error)), 400

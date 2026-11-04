@@ -1,2 +1,18 @@
 {% extends "_shell.html" %}
 {% block meta_description %}Etapa 5 - Analisis multidimensional de los incendios de cobertura vegetal con un modelo estrella y consultas interactivas.{% endblock %}
+{% block scripts %}
+<script>
+  window.OLAP_MODE = "{{ 'sqljs' if static_export else 'api' }}";
+  window.OLAP_CONFIG = {
+    catalogo: {{ url_for('static', filename='olap/consultas.json')|tojson }},
+    base: {{ url_for('static', filename='olap/incendios_dw.db')|tojson }},
+    api: {% if static_export %}null{% else %}{{ url_for('olap_api.consulta')|tojson }}{% endif %}
+  };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+{% if static_export %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.10.3/sql-wasm.js"></script>
+{% endif %}
+<script src="{{ url_for('static', filename='js/olap.js') }}"></script>
+{% block scripts_vista %}{% endblock %}
+{% endblock %}

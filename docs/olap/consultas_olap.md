@@ -37,3 +37,19 @@
 | % de grandes en 2024-T1 | 2,8 % (base: 4.776) | 2,8 % (base: 4.776) |
 | % de grandes en 2024-T3 | 5,5 % (base: 1.983) | 5,5 % (base: 1.983) |
 | Medida no permitida | Estado 400 | Rechazada |
+
+## Motor en el navegador
+`app/static/js/olap.js` ofrece `Olap.consultar(spec)` con dos modos y la misma estructura de
+respuesta: `api` llama a Flask en local y `sqljs` ejecuta el mismo SQL en el navegador con
+sql.js 1.10.3 contra la base publicada. Las vistas solo usan esta API y sus componentes:
+`renderMatriz`, `crearControles`, `tarjeta` y `grafica`.
+
+## Prueba de paridad
+Se ejecutaron las mismas consultas con `python run.py` (modo `api`) y con `python freeze.py`
+y un servidor local de `build/` (modo `sqljs`). Los resultados fueron iguales:
+
+| Consulta | api | sqljs |
+|---|---|---|
+| Hectareas de Orinoquia | 796.581,3 | 796.581,3 |
+| Participacion de eventos de Andina | 66,4 % | 66,4 % |
+| % de grandes en 2024-T3 | 5,5 % (base: 1.983) | 5,5 % (base: 1.983) |

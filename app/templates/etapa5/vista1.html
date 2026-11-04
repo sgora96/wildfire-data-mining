@@ -1,7 +1,106 @@
 {% extends "etapa5/_layout.html" %}
 {% block title %}Vista 1 - Territorio y tiempo{% endblock %}
 {% block content %}
-<p class="text-xs font-semibold uppercase tracking-[0.2em] text-ember-400">Etapa 5</p>
-<h1 class="mt-2 text-3xl font-extrabold tracking-tight text-white sm:text-4xl">Vista 1 - Territorio y tiempo</h1>
-<p class="mt-3 max-w-3xl text-sm text-slate-400">Esta pagina esta en construccion.</p>
+<p class="text-xs font-semibold uppercase tracking-[0.2em] text-ember-400">Etapa 5 · Vista 1</p>
+<h1 class="mt-2 text-3xl font-extrabold tracking-tight text-white sm:text-4xl">Territorio y tiempo</h1>
+<p class="mt-3 max-w-3xl text-sm text-slate-300">
+  <strong>Pregunta:</strong> ¿Cómo se distribuyen las hectáreas quemadas entre regiones, departamentos y municipios, y cómo cambia esa distribución por trimestre y por año?
+</p>
+
+<section class="mt-6 rounded-xl border border-white/10 bg-white/5 p-4 text-sm text-slate-300">
+  <h2 class="font-bold text-white">Dimensiones, medidas y jerarquías usadas</h2>
+  <ul class="mt-2 list-disc space-y-1 pl-5">
+    <li><strong>Dimensiones:</strong> territorio y tiempo. Filtros: tamaño (clase) y fuente (hoja).</li>
+    <li><strong>Medidas:</strong> hectáreas (ha), eventos y participación de eventos (%).</li>
+    <li><strong>Jerarquías:</strong> región → departamento → municipio; año → trimestre → mes.</li>
+    <li><strong>Relación con la Etapa 4:</strong> allí una matriz de 8 departamentos por temporada mostró patrones estacionales. Aquí se baja hasta municipio y se revisa si el patrón aparece también por trimestre y año.</li>
+  </ul>
+</section>
+
+<section id="v1-indicadores" class="mt-6 grid gap-4 md:grid-cols-3" aria-label="Indicadores"></section>
+
+<section class="mt-6 space-y-3">
+  <h2 class="text-lg font-bold text-white">Controles y operaciones</h2>
+  <div class="flex flex-wrap items-end gap-3">
+    <label class="text-xs font-semibold text-slate-400">Medida
+      <select id="v1-medida" class="mt-1 block rounded-lg border border-white/20 bg-slate-900 px-2 py-1.5 text-xs text-slate-200">
+        <option value="hectareas">Hectáreas</option>
+        <option value="eventos">Eventos</option>
+        <option value="pct_total">Participación de eventos (%)</option>
+      </select>
+    </label>
+    <button type="button" data-ejemplo="regiones" class="rounded-lg border border-white/20 px-3 py-1.5 text-xs font-semibold text-slate-200 hover:bg-white/10">Ejemplo: regiones</button>
+    <button type="button" data-ejemplo="temporadas" class="rounded-lg border border-white/20 px-3 py-1.5 text-xs font-semibold text-slate-200 hover:bg-white/10">Ejemplo: región x temporada</button>
+    <button type="button" data-ejemplo="orinoquia" class="rounded-lg border border-white/20 px-3 py-1.5 text-xs font-semibold text-slate-200 hover:bg-white/10">Ejemplo: Orinoquia por trimestre</button>
+  </div>
+  <div id="v1-controles"><p class="text-sm text-slate-400">Cargando controles...</p></div>
+  <p id="v1-error" class="hidden rounded-lg border border-red-500/40 bg-red-500/10 p-3 text-sm text-red-200" role="alert"></p>
+</section>
+
+<section class="mt-6 grid gap-4 lg:grid-cols-2">
+  <article class="rounded-xl border border-white/10 bg-white/5 p-4">
+    <h2 class="font-bold text-white">Grupos con mayor valor</h2>
+    <div id="v1-grafica-1" class="mt-3"></div>
+    <p id="v1-interp-1" class="mt-3 text-sm text-slate-300"></p>
+  </article>
+  <article class="rounded-xl border border-white/10 bg-white/5 p-4">
+    <h2 class="font-bold text-white">Distribución en el otro eje</h2>
+    <div id="v1-grafica-2" class="mt-3"></div>
+    <p id="v1-interp-2" class="mt-3 text-sm text-slate-300"></p>
+  </article>
+</section>
+
+<section class="mt-6">
+  <h2 class="text-lg font-bold text-white">Matriz de resultados</h2>
+  <p class="mt-1 text-xs text-slate-400">Haz clic en un miembro de la primera columna para bajar un nivel. Pasa el cursor por una celda para ver sus denominadores.</p>
+  <div id="v1-matriz" class="mt-3"></div>
+  <p id="v1-interp-3" class="mt-3 text-sm text-slate-300"></p>
+</section>
+
+<section class="mt-8 space-y-3">
+  <h2 class="text-lg font-bold text-white">Conocimientos multidimensionales</h2>
+
+  <details class="rounded-xl border border-white/10 bg-white/5 p-4 text-sm text-slate-300" open>
+    <summary class="cursor-pointer font-bold text-white">1. Muchos eventos no significan más hectáreas</summary>
+    <ul class="mt-3 space-y-2">
+      <li><strong>Pregunta:</strong> ¿Las regiones con más eventos son las que concentran más hectáreas?</li>
+      <li><strong>Dimensiones y medidas:</strong> territorio (región); hectáreas, eventos y participación de eventos.</li>
+      <li><strong>Procedimiento:</strong> sin filtros, filas en región, con "Ejemplo: regiones". Se cambia la medida entre hectáreas y participación de eventos.</li>
+      <li><strong>Evidencia:</strong> matriz y gráfica por región.</li>
+      <li><strong>Hallazgo:</strong> Orinoquia reúne el 49,4 % de 1.612.918 ha con el 10,5 % de 35.355 eventos. Andina reúne el 29,1 % de las hectáreas con el 66,4 % de los eventos. Por evento con área, Orinoquia registra 218,8 ha (796.581,3 ha / 3.640) y Andina 20,4 ha (468.957,0 ha / 22.995).</li>
+      <li><strong>Interpretación:</strong> frecuencia y área quemada dan rankings distintos. Frente al conocimiento evidente, el aporte es comparar ambas medidas en toda la jerarquía territorial, recalculadas para cada grupo.</li>
+      <li><strong>Utilidad:</strong> permite distinguir territorios con muchos eventos de territorios con eventos más extensos.</li>
+      <li><strong>Limitación:</strong> la región es una asignación simplificada por departamento, y 775 eventos sin área no aportan hectáreas.</li>
+    </ul>
+  </details>
+
+  <details class="rounded-xl border border-white/10 bg-white/5 p-4 text-sm text-slate-300">
+    <summary class="cursor-pointer font-bold text-white">2. Las hectáreas de cada región se concentran en trimestres distintos</summary>
+    <ul class="mt-3 space-y-2">
+      <li><strong>Pregunta:</strong> ¿El patrón estacional se ve también al comparar regiones y años?</li>
+      <li><strong>Dimensiones y medidas:</strong> territorio (región) y tiempo (temporada, año y trimestre); hectáreas.</li>
+      <li><strong>Procedimiento:</strong> con "Ejemplo: región x temporada" se cruzan región y temporada. Con "Ejemplo: Orinoquia por trimestre" se aplica el corte región = Orinoquia y se revisa cada trimestre.</li>
+      <li><strong>Evidencia:</strong> matriz por región y temporada, y serie de Orinoquia.</li>
+      <li><strong>Hallazgo:</strong> enero-marzo reúne 688.868 de las 796.581 ha de Orinoquia (86,5 %); julio-septiembre reúne 276.695 de las 468.957 ha de Andina (59,0 %). En Orinoquia, el primer trimestre sumó 129.677 ha en 2022 (95,9 % del año), 26.676 ha en 2023 (83,9 %) y 78.671 ha en 2024 (75,4 %).</li>
+      <li><strong>Interpretación:</strong> en esos tres años el patrón de Orinoquia no aparece solo en el agregado, aunque su magnitud cambia mucho. Frente al conocimiento evidente, el aporte es llevar la comparación de la temporada al trimestre de cada año.</li>
+      <li><strong>Utilidad:</strong> orienta en qué periodo revisar primero cada región.</li>
+      <li><strong>Limitación:</strong> el reporte varía entre años y fuentes, y esta asociación no explica las causas de la estacionalidad. Una explicación climática sería una hipótesis.</li>
+    </ul>
+  </details>
+</section>
+
+<section class="mt-6 grid gap-4 md:grid-cols-2 text-sm text-slate-300">
+  <article class="rounded-xl border border-white/10 bg-white/5 p-4">
+    <h2 class="font-bold text-white">Limitación</h2>
+    <p class="mt-2">El número de eventos reportados cambia mucho entre hojas de origen, por ejemplo 7.786 en 2024 y 1.004 en 2022. Por eso, una diferencia entre años puede reflejar también cambios en el reporte, y no solo en los incendios.</p>
+  </article>
+  <article class="rounded-xl border border-white/10 bg-white/5 p-4">
+    <h2 class="font-bold text-white">Posible decisión</h2>
+    <p class="mt-2">Priorizar la revisión de preparación en Orinoquia antes de enero-marzo y en Andina antes de julio-septiembre, verificando primero el detalle por departamento y municipio del periodo a intervenir.</p>
+  </article>
+</section>
+{% endblock %}
+
+{% block scripts_vista %}
+<script src="{{ url_for('static', filename='js/olap_vista1.js') }}"></script>
 {% endblock %}

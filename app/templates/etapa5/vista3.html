@@ -1,7 +1,112 @@
 {% extends "etapa5/_layout.html" %}
 {% block title %}Vista 3 - Cobertura y territorio{% endblock %}
 {% block content %}
-<p class="text-xs font-semibold uppercase tracking-[0.2em] text-ember-400">Etapa 5</p>
-<h1 class="mt-2 text-3xl font-extrabold tracking-tight text-white sm:text-4xl">Vista 3 - Cobertura y territorio</h1>
-<p class="mt-3 max-w-3xl text-sm text-slate-400">Esta pagina esta en construccion.</p>
+<p class="text-xs font-semibold uppercase tracking-[0.2em] text-ember-400">Etapa 5 · Vista 3</p>
+<h1 class="mt-2 text-3xl font-extrabold tracking-tight text-white sm:text-4xl">Cobertura y territorio</h1>
+<p class="mt-3 max-w-3xl text-sm text-slate-300">
+  <strong>Pregunta:</strong> ¿Qué grupos y tipos de cobertura concentran las hectáreas en cada región y cuánta área queda sin cobertura informada?
+</p>
+
+<section class="mt-6 rounded-xl border border-white/10 bg-white/5 p-4 text-sm text-slate-300">
+  <h2 class="font-bold text-white">Dimensiones, medidas y jerarquías usadas</h2>
+  <ul class="mt-2 list-disc space-y-1 pl-5">
+    <li><strong>Dimensiones:</strong> cobertura (filas) y territorio (columnas, nivel región). Filtros: tiempo (año) y tamaño (clase).</li>
+    <li><strong>Medidas:</strong> hectáreas (ha), eventos y participación de eventos (%). Las hectáreas se suman entre grupos; la participación no, porque es una proporción que se recalcula en cada consulta.</li>
+    <li><strong>Jerarquías:</strong> grupo → tipo de cobertura; región → departamento.</li>
+    <li><strong>Relación con la Etapa 4:</strong> allí el 71,2 % de las hectáreas con cobertura estaba "sin determinar" y la cobertura solo existía en 2010-2020. Aquí se cruza con la región y se baja de grupo a tipo, para ver dónde la cobertura está mejor informada y qué grupos pesan en cada región.</li>
+  </ul>
+</section>
+
+<section class="mt-4 rounded-xl border border-amber-500/30 bg-amber-500/10 p-4 text-sm text-amber-100" aria-label="Aviso sobre las hectáreas">
+  <p><strong>Cómo leer las hectáreas.</strong> Aquí cada evento aporta su <em>área total</em> al grupo o tipo de su cobertura; los eventos con más de un tipo van a "Mas de un tipo de cobertura". Por eso estas hectáreas <strong>no son comparables</strong> con las de la Etapa 4 (669.358 ha), que sumaban las columnas de hectáreas por cobertura. Además, la cobertura solo se registró en la hoja 2010-2020: los eventos de 2021-2024 aparecen como "No informada".</p>
+</section>
+
+<section id="v3-indicadores" class="mt-6 grid gap-4 md:grid-cols-3" aria-label="Indicadores"></section>
+
+<section class="mt-6 space-y-3">
+  <h2 class="text-lg font-bold text-white">Controles y operaciones</h2>
+  <div class="flex flex-wrap items-end gap-3">
+    <label class="text-xs font-semibold text-slate-400">Medida
+      <select id="v3-medida" class="mt-1 block rounded-lg border border-white/20 bg-slate-900 px-2 py-1.5 text-xs text-slate-200">
+        <option value="hectareas">Hectáreas</option>
+        <option value="eventos">Eventos</option>
+        <option value="pct_total">Participación de eventos (%)</option>
+      </select>
+    </label>
+    <button type="button" data-ejemplo="grupos" class="rounded-lg border border-white/20 px-3 py-1.5 text-xs font-semibold text-slate-200 hover:bg-white/10">Ejemplo: grupos por región</button>
+    <button type="button" data-ejemplo="tipos" class="rounded-lg border border-white/20 px-3 py-1.5 text-xs font-semibold text-slate-200 hover:bg-white/10">Ejemplo: drill-down a tipos</button>
+    <button type="button" data-ejemplo="hasta2020" class="rounded-lg border border-white/20 px-3 py-1.5 text-xs font-semibold text-slate-200 hover:bg-white/10">Ejemplo: solo 2010-2020</button>
+    <button type="button" data-ejemplo="dice" class="rounded-lg border border-white/20 px-3 py-1.5 text-xs font-semibold text-slate-200 hover:bg-white/10">Ejemplo DICE: bosques en Orinoquia y Andina</button>
+  </div>
+  <p class="text-xs text-slate-400">Los botones de ejemplo cargan una selección completa. Con los botones de la barra puedes bajar o subir de nivel, intercambiar filas y columnas y filtrar por año o por tamaño.</p>
+  <div id="v3-controles"><p class="text-sm text-slate-400">Cargando controles...</p></div>
+  <p id="v3-error" class="hidden rounded-lg border border-red-500/40 bg-red-500/10 p-3 text-sm text-red-200" role="alert"></p>
+</section>
+
+<section class="mt-6 grid gap-4 lg:grid-cols-2">
+  <article class="rounded-xl border border-white/10 bg-white/5 p-4">
+    <h2 class="font-bold text-white">Coberturas con mayor valor</h2>
+    <div id="v3-grafica-1" class="mt-3"></div>
+    <p id="v3-interp-1" class="mt-3 text-sm text-slate-300"></p>
+  </article>
+  <article class="rounded-xl border border-white/10 bg-white/5 p-4">
+    <h2 class="font-bold text-white">Eventos con cobertura informada por región (%)</h2>
+    <div id="v3-grafica-2" class="mt-3"></div>
+    <p id="v3-interp-2" class="mt-3 text-sm text-slate-300"></p>
+  </article>
+</section>
+
+<section class="mt-6">
+  <h2 class="text-lg font-bold text-white">Matriz de resultados</h2>
+  <p class="mt-1 text-xs text-slate-400">Haz clic en un miembro de la primera columna para bajar un nivel. Pasa el cursor por una celda para ver sus denominadores.</p>
+  <div id="v3-matriz" class="mt-3"></div>
+  <p id="v3-interp-3" class="mt-3 text-sm text-slate-300"></p>
+</section>
+
+<section class="mt-8 space-y-3">
+  <h2 class="text-lg font-bold text-white">Conocimientos multidimensionales</h2>
+
+  <details class="rounded-xl border border-white/10 bg-white/5 p-4 text-sm text-slate-300" open>
+    <summary class="cursor-pointer font-bold text-white">1. La región mejor informada cambia al comparar solo los años con registro de cobertura</summary>
+    <ul class="mt-3 space-y-2">
+      <li><strong>Pregunta:</strong> ¿En qué regiones está mejor informada la cobertura y el orden se mantiene si se comparan solo los años en que la cobertura existe?</li>
+      <li><strong>Dimensiones y medidas:</strong> cobertura (grupo), territorio (región) y tiempo (año); eventos con cobertura informada sobre el total de eventos de la región.</li>
+      <li><strong>Procedimiento:</strong> con "Ejemplo: grupos por región" y la medida eventos se leen los eventos "No informada" y los demás por región. Luego "Ejemplo: solo 2010-2020" aplica el filtro de año. El porcentaje es 100 × (eventos − eventos "No informada") ÷ eventos de la región con esos filtros.</li>
+      <li><strong>Evidencia:</strong> matriz cobertura × región y gráfica de porcentaje por región.</li>
+      <li><strong>Hallazgo:</strong> sin filtros, la cobertura está informada en el 56,3 % de los eventos de Amazonia (513 de 912), 46,8 % de Andina (10.994 de 23.469), 37,5 % de Orinoquia (1.393 de 3.714), 29,8 % de Pacifica (998 de 3.347) y 25,9 % de Caribe (994 de 3.833). Con los años 2010-2020, los porcentajes son 82,1 % en Amazonia, 67,1 % en Andina, 63,1 % en Orinoquia, 59,1 % en Caribe y 56,0 % en Pacifica.</li>
+      <li><strong>Interpretación:</strong> los 12.621 eventos de las hojas 2021-2024 no registran cobertura y bajan el porcentaje de todas las regiones. Al compararlas en periodos equivalentes, Pacifica pasa a ser la región con menos cobertura informada y Caribe sube de la última a la penúltima posición. Frente al conocimiento evidente (42,2 % de eventos con cobertura en todo el país), el aporte es medir ese vacío por región y en periodos comparables.</li>
+      <li><strong>Utilidad:</strong> indica en qué regiones el análisis por cobertura es más confiable y dónde conviene mejorar el registro.</li>
+      <li><strong>Limitación:</strong> "informada" no significa "bien clasificada": el 71,1 % de las hectáreas con cobertura queda en "Sin determinar". La región es una asignación simplificada por departamento.</li>
+    </ul>
+  </details>
+
+  <details class="rounded-xl border border-white/10 bg-white/5 p-4 text-sm text-slate-300">
+    <summary class="cursor-pointer font-bold text-white">2. En los bosques, Orinoquia tiene pocos eventos pero mucha más área por evento que Andina</summary>
+    <ul class="mt-3 space-y-2">
+      <li><strong>Pregunta:</strong> ¿Los incendios en bosque tienen el mismo tamaño en Orinoquia y en Andina?</li>
+      <li><strong>Dimensiones y medidas:</strong> cobertura (grupo Bosques y sus tipos), territorio (región) y tiempo (año); hectáreas, eventos y eventos con área.</li>
+      <li><strong>Procedimiento:</strong> con "Ejemplo DICE: bosques en Orinoquia y Andina" se combinan tres filtros: región en {Orinoquia, Andina}, grupo = Bosques y años 2010 a 2020. Las filas bajan de grupo a tipo (drill-down). Las hectáreas por evento se calculan como hectáreas ÷ eventos con área de cada celda.</li>
+      <li><strong>Evidencia:</strong> matriz tipo de bosque × región, con la medida hectáreas y con la medida eventos.</li>
+      <li><strong>Hallazgo:</strong> Orinoquia suma 23.763,2 ha en 105 eventos (226,3 ha por evento); Andina suma 28.763,1 ha en 1.246 eventos (23,1 ha por evento con área). En bosque natural denso, Orinoquia registra 165,9 ha por evento y Andina 28,2 ha; en bosque intervenido, 451,1 ha y 17,1 ha.</li>
+      <li><strong>Interpretación:</strong> Andina tiene unas 12 veces más eventos en bosque, pero las hectáreas son del mismo orden: los eventos de Orinoquia son mucho más extensos. Frente al conocimiento evidente, que ordenaba regiones sin mirar la cobertura, el aporte es mostrar que el tamaño típico de un incendio en bosque depende de la región.</li>
+      <li><strong>Utilidad:</strong> sugiere preparar respuesta a pocos eventos extensos en Orinoquia y a muchos eventos pequeños en Andina.</li>
+      <li><strong>Limitación:</strong> algunos tipos tienen muy pocos eventos (bosque plantado: 2 en Orinoquia; bosque seco: 4), así que sus promedios son inestables. El área es la total del evento, no solo la de bosque.</li>
+    </ul>
+  </details>
+</section>
+
+<section class="mt-6 grid gap-4 md:grid-cols-2 text-sm text-slate-300">
+  <article class="rounded-xl border border-white/10 bg-white/5 p-4">
+    <h2 class="font-bold text-white">Limitación</h2>
+    <p class="mt-2">La cobertura solo se registró en la hoja 2010-2020, así que los 12.621 eventos de 2021-2024 quedan en "No informada" aunque tuvieran cobertura. En total, 20.448 eventos (57,8 %) y 943.500 ha (58,5 %) no tienen cobertura informada, y "Sin determinar" reúne el 71,1 % de las hectáreas que sí la tienen. Las conclusiones por cobertura describen solo el subconjunto informado.</p>
+  </article>
+  <article class="rounded-xl border border-white/10 bg-white/5 p-4">
+    <h2 class="font-bold text-white">Posible decisión</h2>
+    <p class="mt-2">Priorizar que el registro de cada evento incluya el tipo de cobertura y reducir la categoría "Sin determinar", empezando por Orinoquia y Andina, que reúnen el 79,2 % de las hectáreas en "Sin determinar". Mientras tanto, comparar la cobertura entre regiones solo con los años 2010-2020.</p>
+  </article>
+</section>
+{% endblock %}
+
+{% block scripts_vista %}
+<script src="{{ url_for('static', filename='js/olap_vista3.js') }}"></script>
 {% endblock %}

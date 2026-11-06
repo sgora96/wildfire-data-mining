@@ -1,7 +1,112 @@
 {% extends "etapa5/_layout.html" %}
-{% block title %}Vista 4 - Causa y tamano{% endblock %}
+{% block title %}Vista 4 - Causa y tamaño{% endblock %}
 {% block content %}
-<p class="text-xs font-semibold uppercase tracking-[0.2em] text-ember-400">Etapa 5</p>
-<h1 class="mt-2 text-3xl font-extrabold tracking-tight text-white sm:text-4xl">Vista 4 - Causa y tamano</h1>
-<p class="mt-3 max-w-3xl text-sm text-slate-400">Esta pagina esta en construccion.</p>
+<p class="text-xs font-semibold uppercase tracking-[0.2em] text-ember-400">Etapa 5 · Vista 4</p>
+<h1 class="mt-2 text-3xl font-extrabold tracking-tight text-white sm:text-4xl">Causa y tamaño</h1>
+<p class="mt-3 max-w-3xl text-sm text-slate-300">
+  <strong>Pregunta:</strong> ¿Qué causas registradas se asocian con incendios más grandes y cómo varía esa asociación entre regiones?
+</p>
+
+<section class="mt-6 rounded-xl border border-white/10 bg-white/5 p-4 text-sm text-slate-300">
+  <h2 class="font-bold text-white">Dimensiones, medidas y jerarquías usadas</h2>
+  <ul class="mt-2 list-disc space-y-1 pl-5">
+    <li><strong>Dimensiones:</strong> causa y tamaño, con territorio (región) como corte. Filtros: territorio (región) y tiempo (año).</li>
+    <li><strong>Medidas:</strong> % de eventos grandes (eventos de más de 100 ha / eventos con área del grupo), hectáreas por evento (hectáreas / eventos con área) y eventos.</li>
+    <li><strong>Jerarquías:</strong> registro de causa → causa; región → departamento.</li>
+    <li><strong>Denominador:</strong> el % de grandes y las ha/evento usan solo los eventos con área del grupo. "Sin causa registrada" (31.207 eventos) es un dato faltante, no una causa; los eventos con dos o más causas distintas están en "Mas de una causa" (49). Ambas medidas se recalculan en cada celda; no se suman entre causas ni entre regiones.</li>
+    <li><strong>Relación con la Etapa 4:</strong> allí las causas solo se contaban (Intencional 34,1 %, quema fuera de control 24,2 %). Aquí se cruzan con el tamaño y la región: no cuántas veces aparece una causa, sino cuáles se asocian con incendios más grandes y si eso cambia por región.</li>
+  </ul>
+</section>
+
+<section id="v4-indicadores" class="mt-6 grid gap-4 md:grid-cols-3" aria-label="Indicadores"></section>
+
+<section class="mt-6 space-y-3">
+  <h2 class="text-lg font-bold text-white">Controles y operaciones</h2>
+  <div class="flex flex-wrap items-end gap-3">
+    <label class="text-xs font-semibold text-slate-400">Medida de la matriz
+      <select id="v4-medida" class="mt-1 block rounded-lg border border-white/20 bg-slate-900 px-2 py-1.5 text-xs text-slate-200">
+        <option value="eventos">Eventos</option>
+        <option value="hectareas">Hectáreas</option>
+        <option value="ha_por_evento">Hectáreas por evento</option>
+        <option value="pct_grandes">% de eventos grandes</option>
+      </select>
+    </label>
+    <button type="button" data-ejemplo="inicial" class="rounded-lg border border-white/20 px-3 py-1.5 text-xs font-semibold text-slate-200 hover:bg-white/10">Vista inicial: causa x tamaño</button>
+    <button type="button" data-ejemplo="sliceOrinoquia" class="rounded-lg border border-white/20 px-3 py-1.5 text-xs font-semibold text-slate-200 hover:bg-white/10">Slice: región = Orinoquia</button>
+    <button type="button" data-ejemplo="dice" class="rounded-lg border border-white/20 px-3 py-1.5 text-xs font-semibold text-slate-200 hover:bg-white/10">Dice: Intencional y Otra, en Orinoquia y Andina</button>
+  </div>
+  <p class="text-xs text-slate-400">Pivot: el botón "Pivot" intercambia filas y columnas (por ejemplo, de causa x región a región x causa) y vuelve a ejecutar la consulta. Drill-down/roll-up: disponibles en la jerarquía de causa (registro → causa) y de territorio (región → departamento) si se usan como filas o columnas.</p>
+  <div id="v4-controles"><p class="text-sm text-slate-400">Cargando controles...</p></div>
+  <p id="v4-aviso" class="hidden rounded-lg border border-amber-500/40 bg-amber-500/10 p-2 text-xs text-amber-200"></p>
+  <p id="v4-error" class="hidden rounded-lg border border-red-500/40 bg-red-500/10 p-3 text-sm text-red-200" role="alert"></p>
+</section>
+
+<section class="mt-6 grid gap-4 lg:grid-cols-2">
+  <article class="rounded-xl border border-white/10 bg-white/5 p-4">
+    <h2 class="font-bold text-white">% de eventos grandes por causa</h2>
+    <p class="mt-1 text-xs text-slate-400">Base: eventos con área de cada causa. Recalculado con los filtros activos.</p>
+    <div id="v4-grafica-1" class="mt-3"></div>
+    <p id="v4-interp-1" class="mt-3 text-sm text-slate-300"></p>
+  </article>
+  <article class="rounded-xl border border-white/10 bg-white/5 p-4">
+    <h2 class="font-bold text-white">Hectáreas por evento según la causa</h2>
+    <p class="mt-1 text-xs text-slate-400">Promedio recalculado en cada causa: hectáreas / eventos con área.</p>
+    <div id="v4-grafica-2" class="mt-3"></div>
+    <p id="v4-interp-2" class="mt-3 text-sm text-slate-300"></p>
+  </article>
+</section>
+
+<section class="mt-6">
+  <h2 class="text-lg font-bold text-white">Matriz de resultados</h2>
+  <p class="mt-1 text-xs text-slate-400">Haz clic en un miembro de la primera columna para bajar un nivel (por ejemplo, de registro de causa a la causa concreta). Pasa el cursor por una celda para ver sus denominadores.</p>
+  <div id="v4-matriz" class="mt-3"></div>
+  <p id="v4-interp-3" class="mt-3 text-sm text-slate-300"></p>
+</section>
+
+<section class="mt-8 space-y-3">
+  <h2 class="text-lg font-bold text-white">Conocimientos multidimensionales</h2>
+
+  <details class="rounded-xl border border-white/10 bg-white/5 p-4 text-sm text-slate-300" open>
+    <summary class="cursor-pointer font-bold text-white">1. Las causas más frecuentes no son las que más incendios grandes producen</summary>
+    <ul class="mt-3 space-y-2">
+      <li><strong>Pregunta:</strong> ¿Las causas con más eventos registrados son también las que más se asocian con incendios de más de 100 ha?</li>
+      <li><strong>Dimensiones y medidas:</strong> causa (registro → causa) y tamaño; % de eventos grandes y eventos con área como denominador.</li>
+      <li><strong>Procedimiento:</strong> sin filtros, botón "Vista inicial: causa x tamaño" (filas = causa, columnas = clase de tamaño, medida = eventos). La gráfica "% de eventos grandes por causa" ordena las causas de mayor a menor porcentaje.</li>
+      <li><strong>Evidencia:</strong> gráfica de % de eventos grandes por causa y matriz causa x tamaño de la Vista 4, sin filtros.</li>
+      <li><strong>Hallazgo:</strong> Intencional es la causa más frecuente (1.402 eventos) pero su % de grandes es 3,6 % (47 de 1.303 con área); Quema fuera de control, la segunda más frecuente (974 eventos), también queda en 3,6 % (34 de 945). En cambio "Otra" (499 eventos) llega a 9,8 % (48 de 489) y "Mas de una causa" (49 eventos) a 16,7 % (8 de 48).</li>
+      <li><strong>Interpretación:</strong> contar cuántas veces aparece una causa (lo que hacía la Etapa 4) no dice nada sobre el tamaño de esos incendios. El aporte de esta vista es cruzar causa con tamaño: las causas menos frecuentes ("Otra" y "Mas de una causa") tienen una proporción de eventos grandes 2 a 4 veces mayor que las causas más frecuentes.</li>
+      <li><strong>Utilidad:</strong> sugiere que la respuesta operativa no debe dimensionarse solo por la causa más frecuente; las causas poco comunes también merecen atención por su impacto en área.</li>
+      <li><strong>Limitación:</strong> "Otra" agrupa causas distintas que el formulario no distingue, y "Mas de una causa" tiene solo 48 eventos con área; con tan pocos casos, un solo incendio grande cambia mucho el porcentaje.</li>
+    </ul>
+  </details>
+
+  <details class="rounded-xl border border-white/10 bg-white/5 p-4 text-sm text-slate-300">
+    <summary class="cursor-pointer font-bold text-white">2. En Orinoquia, la causa "Otra" se asocia con incendios mucho más extensos que en el resto del país</summary>
+    <ul class="mt-3 space-y-2">
+      <li><strong>Pregunta:</strong> ¿La asociación entre causa y tamaño es igual en todas las regiones?</li>
+      <li><strong>Dimensiones y medidas:</strong> causa, territorio (región) y tamaño; % de eventos grandes, hectáreas por evento y eventos con área.</li>
+      <li><strong>Procedimiento:</strong> operación DICE con el botón "Dice: Intencional y Otra, en Orinoquia y Andina" (filtros combinados: causa en {Intencional, Otra} y región en {Orinoquia, Andina}; filas = causa, columnas = región, medida = hectáreas). Se compara con el botón "Slice: región = Orinoquia" para ver el resto de causas dentro de esa región.</li>
+      <li><strong>Evidencia:</strong> matriz causa x región con la selección DICE activa (medidas hectáreas, ha por evento) y matriz causa x tamaño con el slice de Orinoquia.</li>
+      <li><strong>Hallazgo:</strong> "Otra" en Orinoquia suma 120.217,5 ha en 83 eventos con área (1.448,4 ha por evento) y un 47,0 % de eventos grandes; en Andina, la misma causa suma 3.750,6 ha en 349 eventos con área (10,7 ha por evento) y solo 2,0 % de grandes. Intencional, en cambio, cambia menos entre regiones: 209,3 ha por evento en Orinoquia (19 eventos) y 15,9 ha por evento en Andina (971 eventos).</li>
+      <li><strong>Interpretación:</strong> frente al conocimiento evidente, que solo contaba causas a nivel nacional, el aporte es mostrar que la misma causa registrada tiene un efecto muy distinto según la región: en Orinoquia, "Otra" se asocia con muy pocos eventos pero extremadamente grandes, mientras que en Andina la misma causa corresponde a muchos eventos pequeños. Es una asociación observada en los datos, no una explicación causal de por qué ocurre.</li>
+      <li><strong>Utilidad:</strong> advierte que un plan de prevención basado solo en la causa más frecuente a nivel nacional puede no ajustarse a lo que realmente ocurre en Orinoquia.</li>
+      <li><strong>Limitación:</strong> dentro de Orinoquia, varias causas tienen muy pocos eventos con área (Accidental: 1; Reactivación de focos: 4) y su porcentaje no es confiable; "Otra" en Orinoquia sí tiene 83 eventos, una base razonable, pero sigue siendo pequeña frente a los miles de eventos de Andina.</li>
+    </ul>
+  </details>
+</section>
+
+<section class="mt-6 grid gap-4 md:grid-cols-2 text-sm text-slate-300">
+  <article class="rounded-xl border border-white/10 bg-white/5 p-4">
+    <h2 class="font-bold text-white">Limitación</h2>
+    <p class="mt-2">La causa solo se registró en las hojas 2010-2022; los eventos de 2023 y 2024 (10.684 eventos) quedan en "Sin causa registrada" aunque sí tuvieran una causa real, lo que infla ese grupo y reduce el peso de las demás causas en los años recientes. Dentro de cada región, varias causas tienen muy pocos eventos con área (por ejemplo, Accidental en Orinoquia: 1 evento), así que su porcentaje de grandes no debe leerse como una tendencia estable.</p>
+  </article>
+  <article class="rounded-xl border border-white/10 bg-white/5 p-4">
+    <h2 class="font-bold text-white">Posible decisión</h2>
+    <p class="mt-2">Priorizar en Orinoquia un seguimiento específico a los eventos de causa "Otra", porque ahí concentran incendios mucho más extensos (1.448 ha por evento) que en el resto del país, en vez de aplicar el mismo criterio de priorización por causa que se usaría a nivel nacional.</p>
+  </article>
+</section>
+{% endblock %}
+
+{% block scripts_vista %}
+<script src="{{ url_for('static', filename='js/olap_vista4.js') }}"></script>
 {% endblock %}

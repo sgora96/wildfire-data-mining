@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Etapa 5 - Analisis multidimensional de los incendios de cobertura vegetal con un modelo estrella y consultas interactivas.">
+  <title>Vista 2 - Tiempo y tamaño · Wildfire Data Mining</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            ember: { 400: '#fb923c', 500: '#f97316', 600: '#ea580c', 700: '#c2410c' },
+            ash:   { 800: '#1e293b', 900: '#0f172a', 950: '#020617' }
+          },
+          fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] },
+          keyframes: {
+            'fade-up': { '0%': { opacity: 0, transform: 'translateY(8px)' }, '100%': { opacity: 1, transform: 'translateY(0)' } }
+          },
+          animation: { 'fade-up': 'fade-up .4s ease-out both' }
+        }
+      }
+    };
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../static/css/styles.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔥</text></svg>">
+  <style>
+    details > summary { list-style: none; cursor: pointer; }
+    details > summary::-webkit-details-marker { display: none; }
+    details[open] > summary .nav-chevron { transform: rotate(90deg); }
+    .nav-chevron { transition: transform .15s ease; }
+    #sidebar { transition: transform .2s ease; }
+  </style>
+</head>
+
+<body class="min-h-screen bg-ash-950 font-sans text-slate-200 antialiased selection:bg-ember-500/30">
+
+  <!-- ===================== SIDEBAR OVERLAY (movil) ===================== -->
+  <div id="sidebar-overlay" class="fixed inset-0 z-30 hidden bg-black/60 lg:hidden"></div>
+
+  <!-- ===================== SIDEBAR ===================== -->
+  <aside id="sidebar"
+         class="fixed inset-y-0 left-0 z-40 flex w-72 -translate-x-full flex-col border-r border-white/5 bg-ash-900/95 backdrop-blur-xl lg:translate-x-0">
+    <div class="flex h-16 shrink-0 items-center gap-3 border-b border-white/5 px-5">
+      <a href="../../index.html" class="flex items-center gap-3">
+        <span class="grid h-9 w-9 place-items-center rounded-xl bg-gradient-to-br from-ember-500 to-red-600 shadow-lg shadow-ember-600/30">
+          <svg class="h-5 w-5 text-white" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M12 2s4.5 4.2 4.5 8.2A4.5 4.5 0 0 1 12 15a4.5 4.5 0 0 1-4.5-4.8C7.5 6.2 12 2 12 2Zm0 20c-3.9 0-7-2.6-7-6 0 0 1.6 1.6 3.1 1.6 0 0-1-3.4 1.4-6.3 0 2.4 1.6 3.4 2.5 4.3 1.2 1.2 1.5 2.6 1.1 4.1 1.4-.3 2.6-1.6 2.9-3.2 1 1.1 1.5 2.4 1.5 3.5 0 3.4-3.1 6-6.5 6Z"/>
+          </svg>
+        </span>
+        <span class="leading-tight">
+          <span class="block text-sm font-extrabold tracking-tight text-white">Wildfire Data Mining</span>
+          <span class="block text-[11px] text-slate-500">Analisis predictivo de incendios forestales</span>
+        </span>
+      </a>
+    </div>
+
+    <nav class="flex-1 space-y-1 overflow-y-auto px-3 py-4" aria-label="Modulos del proyecto">
+      <a href="../../index.html"
+         class="flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-medium transition
+                text-slate-300 hover:bg-white/5 hover:text-white">
+        <svg class="h-4 w-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M3 11.5 12 4l9 7.5"/><path d="M5 10v9a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1v-9"/>
+        </svg>
+        Inicio
+      </a>
+
+      
+      <details class="mt-2 group" open>
+        <summary class="flex items-center justify-between gap-2 rounded-lg px-3 py-2 text-xs font-bold uppercase tracking-wider text-slate-400 hover:bg-white/5 hover:text-white">
+          <span class="flex items-center gap-2.5">
+            <svg class="h-4 w-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/>
+              <rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>
+            </svg>
+            Etapas del proyecto
+          </span>
+          <svg class="nav-chevron h-3.5 w-3.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m9 6 6 6-6 6"/></svg>
+        </summary>
+
+        <div class="mt-1 space-y-1 pl-2">
+          
+          <details class="group/sub" >
+            <summary class="flex items-center justify-between gap-2 rounded-lg py-1.5 pl-4 pr-3 text-sm font-semibold text-slate-200 hover:bg-white/5">
+              <span class="flex flex-col">
+                <span class="flex items-center gap-1.5">
+                  Etapa 1
+                  
+                  <span class="rounded-full bg-emerald-500/15 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-emerald-400">Completa</span>
+                  
+                </span>
+                <span class="text-[11px] font-normal text-slate-500">Del problema a los datos</span>
+              </span>
+              <svg class="nav-chevron h-3.5 w-3.5 shrink-0 text-slate-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m9 6 6 6-6 6"/></svg>
+            </summary>
+            <div class="ml-4 mt-1 space-y-0.5 border-l border-white/5 pl-3">
+              
+              
+              <a href="../../etapa-1/problema/index.html"
+                 class="block rounded-lg px-3 py-1.5 text-[13px] font-medium transition
+                        text-slate-400 hover:bg-white/5 hover:text-white">
+                1. Problema y contexto
+              </a>
+              
+              
+              <a href="../../etapa-1/preguntas/index.html"
+                 class="block rounded-lg px-3 py-1.5 text-[13px] font-medium transition
+                        text-slate-400 hover:bg-white/5 hover:text-white">
+                2. Pregunta principal y secundarias
+              </a>
+              
+              
+              <a href="../../etapa-1/necesidades/index.html"
+                 class="block rounded-lg px-3 py-1.5 text-[13px] font-medium transition
+                        text-slate-400 hover:bg-white/5 hover:text-white">
+                3. Necesidades de informacion
+              </a>
+              
+              
+              <a href="../../etapa-1/fuentes/index.html"
+                 class="block rounded-lg px-3 py-1.5 text-[13px] font-medium transition
+                        text-slate-400 hover:bg-white/5 hover:text-white">
+                4. Fuentes de datos
+              </a>
+              
+              
+              <a href="../../etapa-1/dataset/index.html"
+                 class="block rounded-lg px-3 py-1.5 text-[13px] font-medium transition
+                        text-slate-400 hover:bg-white/5 hover:text-white">
+                5. Dataset
+              </a>
+              
+              
+              <a href="../../etapa-1/diccionario/index.html"
+                 class="block rounded-lg px-3 py-1.5 text-[13px] font-medium transition
+                        text-slate-400 hover:bg-white/5 hover:text-white">
+                6. Diccionario de datos
+              </a>
+              
+              
+              <a href="../../etapa-1/calidad/index.html"
+                 class="block rounded-lg px-3 py-1.5 text-[13px] font-medium transition
+                        text-slate-400 hover:bg-white/5 hover:text-white">
+                7. Calidad inicial de los datos
+              </a>
+              
+              
+              <a href="../../etapa-1/limitaciones/index.html"
+                 class="block rounded-lg px-3 py-1.5 text-[13px] font-medium transition
+                        text-slate-400 hover:bg-white/5 hover:text-white">
+                8. Limitaciones y consideraciones
+              </a>
+              
+              <div class="my-1.5 border-t border-dashed border-white/10"></div>
+              <a href="../../etapa-1/tareas/index.html"
+                 class="block rounded-lg px-3 py-1.5 text-[13px] font-medium transition
+                        text-slate-400 hover:bg-white/5 hover:text-white">
+                Equipo y tareas
+              </a>
+              
+            </div>
+          </details>
+          
+          <details class="group/sub" >
+            <summary class="flex items-center justify-between gap-2 rounded-lg py-1.5 pl-4 pr-3 text-sm font-semibold text-slate-200 hover:bg-white/5">
+              <span class="flex flex-col">
+                <span class="flex items-center gap-1.5">
+                  Etapa 2
+                  
+                  <span class="rounded-full bg-emerald-500/15 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-emerald-400">Completa</span>
+                  
+                </span>
+                <span class="text-[11px] font-normal text-slate-500">Calidad de datos</span>
+              </span>
+              <svg class="nav-chevron h-3.5 w-3.5 shrink-0 text-slate-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m9 6 6 6-6 6"/></svg>
+            </summary>
+            <div class="ml-4 mt-1 space-y-0.5 border-l border-white/5 pl-3">
+              
+              
+              <a href="../../etapa-2/descripcion/index.html"
+                 class="block rounded-lg px-3 py-1.5 text-[13px] font-medium transition
+                        text-slate-400 hover:bg-white/5 hover:text-white">
+                1. Descripción y requisitos de calidad
+              </a>
+              
+              
+              <a href="../../etapa-2/perfilamiento/index.html"
+                 class="block rounded-lg px-3 py-1.5 text-[13px] font-medium transition
+                        text-slate-400 hover:bg-white/5 hover:text-white">
+                2. Perfilamiento de datos
+              </a>
+              
+              
+              <a href="../../etapa-2/dimensiones/index.html"
+                 class="block rounded-lg px-3 py-1.5 text-[13px] font-medium transition
+                        text-slate-400 hover:bg-white/5 hover:text-white">
+                3. Dimensiones e inventario de problemas
+              </a>
+              
+              
+              <a href="../../etapa-2/tratamiento/index.html"
+                 class="block rounded-lg px-3 py-1.5 text-[13px] font-medium transition
+                        text-slate-400 hover:bg-white/5 hover:text-white">
+                4. Integración, homologación y tratamiento
+              </a>
+              
+            </div>
+          </details>
+          
+          <details class="group/sub" >
+            <summary class="flex items-center justify-between gap-2 rounded-lg py-1.5 pl-4 pr-3 text-sm font-semibold text-slate-200 hover:bg-white/5">
+              <span class="flex flex-col">
+                <span class="flex items-center gap-1.5">
+                  Etapa 3
+                  
+                  <span class="rounded-full bg-emerald-500/15 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-emerald-400">Completa</span>
+                  
+                </span>
+                <span class="text-[11px] font-normal text-slate-500">ETL y limpieza con SSIS</span>
+              </span>
+              <svg class="nav-chevron h-3.5 w-3.5 shrink-0 text-slate-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m9 6 6 6-6 6"/></svg>
+            </summary>
+            <div class="ml-4 mt-1 space-y-0.5 border-l border-white/5 pl-3">
+              
+              
+              <a href="../../etapa-3/resultados/index.html"
+                 class="block rounded-lg px-3 py-1.5 text-[13px] font-medium transition
+                        text-slate-400 hover:bg-white/5 hover:text-white">
+                1. Resultados de las 3 iteraciones
+              </a>
+              
+              
+              <a href="../../etapa-3/recursos/index.html"
+                 class="block rounded-lg px-3 py-1.5 text-[13px] font-medium transition
+                        text-slate-400 hover:bg-white/5 hover:text-white">
+                2. Informe tecnico y video
+              </a>
+              
+            </div>
+          </details>
+          
+          <details class="group/sub" >
+            <summary class="flex items-center justify-between gap-2 rounded-lg py-1.5 pl-4 pr-3 text-sm font-semibold text-slate-200 hover:bg-white/5">
+              <span class="flex flex-col">
+                <span class="flex items-center gap-1.5">
+                  Etapa 4
+                  
+                  <span class="rounded-full bg-emerald-500/15 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-emerald-400">Completa</span>
+                  
+                </span>
+                <span class="text-[11px] font-normal text-slate-500">Conocimiento evidente</span>
+              </span>
+              <svg class="nav-chevron h-3.5 w-3.5 shrink-0 text-slate-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m9 6 6 6-6 6"/></svg>
+            </summary>
+            <div class="ml-4 mt-1 space-y-0.5 border-l border-white/5 pl-3">
+              
+              
+              <a href="../../etapa-4/conocimiento/index.html"
+                 class="block rounded-lg px-3 py-1.5 text-[13px] font-medium transition
+                        text-slate-400 hover:bg-white/5 hover:text-white">
+                1. Conocimiento evidente
+              </a>
+              
+            </div>
+          </details>
+          
+          <details class="group/sub" open>
+            <summary class="flex items-center justify-between gap-2 rounded-lg py-1.5 pl-4 pr-3 text-sm font-semibold text-slate-200 hover:bg-white/5">
+              <span class="flex flex-col">
+                <span class="flex items-center gap-1.5">
+                  Etapa 5
+                  
+                  <span class="rounded-full bg-emerald-500/15 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-emerald-400">En desarrollo</span>
+                  
+                </span>
+                <span class="text-[11px] font-normal text-slate-500">Analisis multidimensional</span>
+              </span>
+              <svg class="nav-chevron h-3.5 w-3.5 shrink-0 text-slate-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m9 6 6 6-6 6"/></svg>
+            </summary>
+            <div class="ml-4 mt-1 space-y-0.5 border-l border-white/5 pl-3">
+              
+              
+              <a href="../index.html"
+                 class="block rounded-lg px-3 py-1.5 text-[13px] font-medium transition
+                        text-slate-400 hover:bg-white/5 hover:text-white">
+                Analisis multidimensional
+              </a>
+              
+              
+              <a href="../vista-1/index.html"
+                 class="block rounded-lg px-3 py-1.5 text-[13px] font-medium transition
+                        text-slate-400 hover:bg-white/5 hover:text-white">
+                Vista 1 - Territorio y tiempo
+              </a>
+              
+              
+              <a href="index.html"
+                 class="block rounded-lg px-3 py-1.5 text-[13px] font-medium transition
+                        bg-ember-600 text-white shadow shadow-ember-600/20">
+                Vista 2 - Tiempo y tamano
+              </a>
+              
+              
+              <a href="../vista-3/index.html"
+                 class="block rounded-lg px-3 py-1.5 text-[13px] font-medium transition
+                        text-slate-400 hover:bg-white/5 hover:text-white">
+                Vista 3 - Cobertura y territorio
+              </a>
+              
+              
+              <a href="../vista-4/index.html"
+                 class="block rounded-lg px-3 py-1.5 text-[13px] font-medium transition
+                        text-slate-400 hover:bg-white/5 hover:text-white">
+                Vista 4 - Causa y tamano
+              </a>
+              
+            </div>
+          </details>
+          
+        </div>
+      </details>
+      
+    </nav>
+
+    <div class="shrink-0 border-t border-white/5 p-4">
+      <p class="text-[11px] leading-relaxed text-slate-600">
+        Wildfire Data Mining · v0.1.0<br>Proyecto academico de Mineria de Datos
+      </p>
+    </div>
+  </aside>
+
+  <!-- ===================== COLUMNA PRINCIPAL ===================== -->
+  <div class="flex min-h-screen flex-col lg:pl-72">
+
+    <!-- Header -->
+    <header class="sticky top-0 z-20 flex h-16 shrink-0 items-center gap-3 border-b border-white/5 bg-ash-950/80 px-4 backdrop-blur-xl sm:px-6 lg:px-8">
+      <button id="btn-sidebar-toggle" type="button" aria-label="Abrir menu"
+              class="grid h-9 w-9 shrink-0 place-items-center rounded-lg text-slate-300 hover:bg-white/5 lg:hidden">
+        <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      </button>
+
+      
+      <nav aria-label="Breadcrumb" class="min-w-0 flex-1">
+        
+        <ol class="flex flex-wrap items-center gap-1.5 text-xs text-slate-500">
+          <li>Etapas del proyecto</li>
+          <li class="text-slate-700">/</li>
+          <li>Etapa 5</li>
+          <li class="text-slate-700">/</li>
+          <li class="font-semibold text-white">Vista 2 - Tiempo y tamano</li>
+        </ol>
+        
+      </nav>
+    </header>
+
+    <!-- Contenido -->
+    <main class="flex-1">
+      <div class="mx-auto max-w-5xl px-4 py-10 sm:px-6 lg:px-8">
+        
+<p class="text-xs font-semibold uppercase tracking-[0.2em] text-ember-400">Etapa 5 · Vista 2</p>
+<h1 class="mt-2 text-3xl font-extrabold tracking-tight text-white sm:text-4xl">Tiempo y tamaño</h1>
+<p class="mt-3 max-w-3xl text-sm text-slate-300">
+  <strong>Pregunta:</strong> ¿Cómo cambia, entre años y trimestres, la proporción de incendios grandes (más de 100 ha) y el área promedio por evento?
+</p>
+
+<section class="mt-6 rounded-xl border border-white/10 bg-white/5 p-4 text-sm text-slate-300">
+  <h2 class="font-bold text-white">Dimensiones, medidas y jerarquías usadas</h2>
+  <ul class="mt-2 list-disc space-y-1 pl-5">
+    <li><strong>Dimensiones:</strong> tiempo, tamaño y fuente. Filtros: territorio (región) y fuente (hoja de origen).</li>
+    <li><strong>Medidas:</strong> % de eventos grandes (eventos de más de 100 ha / eventos con área del grupo), hectáreas por evento (hectáreas / eventos con área), eventos y eventos con área.</li>
+    <li><strong>Jerarquías:</strong> año → trimestre → mes; hoja de origen → entidad que reporta.</li>
+    <li><strong>Denominador:</strong> los porcentajes y promedios usan solo los eventos con área del grupo; los 775 eventos sin área quedan fuera. Ambas medidas se recalculan en cada nivel: no se suman ni se promedian entre trimestres.</li>
+    <li><strong>Relación con la Etapa 4:</strong> allí la proporción de eventos de más de 100 ha por temporada se invertía en 2024 (5,5 % en julio-septiembre contra 2,8 % en enero-marzo) y se planteó como hipótesis un cambio en quién reporta. Aquí se compara el mismo trimestre entre años para ver si la inversión de 2024 es un caso aislado, y se usa la dimensión fuente para contrastar esa hipótesis.</li>
+  </ul>
+</section>
+
+<section id="v2-indicadores" class="mt-6 grid gap-4 md:grid-cols-3" aria-label="Indicadores"></section>
+
+<section class="mt-6 space-y-3">
+  <h2 class="text-lg font-bold text-white">Controles y operaciones</h2>
+  <div class="flex flex-wrap items-end gap-3">
+    <label class="text-xs font-semibold text-slate-400">Medida de la matriz
+      <select id="v2-medida" class="mt-1 block rounded-lg border border-white/20 bg-slate-900 px-2 py-1.5 text-xs text-slate-200">
+        <option value="eventos">Eventos</option>
+        <option value="eventos_con_area">Eventos con área</option>
+        <option value="pct_grandes">% de eventos grandes</option>
+        <option value="ha_por_evento">Hectáreas por evento</option>
+      </select>
+    </label>
+    <button type="button" data-ejemplo="inicial" class="rounded-lg border border-white/20 px-3 py-1.5 text-xs font-semibold text-slate-200 hover:bg-white/10">Vista inicial: año x tamaño</button>
+    <button type="button" data-ejemplo="slice2024" class="rounded-lg border border-white/20 px-3 py-1.5 text-xs font-semibold text-slate-200 hover:bg-white/10">Slice: año = 2024</button>
+    <button type="button" data-ejemplo="equivalentes" class="rounded-lg border border-white/20 px-3 py-1.5 text-xs font-semibold text-slate-200 hover:bg-white/10">Ejemplo: misma temporada entre años</button>
+    <button type="button" data-ejemplo="entidad2024" class="rounded-lg border border-white/20 px-3 py-1.5 text-xs font-semibold text-slate-200 hover:bg-white/10">Ejemplo: entidad que reporta en 2024</button>
+  </div>
+  <p class="text-xs text-slate-400">Roll-up: con filas en trimestre, usa "Roll-up filas" para volver a año. Pivot: intercambia filas y columnas y vuelve a ejecutar la consulta.</p>
+  <div id="v2-controles"><p class="text-sm text-slate-400">Cargando controles...</p></div>
+  <p id="v2-error" class="hidden rounded-lg border border-red-500/40 bg-red-500/10 p-3 text-sm text-red-200" role="alert"></p>
+</section>
+
+<section class="mt-6 grid gap-4 lg:grid-cols-2">
+  <article class="rounded-xl border border-white/10 bg-white/5 p-4">
+    <h2 id="v2-titulo-1" class="font-bold text-white">% de eventos grandes por año y temporada</h2>
+    <p class="mt-1 text-xs text-slate-400">Sin filtro de tiempo, cada línea compara la misma temporada entre años (periodos equivalentes). Con un filtro de tiempo, se muestran los trimestres seleccionados. Base: eventos con área de cada grupo.</p>
+    <div id="v2-grafica-1" class="mt-3"></div>
+    <p id="v2-interp-1" class="mt-3 text-sm text-slate-300"></p>
+  </article>
+  <article class="rounded-xl border border-white/10 bg-white/5 p-4">
+    <h2 id="v2-titulo-2" class="font-bold text-white">Hectáreas por evento según el año</h2>
+    <p class="mt-1 text-xs text-slate-400">Promedio recalculado en cada grupo: hectáreas / eventos con área.</p>
+    <div id="v2-grafica-2" class="mt-3"></div>
+    <p id="v2-interp-2" class="mt-3 text-sm text-slate-300"></p>
+  </article>
+</section>
+
+<section class="mt-6">
+  <h2 class="text-lg font-bold text-white">Matriz de resultados</h2>
+  <p class="mt-1 text-xs text-slate-400">Haz clic en un miembro de la primera columna para bajar un nivel (por ejemplo, de un año a sus trimestres). Pasa el cursor por una celda para ver sus denominadores.</p>
+  <p id="v2-aviso" class="mt-2 hidden rounded-lg border border-amber-500/40 bg-amber-500/10 p-2 text-xs text-amber-200"></p>
+  <div id="v2-matriz" class="mt-3"></div>
+  <p id="v2-interp-3" class="mt-3 text-sm text-slate-300"></p>
+</section>
+
+<section class="mt-8 space-y-3">
+  <h2 class="text-lg font-bold text-white">Conocimientos multidimensionales</h2>
+
+  <details class="rounded-xl border border-white/10 bg-white/5 p-4 text-sm text-slate-300" open>
+    <summary class="cursor-pointer font-bold text-white">1. La inversión de 2024 no es un caso aislado</summary>
+    <ul class="mt-3 space-y-2">
+      <li><strong>Pregunta:</strong> Al comparar la misma temporada entre años, ¿enero-marzo tiene siempre una proporción de incendios grandes mayor que julio-septiembre?</li>
+      <li><strong>Dimensiones y medidas:</strong> tiempo (año y temporada; enero-marzo equivale al trimestre 1 y julio-septiembre al trimestre 3) y tamaño; % de eventos grandes, con base en los eventos con área de cada año y temporada.</li>
+      <li><strong>Procedimiento:</strong> sin filtros, botón "Ejemplo: misma temporada entre años" (filas = año, columnas = temporada, medida = % de eventos grandes). Después, "Slice: año = 2024" para ver 2024 por trimestre.</li>
+      <li><strong>Evidencia:</strong> matriz año x temporada y gráfica de líneas por temporada.</li>
+      <li><strong>Hallazgo:</strong> en 12 de los 15 años enero-marzo tiene un % de grandes igual o mayor que julio-septiembre (por ejemplo, 2022: 12,1 %, 71 de 588, contra 5,1 %, 11 de 215). La relación se invierte en 2015 (3,4 % contra 4,0 %), 2023 (3,4 %, 49 de 1.448, contra 5,3 %, 54 de 1.028) y 2024 (2,8 %, 135 de 4.776, contra 5,5 %, 109 de 1.983).</li>
+      <li><strong>Interpretación:</strong> la inversión que la Etapa 4 vio en 2024 ya aparecía en 2023 y en 2015, así que no es un caso aislado. Lo nuevo frente al conocimiento evidente es comparar periodos equivalentes año por año, con el porcentaje recalculado para cada celda en vez de un agregado por temporada.</li>
+      <li><strong>Utilidad:</strong> indica que la preparación para incendios grandes no puede concentrarse solo en enero-marzo; en los últimos años julio-septiembre también exige atención.</li>
+      <li><strong>Limitación:</strong> 2010 tiene casi todo su reporte entre enero y marzo (2.269 de 2.322 eventos con área), y julio-septiembre de ese año solo tiene 13 eventos con área, por lo que su comparación es poco confiable. Los grupos pequeños hacen que el porcentaje cambie mucho con pocos eventos.</li>
+    </ul>
+  </details>
+
+  <details class="rounded-xl border border-white/10 bg-white/5 p-4 text-sm text-slate-300">
+    <summary class="cursor-pointer font-bold text-white">2. Dentro de una misma entidad también se invierte la proporción</summary>
+    <ul class="mt-3 space-y-2">
+      <li><strong>Pregunta:</strong> ¿La inversión de 2024 se explica por quién reporta?</li>
+      <li><strong>Dimensiones y medidas:</strong> fuente (hoja → entidad que reporta) y tiempo (temporada); % de eventos grandes, eventos con área.</li>
+      <li><strong>Procedimiento:</strong> botón "Ejemplo: entidad que reporta en 2024" (slice año = 2024; filas = entidad, columnas = temporada, medida = % de eventos grandes). Se lee la fila de UNGRD, que reporta 7.031 de los 7.786 eventos de la hoja 2024.</li>
+      <li><strong>Evidencia:</strong> matriz entidad x temporada para 2024 y matriz año x temporada.</li>
+      <li><strong>Hallazgo:</strong> solo dentro de UNGRD, el % de grandes es 3,0 % en enero-marzo (128 de 4.233 eventos con área) y 4,8 % en julio-septiembre (88 de 1.819). Además, la hoja 2023, que no tiene campo de entidad, ya muestra la misma inversión (3,4 % contra 5,3 %).</li>
+      <li><strong>Interpretación:</strong> si la inversión se debiera solo a una mezcla distinta de entidades, no aparecería dentro de una sola entidad. Por eso la hipótesis de la Etapa 4 (cambio en quién reporta) pierde fuerza como explicación única, aunque no se descarta: la entidad solo existe en 2024 y no se puede comparar con años anteriores. Es una asociación, no una causa.</li>
+      <li><strong>Utilidad:</strong> evita atribuir el cambio solo a la fuente y sugiere revisar también factores del propio periodo (hipótesis por comprobar).</li>
+      <li><strong>Limitación:</strong> las otras entidades tienen pocos eventos por temporada (CAM tiene 68 eventos con área en julio-septiembre), así que sus porcentajes no son comparables con los de UNGRD.</li>
+    </ul>
+  </details>
+</section>
+
+<section class="mt-6 grid gap-4 md:grid-cols-2 text-sm text-slate-300">
+  <article class="rounded-xl border border-white/10 bg-white/5 p-4">
+    <h2 class="font-bold text-white">Limitación</h2>
+    <p class="mt-2">La cantidad de eventos reportados cambia mucho entre años y hojas (1.003 eventos con área en 2022 contra 7.784 en 2024). Un reporte más amplio incluye más incendios pequeños y puede bajar el % de grandes sin que cambien los incendios. Por eso el promedio de hectáreas por evento de 2021 y 2022 (110,2 y 155,7 ha) no es directamente comparable con el de 2024 (39,7 ha). SQLite no calcula medianas, así que el promedio, muy sensible a pocos eventos enormes, no se complementa aquí con la mediana.</p>
+  </article>
+  <article class="rounded-xl border border-white/10 bg-white/5 p-4">
+    <h2 class="font-bold text-white">Posible decisión</h2>
+    <p class="mt-2">Mantener la capacidad de respuesta a incendios grandes también en julio-septiembre, no solo en enero-marzo, porque en 2023 y 2024 ese trimestre tuvo la mayor proporción de eventos de más de 100 ha. Antes de comparar años, pedir a las entidades un criterio de reporte común para que el aumento de eventos pequeños no oculte la tendencia.</p>
+  </article>
+</section>
+
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-white/5 bg-ash-950">
+      <div class="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
+        <div class="flex flex-col items-center justify-between gap-3 sm:flex-row">
+          <div class="flex items-center gap-2.5">
+            <span class="grid h-7 w-7 place-items-center rounded-lg bg-gradient-to-br from-ember-500 to-red-600">
+              <svg class="h-4 w-4 text-white" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2s4.5 4.2 4.5 8.2A4.5 4.5 0 0 1 12 15a4.5 4.5 0 0 1-4.5-4.8C7.5 6.2 12 2 12 2Z"/></svg>
+            </span>
+            <span class="text-sm font-bold text-white">Wildfire Data Mining</span>
+          </div>
+          <p class="text-xs text-slate-500">© <span id="year">2026</span> · Proyecto academico de Mineria de Datos · Uso investigativo</p>
+          <p class="text-xs text-slate-600">v0.1.0</p>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    (function () {
+      var sidebar = document.getElementById('sidebar');
+      var overlay = document.getElementById('sidebar-overlay');
+      var toggle = document.getElementById('btn-sidebar-toggle');
+
+      function openSidebar() {
+        sidebar.classList.remove('-translate-x-full');
+        overlay.classList.remove('hidden');
+      }
+      function closeSidebar() {
+        sidebar.classList.add('-translate-x-full');
+        overlay.classList.add('hidden');
+      }
+      toggle && toggle.addEventListener('click', function () {
+        sidebar.classList.contains('-translate-x-full') ? openSidebar() : closeSidebar();
+      });
+      overlay && overlay.addEventListener('click', closeSidebar);
+
+      var yearEl = document.getElementById('year');
+      if (yearEl) { yearEl.textContent = new Date().getFullYear(); }
+    })();
+  </script>
+  
+<script>
+  window.OLAP_MODE = "sqljs";
+  window.OLAP_CONFIG = {
+    catalogo: "../../static/olap/consultas.json",
+    base: "../../static/olap/incendios_dw.db",
+    api: null
+  };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.10.3/sql-wasm.js"></script>
+
+<script src="../../static/js/olap.js"></script>
+
+<script src="../../static/js/olap_vista2.js"></script>
+
+
+</body>
+</html>

@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Etapa 5 - Analisis multidimensional de los incendios de cobertura vegetal con un modelo estrella y consultas interactivas.">
+  <title>Analisis multidimensional · Wildfire Data Mining</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            ember: { 400: '#fb923c', 500: '#f97316', 600: '#ea580c', 700: '#c2410c' },
+            ash:   { 800: '#1e293b', 900: '#0f172a', 950: '#020617' }
+          },
+          fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] },
+          keyframes: {
+            'fade-up': { '0%': { opacity: 0, transform: 'translateY(8px)' }, '100%': { opacity: 1, transform: 'translateY(0)' } }
+          },
+          animation: { 'fade-up': 'fade-up .4s ease-out both' }
+        }
+      }
+    };
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../static/css/styles.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔥</text></svg>">
+  <style>
+    details > summary { list-style: none; cursor: pointer; }
+    details > summary::-webkit-details-marker { display: none; }
+    details[open] > summary .nav-chevron { transform: rotate(90deg); }
+    .nav-chevron { transition: transform .15s ease; }
+    #sidebar { transition: transform .2s ease; }
+  </style>
+</head>
+
+<body class="min-h-screen bg-ash-950 font-sans text-slate-200 antialiased selection:bg-ember-500/30">
+
+  <!-- ===================== SIDEBAR OVERLAY (movil) ===================== -->
+  <div id="sidebar-overlay" class="fixed inset-0 z-30 hidden bg-black/60 lg:hidden"></div>
+
+  <!-- ===================== SIDEBAR ===================== -->
+  <aside id="sidebar"
+         class="fixed inset-y-0 left-0 z-40 flex w-72 -translate-x-full flex-col border-r border-white/5 bg-ash-900/95 backdrop-blur-xl lg:translate-x-0">
+    <div class="flex h-16 shrink-0 items-center gap-3 border-b border-white/5 px-5">
+      <a href="../index.html" class="flex items-center gap-3">
+        <span class="grid h-9 w-9 place-items-center rounded-xl bg-gradient-to-br from-ember-500 to-red-600 shadow-lg shadow-ember-600/30">
+          <svg class="h-5 w-5 text-white" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M12 2s4.5 4.2 4.5 8.2A4.5 4.5 0 0 1 12 15a4.5 4.5 0 0 1-4.5-4.8C7.5 6.2 12 2 12 2Zm0 20c-3.9 0-7-2.6-7-6 0 0 1.6 1.6 3.1 1.6 0 0-1-3.4 1.4-6.3 0 2.4 1.6 3.4 2.5 4.3 1.2 1.2 1.5 2.6 1.1 4.1 1.4-.3 2.6-1.6 2.9-3.2 1 1.1 1.5 2.4 1.5 3.5 0 3.4-3.1 6-6.5 6Z"/>
+          </svg>
+        </span>
+        <span class="leading-tight">
+          <span class="block text-sm font-extrabold tracking-tight text-white">Wildfire Data Mining</span>
+          <span class="block text-[11px] text-slate-500">Analisis predictivo de incendios forestales</span>
+        </span>
+      </a>
+    </div>
+
+    <nav class="flex-1 space-y-1 overflow-y-auto px-3 py-4" aria-label="Modulos del proyecto">
+      <a href="../index.html"
+         class="flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-medium transition
+                text-slate-300 hover:bg-white/5 hover:text-white">
+        <svg class="h-4 w-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M3 11.5 12 4l9 7.5"/><path d="M5 10v9a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1v-9"/>
+        </svg>
+        Inicio
+      </a>
+
+      
+      <details class="mt-2 group" open>
+        <summary class="flex items-center justify-between gap-2 rounded-lg px-3 py-2 text-xs font-bold uppercase tracking-wider text-slate-400 hover:bg-white/5 hover:text-white">
+          <span class="flex items-center gap-2.5">
+            <svg class="h-4 w-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/>
+              <rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>
+            </svg>
+            Etapas del proyecto
+          </span>
+          <svg class="nav-chevron h-3.5 w-3.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m9 6 6 6-6 6"/></svg>
+        </summary>
+
+        <div class="mt-1 space-y-1 pl-2">
+          
+          <details class="group/sub" >
+            <summary class="flex items-center justify-between gap-2 rounded-lg py-1.5 pl-4 pr-3 text-sm font-semibold text-slate-200 hover:bg-white/5">
+              <span class="flex flex-col">
+                <span class="flex items-center gap-1.5">
+                  Etapa 1
+                  
+                  <span class="rounded-full bg-emerald-500/15 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-emerald-400">Completa</span>
+                  
+                </span>
+                <span class="text-[11px] font-normal text-slate-500">Del problema a los datos</span>
+              </span>
+              <svg class="nav-chevron h-3.5 w-3.5 shrink-0 text-slate-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m9 6 6 6-6 6"/></svg>
+            </summary>
+            <div class="ml-4 mt-1 space-y-0.5 border-l border-white/5 pl-3">
+              
+              
+              <a href="../etapa-1/problema/index.html"
+                 class="block rounded-lg px-3 py-1.5 text-[13px] font-medium transition
+                        text-slate-400 hover:bg-white/5 hover:text-white">
+                1. Problema y contexto
+              </a>
+              
+              
+              <a href="../etapa-1/preguntas/index.html"
+                 class="block rounded-lg px-3 py-1.5 text-[13px] font-medium transition
+                        text-slate-400 hover:bg-white/5 hover:text-white">
+                2. Pregunta principal y secundarias
+              </a>
+              
+              
+              <a href="../etapa-1/necesidades/index.html"
+                 class="block rounded-lg px-3 py-1.5 text-[13px] font-medium transition
+                        text-slate-400 hover:bg-white/5 hover:text-white">
+                3. Necesidades de informacion
+              </a>
+              
+              
+              <a href="../etapa-1/fuentes/index.html"
+                 class="block rounded-lg px-3 py-1.5 text-[13px] font-medium transition
+                        text-slate-400 hover:bg-white/5 hover:text-white">
+                4. Fuentes de datos
+              </a>
+              
+              
+              <a href="../etapa-1/dataset/index.html"
+                 class="block rounded-lg px-3 py-1.5 text-[13px] font-medium transition
+                        text-slate-400 hover:bg-white/5 hover:text-white">
+                5. Dataset
+              </a>
+              
+              
+              <a href="../etapa-1/diccionario/index.html"
+                 class="block rounded-lg px-3 py-1.5 text-[13px] font-medium transition
+                        text-slate-400 hover:bg-white/5 hover:text-white">
+                6. Diccionario de datos
+              </a>
+              
+              
+              <a href="../etapa-1/calidad/index.html"
+                 class="block rounded-lg px-3 py-1.5 text-[13px] font-medium transition
+                        text-slate-400 hover:bg-white/5 hover:text-white">
+                7. Calidad inicial de los datos
+              </a>
+              
+              
+              <a href="../etapa-1/limitaciones/index.html"
+                 class="block rounded-lg px-3 py-1.5 text-[13px] font-medium transition
+                        text-slate-400 hover:bg-white/5 hover:text-white">
+                8. Limitaciones y consideraciones
+              </a>
+              
+              <div class="my-1.5 border-t border-dashed border-white/10"></div>
+              <a href="../etapa-1/tareas/index.html"
+                 class="block rounded-lg px-3 py-1.5 text-[13px] font-medium transition
+                        text-slate-400 hover:bg-white/5 hover:text-white">
+                Equipo y tareas
+              </a>
+              
+            </div>
+          </details>
+          
+          <details class="group/sub" >
+            <summary class="flex items-center justify-between gap-2 rounded-lg py-1.5 pl-4 pr-3 text-sm font-semibold text-slate-200 hover:bg-white/5">
+              <span class="flex flex-col">
+                <span class="flex items-center gap-1.5">
+                  Etapa 2
+                  
+                  <span class="rounded-full bg-emerald-500/15 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-emerald-400">Completa</span>
+                  
+                </span>
+                <span class="text-[11px] font-normal text-slate-500">Calidad de datos</span>
+              </span>
+              <svg class="nav-chevron h-3.5 w-3.5 shrink-0 text-slate-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m9 6 6 6-6 6"/></svg>
+            </summary>
+            <div class="ml-4 mt-1 space-y-0.5 border-l border-white/5 pl-3">
+              
+              
+              <a href="../etapa-2/descripcion/index.html"
+                 class="block rounded-lg px-3 py-1.5 text-[13px] font-medium transition
+                        text-slate-400 hover:bg-white/5 hover:text-white">
+                1. Descripción y requisitos de calidad
+              </a>
+              
+              
+              <a href="../etapa-2/perfilamiento/index.html"
+                 class="block rounded-lg px-3 py-1.5 text-[13px] font-medium transition
+                        text-slate-400 hover:bg-white/5 hover:text-white">
+                2. Perfilamiento de datos
+              </a>
+              
+              
+              <a href="../etapa-2/dimensiones/index.html"
+                 class="block rounded-lg px-3 py-1.5 text-[13px] font-medium transition
+                        text-slate-400 hover:bg-white/5 hover:text-white">
+                3. Dimensiones e inventario de problemas
+              </a>
+              
+              
+              <a href="../etapa-2/tratamiento/index.html"
+                 class="block rounded-lg px-3 py-1.5 text-[13px] font-medium transition
+                        text-slate-400 hover:bg-white/5 hover:text-white">
+                4. Integración, homologación y tratamiento
+              </a>
+              
+            </div>
+          </details>
+          
+          <details class="group/sub" >
+            <summary class="flex items-center justify-between gap-2 rounded-lg py-1.5 pl-4 pr-3 text-sm font-semibold text-slate-200 hover:bg-white/5">
+              <span class="flex flex-col">
+                <span class="flex items-center gap-1.5">
+                  Etapa 3
+                  
+                  <span class="rounded-full bg-emerald-500/15 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-emerald-400">Completa</span>
+                  
+                </span>
+                <span class="text-[11px] font-normal text-slate-500">ETL y limpieza con SSIS</span>
+              </span>
+              <svg class="nav-chevron h-3.5 w-3.5 shrink-0 text-slate-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m9 6 6 6-6 6"/></svg>
+            </summary>
+            <div class="ml-4 mt-1 space-y-0.5 border-l border-white/5 pl-3">
+              
+              
+              <a href="../etapa-3/resultados/index.html"
+                 class="block rounded-lg px-3 py-1.5 text-[13px] font-medium transition
+                        text-slate-400 hover:bg-white/5 hover:text-white">
+                1. Resultados de las 3 iteraciones
+              </a>
+              
+              
+              <a href="../etapa-3/recursos/index.html"
+                 class="block rounded-lg px-3 py-1.5 text-[13px] font-medium transition
+                        text-slate-400 hover:bg-white/5 hover:text-white">
+                2. Informe tecnico y video
+              </a>
+              
+            </div>
+          </details>
+          
+          <details class="group/sub" >
+            <summary class="flex items-center justify-between gap-2 rounded-lg py-1.5 pl-4 pr-3 text-sm font-semibold text-slate-200 hover:bg-white/5">
+              <span class="flex flex-col">
+                <span class="flex items-center gap-1.5">
+                  Etapa 4
+                  
+                  <span class="rounded-full bg-emerald-500/15 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-emerald-400">Completa</span>
+                  
+                </span>
+                <span class="text-[11px] font-normal text-slate-500">Conocimiento evidente</span>
+              </span>
+              <svg class="nav-chevron h-3.5 w-3.5 shrink-0 text-slate-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m9 6 6 6-6 6"/></svg>
+            </summary>
+            <div class="ml-4 mt-1 space-y-0.5 border-l border-white/5 pl-3">
+              
+              
+              <a href="../etapa-4/conocimiento/index.html"
+                 class="block rounded-lg px-3 py-1.5 text-[13px] font-medium transition
+                        text-slate-400 hover:bg-white/5 hover:text-white">
+                1. Conocimiento evidente
+              </a>
+              
+            </div>
+          </details>
+          
+          <details class="group/sub" open>
+            <summary class="flex items-center justify-between gap-2 rounded-lg py-1.5 pl-4 pr-3 text-sm font-semibold text-slate-200 hover:bg-white/5">
+              <span class="flex flex-col">
+                <span class="flex items-center gap-1.5">
+                  Etapa 5
+                  
+                  <span class="rounded-full bg-emerald-500/15 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-emerald-400">En desarrollo</span>
+                  
+                </span>
+                <span class="text-[11px] font-normal text-slate-500">Analisis multidimensional</span>
+              </span>
+              <svg class="nav-chevron h-3.5 w-3.5 shrink-0 text-slate-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m9 6 6 6-6 6"/></svg>
+            </summary>
+            <div class="ml-4 mt-1 space-y-0.5 border-l border-white/5 pl-3">
+              
+              
+              <a href="index.html"
+                 class="block rounded-lg px-3 py-1.5 text-[13px] font-medium transition
+                        bg-ember-600 text-white shadow shadow-ember-600/20">
+                Analisis multidimensional
+              </a>
+              
+              
+              <a href="vista-1/index.html"
+                 class="block rounded-lg px-3 py-1.5 text-[13px] font-medium transition
+                        text-slate-400 hover:bg-white/5 hover:text-white">
+                Vista 1 - Territorio y tiempo
+              </a>
+              
+              
+              <a href="vista-2/index.html"
+                 class="block rounded-lg px-3 py-1.5 text-[13px] font-medium transition
+                        text-slate-400 hover:bg-white/5 hover:text-white">
+                Vista 2 - Tiempo y tamano
+              </a>
+              
+              
+              <a href="vista-3/index.html"
+                 class="block rounded-lg px-3 py-1.5 text-[13px] font-medium transition
+                        text-slate-400 hover:bg-white/5 hover:text-white">
+                Vista 3 - Cobertura y territorio
+              </a>
+              
+              
+              <a href="vista-4/index.html"
+                 class="block rounded-lg px-3 py-1.5 text-[13px] font-medium transition
+                        text-slate-400 hover:bg-white/5 hover:text-white">
+                Vista 4 - Causa y tamano
+              </a>
+              
+            </div>
+          </details>
+          
+        </div>
+      </details>
+      
+    </nav>
+
+    <div class="shrink-0 border-t border-white/5 p-4">
+      <p class="text-[11px] leading-relaxed text-slate-600">
+        Wildfire Data Mining · v0.1.0<br>Proyecto academico de Mineria de Datos
+      </p>
+    </div>
+  </aside>
+
+  <!-- ===================== COLUMNA PRINCIPAL ===================== -->
+  <div class="flex min-h-screen flex-col lg:pl-72">
+
+    <!-- Header -->
+    <header class="sticky top-0 z-20 flex h-16 shrink-0 items-center gap-3 border-b border-white/5 bg-ash-950/80 px-4 backdrop-blur-xl sm:px-6 lg:px-8">
+      <button id="btn-sidebar-toggle" type="button" aria-label="Abrir menu"
+              class="grid h-9 w-9 shrink-0 place-items-center rounded-lg text-slate-300 hover:bg-white/5 lg:hidden">
+        <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      </button>
+
+      
+      <nav aria-label="Breadcrumb" class="min-w-0 flex-1">
+        
+        <ol class="flex flex-wrap items-center gap-1.5 text-xs text-slate-500">
+          <li>Etapas del proyecto</li>
+          <li class="text-slate-700">/</li>
+          <li>Etapa 5</li>
+          <li class="text-slate-700">/</li>
+          <li class="font-semibold text-white">Analisis multidimensional</li>
+        </ol>
+        
+      </nav>
+    </header>
+
+    <!-- Contenido -->
+    <main class="flex-1">
+      <div class="mx-auto max-w-5xl px-4 py-10 sm:px-6 lg:px-8">
+        
+
+<p class="text-xs font-semibold uppercase tracking-[0.2em] text-ember-400">Etapa 5</p>
+<h1 class="mt-2 text-3xl font-extrabold tracking-tight text-white sm:text-4xl">Análisis multidimensional</h1>
+<p class="mt-3 max-w-3xl text-sm text-slate-400">
+  Esta etapa profundiza el conocimiento evidente de la Etapa 4 con un modelo estrella del
+  mismo dataset: cuatro vistas interactivas que combinan dimensiones y medidas, con
+  consultas que se ejecutan de verdad (no capturas) tanto en local como en el sitio
+  publicado en GitHub Pages.
+</p>
+
+<!-- ===================== FUENTE Y PERIODO ===================== -->
+<section class="mt-8 rounded-2xl border border-white/10 bg-ash-900/60 p-6 shadow-xl">
+  <h2 class="text-sm font-bold uppercase tracking-wider text-white">Fuente de los datos y periodo analizado</h2>
+  <dl class="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+    <div>
+      <dt class="text-xs uppercase tracking-wider text-slate-500">Fuente</dt>
+      <dd class="mt-1 text-sm text-slate-200">Base de Datos de Incendios de la Cobertura Vegetal (BD-ICV), IDEAM</dd>
+    </div>
+    <div>
+      <dt class="text-xs uppercase tracking-wider text-slate-500">Periodo analizado</dt>
+      <dd class="mt-1 text-sm text-slate-200">2010 - 2024</dd>
+    </div>
+    <div>
+      <dt class="text-xs uppercase tracking-wider text-slate-500">Eventos en el modelo</dt>
+      <dd class="mt-1 text-sm text-slate-200">35.355 (datos tratados en la Etapa 2)</dd>
+    </div>
+    <div>
+      <dt class="text-xs uppercase tracking-wider text-slate-500">Dónde está la base</dt>
+      <dd class="mt-1 text-sm text-slate-200"><code class="font-mono">data/warehouse/incendios_dw.db</code> (SQLite)</dd>
+    </div>
+  </dl>
+  <div class="mt-4 flex flex-col gap-2 sm:flex-row sm:gap-6">
+    <a href="https://ideam.gov.co/nuestra-entidad/ecosistemas-e-informacion-ambiental/incendios-de-la-cobertura-vegetal/base-de-datos-de-eventos-de-incendios-de-la" target="_blank" rel="noopener" class="text-sm text-ember-400 hover:underline">Fuente original de los datos (IDEAM) →</a>
+    <a href="../etapa-2/tratamiento/index.html" class="text-sm text-ember-400 hover:underline">Tratamiento previo de los datos (Etapa 2) →</a>
+    <a href="https://github.com/sgora96/wildfire-data-mining/tree/main/sql" target="_blank" rel="noopener" class="text-sm text-ember-400 hover:underline">Scripts de creación y carga (sql/, scripts/etl/) →</a>
+  </div>
+</section>
+
+<!-- ===================== RELACION CON LA ETAPA 4 ===================== -->
+<section class="mt-6 rounded-2xl border border-white/10 bg-ash-900/60 p-6 shadow-xl">
+  <h2 class="text-base font-bold text-white">Relación con los conocimientos evidentes (Etapa 4)</h2>
+  <p class="mt-3 text-sm text-slate-300">
+    La Etapa 4 contó y comparó variables por separado (tamaño, cobertura, causa, departamento,
+    tiempo) en cuatro tableros de Power BI. Esta etapa profundiza esos mismos hallazgos
+    cruzando varias dimensiones a la vez con un modelo estrella: no solo cuántos eventos hay de
+    cada tipo, sino cómo se relacionan el territorio, el tiempo, el tamaño, la causa y la
+    cobertura entre sí, y qué cambia al bajar de nivel (de región a municipio, de año a mes).
+  </p>
+  <p class="mt-3 text-sm text-slate-300">
+    Ejemplos concretos: la matriz departamento x temporada de la Etapa 4 (8 departamentos) se
+    profundiza en la <a href="vista-1/index.html" class="text-ember-400 hover:underline">Vista 1</a>
+    con la jerarquía completa región → departamento → municipio; la proporción de incendios
+    grandes por temporada se profundiza en la <a href="vista-2/index.html" class="text-ember-400 hover:underline">Vista 2</a>
+    comparando el mismo trimestre entre los 15 años; el 71,2 % de cobertura "sin determinar" se
+    profundiza en la <a href="vista-3/index.html" class="text-ember-400 hover:underline">Vista 3</a>
+    por región; y el conteo simple de causas se profundiza en la <a href="vista-4/index.html" class="text-ember-400 hover:underline">Vista 4</a>
+    cruzando causa con tamaño.
+  </p>
+  <a href="../etapa-4/conocimiento/index.html" class="mt-3 inline-block text-sm text-ember-400 hover:underline">Ver el conocimiento evidente de la Etapa 4 →</a>
+</section>
+
+<!-- ===================== DIAGRAMA DEL MODELO ===================== -->
+<section class="mt-6 rounded-2xl border border-white/10 bg-ash-900/60 p-6 shadow-xl">
+  <h2 class="text-base font-bold text-white">Modelo estrella</h2>
+  <p class="mt-3 text-sm text-slate-300">
+    Una tabla de hechos (<code class="font-mono">fact_incendio</code>) con una fila por evento
+    de incendio reportado, y seis dimensiones alrededor. Cada columna <code class="font-mono">*_key</code>
+    de los hechos es una clave foránea hacia la clave primaria de su dimensión.
+  </p>
+  <div class="mt-4 overflow-x-auto">
+    <svg viewBox="0 0 800 600" class="mx-auto w-full max-w-3xl" role="img" aria-label="Diagrama del modelo estrella: fact_incendio en el centro, rodeada de seis dimensiones">
+      <!-- Lineas de relacion (hechos -> dimension) -->
+      <g stroke="#475569" stroke-width="2">
+        <line x1="400" y1="270" x2="150" y2="110" />
+        <line x1="400" y1="260" x2="400" y2="90" />
+        <line x1="400" y1="270" x2="650" y2="110" />
+        <line x1="400" y1="330" x2="150" y2="510" />
+        <line x1="400" y1="340" x2="400" y2="530" />
+        <line x1="400" y1="330" x2="650" y2="510" />
+      </g>
+      <!-- Etiquetas de las claves foraneas -->
+      <g fill="#94a3b8" font-size="11" font-family="monospace">
+        <text x="250" y="175">tiempo_key</text>
+        <text x="410" y="175">territorio_key</text>
+        <text x="530" y="175">tamano_key</text>
+        <text x="250" y="445">causa_key</text>
+        <text x="410" y="445">cobertura_key</text>
+        <text x="530" y="445">fuente_key</text>
+      </g>
+      <!-- Tabla de hechos (centro) -->
+      <rect x="310" y="250" width="180" height="100" rx="10" fill="#7c2d12" stroke="#ea580c" stroke-width="2" />
+      <text x="400" y="278" text-anchor="middle" fill="#fff" font-size="14" font-weight="bold">fact_incendio</text>
+      <text x="400" y="298" text-anchor="middle" fill="#fed7aa" font-size="10">PK id_evento</text>
+      <text x="400" y="314" text-anchor="middle" fill="#fed7aa" font-size="10">6 FK + n_eventos</text>
+      <text x="400" y="330" text-anchor="middle" fill="#fed7aa" font-size="10">area_total_ha, con_area</text>
+      <!-- Dimensiones -->
+      <g font-family="sans-serif">
+        <rect x="40" y="40" width="200" height="70" rx="8" fill="#0f172a" stroke="#334155" stroke-width="2" />
+        <text x="140" y="65" text-anchor="middle" fill="#fff" font-size="13" font-weight="bold">dim_tiempo</text>
+        <text x="140" y="83" text-anchor="middle" fill="#94a3b8" font-size="10">anio, trimestre, mes</text>
+        <text x="140" y="98" text-anchor="middle" fill="#94a3b8" font-size="10">196 filas</text>
+
+        <rect x="300" y="20" width="200" height="70" rx="8" fill="#0f172a" stroke="#334155" stroke-width="2" />
+        <text x="400" y="45" text-anchor="middle" fill="#fff" font-size="13" font-weight="bold">dim_territorio</text>
+        <text x="400" y="63" text-anchor="middle" fill="#94a3b8" font-size="10">region, departamento, municipio</text>
+        <text x="400" y="78" text-anchor="middle" fill="#94a3b8" font-size="10">1.058 filas</text>
+
+        <rect x="560" y="40" width="200" height="70" rx="8" fill="#0f172a" stroke="#334155" stroke-width="2" />
+        <text x="660" y="65" text-anchor="middle" fill="#fff" font-size="13" font-weight="bold">dim_tamano</text>
+        <text x="660" y="83" text-anchor="middle" fill="#94a3b8" font-size="10">clase, orden, es_grande</text>
+        <text x="660" y="98" text-anchor="middle" fill="#94a3b8" font-size="10">5 filas</text>
+
+        <rect x="40" y="510" width="200" height="70" rx="8" fill="#0f172a" stroke="#334155" stroke-width="2" />
+        <text x="140" y="535" text-anchor="middle" fill="#fff" font-size="13" font-weight="bold">dim_causa</text>
+        <text x="140" y="553" text-anchor="middle" fill="#94a3b8" font-size="10">registro, causa</text>
+        <text x="140" y="568" text-anchor="middle" fill="#94a3b8" font-size="10">8 filas</text>
+
+        <rect x="300" y="530" width="200" height="70" rx="8" fill="#0f172a" stroke="#334155" stroke-width="2" />
+        <text x="400" y="555" text-anchor="middle" fill="#fff" font-size="13" font-weight="bold">dim_cobertura</text>
+        <text x="400" y="573" text-anchor="middle" fill="#94a3b8" font-size="10">grupo_cobertura, tipo_cobertura</text>
+        <text x="400" y="588" text-anchor="middle" fill="#94a3b8" font-size="10">13 filas</text>
+
+        <rect x="560" y="510" width="200" height="70" rx="8" fill="#0f172a" stroke="#334155" stroke-width="2" />
+        <text x="660" y="535" text-anchor="middle" fill="#fff" font-size="13" font-weight="bold">dim_fuente</text>
+        <text x="660" y="553" text-anchor="middle" fill="#94a3b8" font-size="10">hoja, periodo_hoja, entidad</text>
+        <text x="660" y="568" text-anchor="middle" fill="#94a3b8" font-size="10">23 filas</text>
+      </g>
+    </svg>
+  </div>
+  <p class="mt-4 text-sm text-slate-300">
+    <strong>Granularidad:</strong> una fila de hechos por evento de incendio reportado
+    (<code class="font-mono">id_evento</code>, 1 a 35.355, en el orden del CSV tratado).
+    Se eligió el evento como granularidad para que ninguna dimensión multiplique filas: un
+    evento con varias causas o varias coberturas no se repite, se asigna a un miembro especial
+    ("Mas de una causa", "Mas de un tipo de cobertura"). Un JOIN de los hechos con las seis
+    dimensiones devuelve exactamente 35.355 filas (verificado).
+  </p>
+  <a href="https://github.com/sgora96/wildfire-data-mining/blob/main/docs/olap/modelo_estrella.md" target="_blank" rel="noopener" class="mt-3 inline-block text-sm text-ember-400 hover:underline">Diagrama Mermaid y diccionario completo →</a>
+</section>
+
+<!-- ===================== DIMENSIONES, MEDIDAS Y JERARQUIAS ===================== -->
+<section class="mt-6 rounded-2xl border border-white/10 bg-ash-900/60 p-6 shadow-xl">
+  <h2 class="text-base font-bold text-white">Dimensiones, medidas y jerarquías</h2>
+
+  <h3 class="mt-4 text-sm font-semibold uppercase tracking-wider text-slate-400">Dimensiones (6)</h3>
+  <ul class="mt-2 grid grid-cols-1 gap-2 text-sm text-slate-300 sm:grid-cols-2">
+    <li><strong>Tiempo:</strong> año, trimestre, mes, temporada.</li>
+    <li><strong>Territorio:</strong> región, departamento, municipio (par departamento-municipio, por los homónimos).</li>
+    <li><strong>Tamaño:</strong> clase de área ("Sin dato", "&lt;= 1 ha" … "&gt; 100 ha").</li>
+    <li><strong>Causa:</strong> registrada (1 causa), "Mas de una causa" o "Sin causa registrada".</li>
+    <li><strong>Cobertura:</strong> grupo y tipo de cobertura afectada.</li>
+    <li><strong>Fuente:</strong> hoja de origen del dato y entidad que reporta.</li>
+  </ul>
+
+  <h3 class="mt-5 text-sm font-semibold uppercase tracking-wider text-slate-400">Medidas (todas en SQL sobre fact_incendio)</h3>
+  <div class="mt-2 overflow-x-auto">
+    <table class="min-w-[640px] w-full text-left text-sm">
+      <thead class="bg-white/5 text-slate-400"><tr><th class="px-3 py-2">Medida</th><th class="px-3 py-2">Unidad</th><th class="px-3 py-2">¿Suma entre grupos?</th><th class="px-3 py-2">Significado</th></tr></thead>
+      <tbody class="divide-y divide-white/5 text-slate-300">
+        <tr><td class="px-3 py-2 font-mono">eventos</td><td class="px-3 py-2">eventos</td><td class="px-3 py-2 text-emerald-400">Sí</td><td class="px-3 py-2">Conteo de eventos reportados.</td></tr>
+        <tr><td class="px-3 py-2 font-mono">hectareas</td><td class="px-3 py-2">ha</td><td class="px-3 py-2 text-emerald-400">Sí</td><td class="px-3 py-2">Suma de hectáreas; ignora los nulos.</td></tr>
+        <tr><td class="px-3 py-2 font-mono">eventos_con_area</td><td class="px-3 py-2">eventos</td><td class="px-3 py-2 text-emerald-400">Sí</td><td class="px-3 py-2">Eventos con área informada; denominador de los indicadores de tamaño.</td></tr>
+        <tr><td class="px-3 py-2 font-mono">ha_por_evento</td><td class="px-3 py-2">ha/evento</td><td class="px-3 py-2 text-amber-400">No, se recalcula</td><td class="px-3 py-2">Hectáreas ÷ eventos con área del grupo.</td></tr>
+        <tr><td class="px-3 py-2 font-mono">pct_grandes</td><td class="px-3 py-2">%</td><td class="px-3 py-2 text-amber-400">No, se recalcula</td><td class="px-3 py-2">% de eventos de más de 100 ha; denominador: eventos con área del grupo.</td></tr>
+        <tr><td class="px-3 py-2 font-mono">pct_total</td><td class="px-3 py-2">%</td><td class="px-3 py-2 text-amber-400">No, se recalcula</td><td class="px-3 py-2">Participación del grupo sobre el total de la consulta.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3 class="mt-5 text-sm font-semibold uppercase tracking-wider text-slate-400">Jerarquías (mínimo 2 exigidas, aquí hay 5)</h3>
+  <ul class="mt-2 list-disc space-y-1 pl-5 text-sm text-slate-300">
+    <li>Tiempo: año → trimestre → mes (principal).</li>
+    <li>Territorio: región → departamento → municipio (principal).</li>
+    <li>Cobertura: grupo → tipo (agrupación propia del equipo).</li>
+    <li>Causa: registro → causa.</li>
+    <li>Fuente: hoja → entidad.</li>
+  </ul>
+  <a href="https://github.com/sgora96/wildfire-data-mining/blob/main/docs/olap/modelo_estrella.md" target="_blank" rel="noopener" class="mt-3 inline-block text-sm text-ember-400 hover:underline">Diccionario de datos completo (todas las columnas) →</a>
+</section>
+
+<!-- ===================== LAS 4 VISTAS ===================== -->
+<section class="mt-6">
+  <h2 class="text-base font-bold text-white">Las cuatro vistas</h2>
+  <div class="mt-4 grid grid-cols-1 gap-5 md:grid-cols-2">
+
+    <article class="rounded-2xl border border-white/10 bg-ash-900/60 p-6 shadow-xl">
+      <p class="text-xs font-semibold uppercase tracking-wider text-ember-400">Vista 1 · Territorio y tiempo</p>
+      <p class="mt-3 text-sm text-slate-200">¿Cómo se distribuyen las hectáreas quemadas entre regiones, departamentos y municipios, y cómo cambia esa distribución por trimestre y por año?</p>
+      <a href="vista-1/index.html" class="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-ember-400 hover:underline">Ver Vista 1 →</a>
+    </article>
+
+    <article class="rounded-2xl border border-white/10 bg-ash-900/60 p-6 shadow-xl">
+      <p class="text-xs font-semibold uppercase tracking-wider text-ember-400">Vista 2 · Tiempo y tamaño</p>
+      <p class="mt-3 text-sm text-slate-200">¿Cómo cambia, entre años y trimestres, la proporción de incendios grandes (más de 100 ha) y el área promedio por evento?</p>
+      <a href="vista-2/index.html" class="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-ember-400 hover:underline">Ver Vista 2 →</a>
+    </article>
+
+    <article class="rounded-2xl border border-white/10 bg-ash-900/60 p-6 shadow-xl">
+      <p class="text-xs font-semibold uppercase tracking-wider text-ember-400">Vista 3 · Cobertura y territorio</p>
+      <p class="mt-3 text-sm text-slate-200">¿Qué grupos y tipos de cobertura concentran las hectáreas en cada región y cuánta área queda sin cobertura informada?</p>
+      <a href="vista-3/index.html" class="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-ember-400 hover:underline">Ver Vista 3 →</a>
+    </article>
+
+    <article class="rounded-2xl border border-white/10 bg-ash-900/60 p-6 shadow-xl">
+      <p class="text-xs font-semibold uppercase tracking-wider text-ember-400">Vista 4 · Causa y tamaño</p>
+      <p class="mt-3 text-sm text-slate-200">¿Qué causas registradas se asocian con incendios más grandes y cómo varía esa asociación entre regiones?</p>
+      <a href="vista-4/index.html" class="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-ember-400 hover:underline">Ver Vista 4 →</a>
+    </article>
+
+  </div>
+</section>
+
+<!-- ===================== LAS 5 OPERACIONES ===================== -->
+<section class="mt-6 rounded-2xl border border-white/10 bg-ash-900/60 p-6 shadow-xl">
+  <h2 class="text-base font-bold text-white">Las cinco operaciones multidimensionales</h2>
+  <p class="mt-2 text-sm text-slate-400">Cada operación cambia el nivel o el filtro y vuelve a ejecutar la consulta: las medidas siempre se recalculan, nunca se reciclan de la vista anterior.</p>
+  <div class="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
+    <div class="rounded-xl border border-white/10 bg-white/5 p-4 text-sm text-slate-300">
+      <p class="font-bold text-white">Drill-down</p>
+      <p class="mt-1">Bajar un nivel dentro de una jerarquía. Ejemplo: en la <a href="vista-1/index.html" class="text-ember-400 hover:underline">Vista 1</a>, de región a departamento a municipio.</p>
+    </div>
+    <div class="rounded-xl border border-white/10 bg-white/5 p-4 text-sm text-slate-300">
+      <p class="font-bold text-white">Roll-up</p>
+      <p class="mt-1">Subir al nivel padre. Ejemplo: en la <a href="vista-2/index.html" class="text-ember-400 hover:underline">Vista 2</a>, de mes o trimestre a año.</p>
+    </div>
+    <div class="rounded-xl border border-white/10 bg-white/5 p-4 text-sm text-slate-300">
+      <p class="font-bold text-white">Slice</p>
+      <p class="mt-1">Fijar un solo valor de una dimensión. Ejemplo: en la <a href="vista-4/index.html" class="text-ember-400 hover:underline">Vista 4</a>, región = Orinoquia.</p>
+    </div>
+    <div class="rounded-xl border border-white/10 bg-white/5 p-4 text-sm text-slate-300">
+      <p class="font-bold text-white">Dice</p>
+      <p class="mt-1">Combinar filtros de dos o más dimensiones. Ejemplo: en la <a href="vista-4/index.html" class="text-ember-400 hover:underline">Vista 4</a>, causa en {Intencional, Otra} y región en {Orinoquia, Andina}.</p>
+    </div>
+    <div class="rounded-xl border border-white/10 bg-white/5 p-4 text-sm text-slate-300 sm:col-span-2">
+      <p class="font-bold text-white">Pivot</p>
+      <p class="mt-1">Intercambiar filas y columnas de la matriz. Ejemplo: en la <a href="vista-1/index.html" class="text-ember-400 hover:underline">Vista 1</a>, pasar de territorio x tiempo a tiempo x territorio.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== CONOCIMIENTOS ===================== -->
+<section class="mt-6 rounded-2xl border border-white/10 bg-ash-900/60 p-6 shadow-xl">
+  <h2 class="text-base font-bold text-white">Conocimientos descubiertos (8, dos por vista)</h2>
+  <ol class="mt-3 list-decimal space-y-2 pl-5 text-sm text-slate-300">
+    <li>Muchos eventos no significan más hectáreas: Orinoquia reúne 49,4 % de las hectáreas con solo 10,5 % de los eventos. (<a href="vista-1/index.html" class="text-ember-400 hover:underline">Vista 1</a>)</li>
+    <li>El patrón estacional de Orinoquia (enero-marzo) se repite en varios años, no solo en el agregado. (<a href="vista-1/index.html" class="text-ember-400 hover:underline">Vista 1</a>)</li>
+    <li>La inversión de la proporción de incendios grandes en 2024 (más en julio-septiembre que en enero-marzo) ya aparecía en 2015 y 2023. (<a href="vista-2/index.html" class="text-ember-400 hover:underline">Vista 2</a>)</li>
+    <li>La misma inversión aparece dentro de una sola entidad que reporta, lo que debilita la hipótesis de que el cambio se debe solo a quién reporta. (<a href="vista-2/index.html" class="text-ember-400 hover:underline">Vista 2</a>)</li>
+    <li>La región mejor informada en cobertura cambia cuando se comparan solo los años con ese registro (2010-2020): Pacifica pasa a ser la peor informada. (<a href="vista-3/index.html" class="text-ember-400 hover:underline">Vista 3</a>)</li>
+    <li>En los bosques, Orinoquia tiene muchos menos eventos que Andina pero un área por evento casi 10 veces mayor. (<a href="vista-3/index.html" class="text-ember-400 hover:underline">Vista 3</a>)</li>
+    <li>Las causas más frecuentes (Intencional, Quema fuera de control) no son las que más incendios grandes producen en proporción; "Otra" y "Mas de una causa" sí. (<a href="vista-4/index.html" class="text-ember-400 hover:underline">Vista 4</a>)</li>
+    <li>En Orinoquia, la causa "Otra" se asocia con incendios mucho más extensos (1.448 ha por evento) que la misma causa en Andina (11 ha por evento). (<a href="vista-4/index.html" class="text-ember-400 hover:underline">Vista 4</a>)</li>
+  </ol>
+
+  <h3 class="mt-5 text-sm font-semibold uppercase tracking-wider text-slate-400">Limitaciones generales</h3>
+  <ul class="mt-2 list-disc space-y-1 pl-5 text-sm text-slate-300">
+    <li>Causa y cobertura no se registraron en todo el periodo (causa: 2010-2022; cobertura: solo 2010-2020), así que los años recientes quedan en "Sin causa registrada" o "No informada" sin que eso signifique ausencia real.</li>
+    <li>Varias celdas de las matrices, sobre todo al cruzar región con causa o cobertura, tienen pocos eventos; sus porcentajes y promedios no deben leerse como una tendencia.</li>
+    <li>SQLite no calcula mediana; los promedios se complementan con el denominador visible, no con la mediana.</li>
+    <li>Todas las asociaciones encontradas son observaciones de los datos, no relaciones de causa-efecto comprobadas.</li>
+  </ul>
+
+  <h3 class="mt-5 text-sm font-semibold uppercase tracking-wider text-slate-400">Conclusiones</h3>
+  <p class="mt-2 text-sm text-slate-300">
+    Cruzar dimensiones en vez de contarlas por separado cambia las lecturas de la Etapa 4:
+    la frecuencia de eventos no equivale a hectáreas quemadas ni a tamaño típico de incendio,
+    los patrones estacionales y de cobertura dependen de la región y del periodo que se
+    compare, y la causa más frecuente no es la que más incendios grandes produce. El modelo
+    estrella permite bajar de nivel (región a municipio, año a mes, grupo a tipo de cobertura)
+    y recalcular cada medida sin perder el denominador, algo que un conteo simple no muestra.
+  </p>
+</section>
+
+
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-white/5 bg-ash-950">
+      <div class="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
+        <div class="flex flex-col items-center justify-between gap-3 sm:flex-row">
+          <div class="flex items-center gap-2.5">
+            <span class="grid h-7 w-7 place-items-center rounded-lg bg-gradient-to-br from-ember-500 to-red-600">
+              <svg class="h-4 w-4 text-white" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2s4.5 4.2 4.5 8.2A4.5 4.5 0 0 1 12 15a4.5 4.5 0 0 1-4.5-4.8C7.5 6.2 12 2 12 2Z"/></svg>
+            </span>
+            <span class="text-sm font-bold text-white">Wildfire Data Mining</span>
+          </div>
+          <p class="text-xs text-slate-500">© <span id="year">2026</span> · Proyecto academico de Mineria de Datos · Uso investigativo</p>
+          <p class="text-xs text-slate-600">v0.1.0</p>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    (function () {
+      var sidebar = document.getElementById('sidebar');
+      var overlay = document.getElementById('sidebar-overlay');
+      var toggle = document.getElementById('btn-sidebar-toggle');
+
+      function openSidebar() {
+        sidebar.classList.remove('-translate-x-full');
+        overlay.classList.remove('hidden');
+      }
+      function closeSidebar() {
+        sidebar.classList.add('-translate-x-full');
+        overlay.classList.add('hidden');
+      }
+      toggle && toggle.addEventListener('click', function () {
+        sidebar.classList.contains('-translate-x-full') ? openSidebar() : closeSidebar();
+      });
+      overlay && overlay.addEventListener('click', closeSidebar);
+
+      var yearEl = document.getElementById('year');
+      if (yearEl) { yearEl.textContent = new Date().getFullYear(); }
+    })();
+  </script>
+  
+<script>
+  window.OLAP_MODE = "sqljs";
+  window.OLAP_CONFIG = {
+    catalogo: "../static/olap/consultas.json",
+    base: "../static/olap/incendios_dw.db",
+    api: null
+  };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.10.3/sql-wasm.js"></script>
+
+<script src="../static/js/olap.js"></script>
+
+
+</body>
+</html>

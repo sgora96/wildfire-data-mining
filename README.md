@@ -21,8 +21,7 @@ Cada entregable del curso vive dentro de la misma app, bajo el menú lateral
 | 2 | Calidad de datos | Completa | `/etapa-2/...` |
 | 3 | ETL y limpieza con SSIS | Completa | `/etapa-3/...` |
 | 4 | Conocimiento evidente (Power BI) | Completa | `/etapa-4/` |
-
-
+| 5 | Análisis multidimensional (modelo estrella) | Completa | `/etapa-5/` |
 
 ---
 
@@ -31,6 +30,7 @@ Cada entregable del curso vive dentro de la misma app, bajo el menú lateral
 - [Características](#-características)
 - [Estructura del proyecto](#-estructura-del-proyecto)
 - [Etapa 4 — Conocimiento evidente (Power BI)](#-etapa-4--conocimiento-evidente-power-bi)
+- [Etapa 5 — Análisis multidimensional (modelo estrella)](#-etapa-5--análisis-multidimensional-modelo-estrella)
 - [Inicio rápido](#-inicio-rápido)
 - [API disponible](#-api-disponible)
 - [Datos y modelado](#-datos-y-modelado)
@@ -139,6 +139,56 @@ El archivo del informe es `powerbi/Wildfire_ConocimientoEvidente.pbix` y el tema
 - Aplicación publicada: https://sgora96.github.io/wildfire-data-mining/
 - Página de la etapa: https://sgora96.github.io/wildfire-data-mining/etapa-4/
 - Informe de Power BI: https://app.powerbi.com/view?r=eyJrIjoiNDBjZTk3MjItNTQ4NS00NjNkLTk4YTAtODEzOWY4M2Y5MTdiIiwidCI6IjA3ZGE2N2EwLTFmNDMtNGU4Yy05NzdmLTVmODhiNjQ3MGVlNiIsImMiOjR9
+
+---
+
+## 📐 Etapa 5 — Análisis multidimensional (modelo estrella)
+
+Modelo estrella del mismo dataset de las etapas anteriores, con cuatro vistas interactivas
+en `/etapa-5/` que ejecutan consultas de verdad (drill-down, roll-up, slice, dice y pivot),
+tanto en local (API de Flask) como en el sitio publicado en GitHub Pages (sql.js en el
+navegador contra la misma base SQLite).
+
+### Modelo de datos
+
+- Diagrama, diccionario, granularidad, medidas y jerarquías: [`docs/olap/modelo_estrella.md`](docs/olap/modelo_estrella.md).
+- Correspondencia variable original → campo del modelo: [`docs/olap/etl_mapeo.md`](docs/olap/etl_mapeo.md).
+- Verificaciones del modelo contra los datos tratados: [`docs/olap/validaciones.md`](docs/olap/validaciones.md).
+- Consultas y operaciones de cada vista: `docs/olap/vista1_consultas.md` a `vista4_consultas.md`.
+- Conocimientos multidimensionales de cada vista (8 en total): `docs/olap/vista1_conocimientos.md` a `vista4_conocimientos.md`.
+
+### Datos usados
+
+- Archivo: `data/processed/incendios_ideam_tratado_2010_2024.csv` (35.355 eventos, 2010-2024, tratado en la Etapa 2).
+- Base de datos del modelo: `data/warehouse/incendios_dw.db` (SQLite), con una copia servida por Flask en `app/static/olap/incendios_dw.db`.
+
+### Cómo configurar, cargar y ejecutar
+
+```bash
+pip install -r requirements.txt
+python scripts/etl/build_dw.py       # reconstruye incendios_dw.db desde el CSV tratado
+python scripts/etl/validar_dw.py     # corre las verificaciones del modelo
+python run.py                        # abrir http://127.0.0.1:5000/etapa-5/
+python freeze.py                     # genera build/ (sitio estatico, modo sql.js)
+```
+
+No se agregaron dependencias nuevas de Python para esta etapa.
+
+### Cambios realizados en la aplicación web
+
+- `app/etapa5.py` y `app/olap.py`: blueprint de la Etapa 5 (`/etapa-5/`) y motor de consultas en Python (API `/api/olap/consulta`).
+- `app/templates/etapa5/`: página de entrada "Análisis multidimensional" y las cuatro vistas (territorio y tiempo, tiempo y tamaño, cobertura y territorio, causa y tamaño).
+- `app/static/js/olap.js` y `app/static/js/olap_vista1.js` a `olap_vista4.js`: motor de consultas y componentes compartidos en el navegador (mismo SQL que la API, ejecutado con sql.js en el sitio publicado).
+- `app/static/olap/consultas.json`: definiciones de dimensiones, niveles, jerarquías y medidas que usan tanto Python como JavaScript.
+- `app/navigation.py` y `app/__init__.py`: la Etapa 5 se agrega al menú lateral y se registran los blueprints.
+- `freeze.py`: las cinco páginas de la Etapa 5 se incluyen en el sitio estático de GitHub Pages.
+- `app/templates/index.html`: el inicio muestra las tarjetas de las Etapas 1 a 5.
+
+### Enlaces
+
+- Repositorio: https://github.com/sgora96/wildfire-data-mining
+- Aplicación publicada: https://sgora96.github.io/wildfire-data-mining/
+- Página de la etapa: https://sgora96.github.io/wildfire-data-mining/etapa-5/
 
 ---
 

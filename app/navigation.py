@@ -7,6 +7,7 @@ from app.etapa1 import SUBMENU as _ETAPA1_PAGINAS
 from app.etapa2 import SUBMENU as _ETAPA2_PAGINAS
 from app.etapa3 import SUBMENU as _ETAPA3_PAGINAS
 from app.etapa4 import SUBMENU as _ETAPA4_PAGINAS
+from app.etapa5 import SUBMENU as _ETAPA5_PAGINAS
 
 MODULOS: list[dict] = [
     {
@@ -63,7 +64,16 @@ MODULOS: list[dict] = [
                 ],
             },
           
-            # Las siguientes etapas del semestre se agregan aqui, con la
+                       {
+                "id": "etapa-5",
+                "label": "Etapa 5",
+                "sublabel": "Analisis multidimensional",
+                "estado": "En desarrollo",
+                "paginas": [
+                    {"endpoint": f"etapa5.{p['slug']}", "label": p["label"]}
+                    for p in _ETAPA5_PAGINAS
+                ],
+            },
             # misma forma: {"id", "label", "sublabel", "estado", "paginas"}.
         ],
     },

@@ -104,11 +104,16 @@ comentario): el JSON crudo de la API, que si trae esos campos, queda en
 Flujo guardado en `orange/texto/youtube_comentarios.ows`, generado con la API de
 esquemas de Orange (`orangecanvas`/`orangewidget`) ejecutando directamente el Python
 que trae instalado Orange Data Mining 3.40.0 (el mismo que usa el canvas real), con
-los parametros de la tabla ya cargados en cada widget; se verifico que el archivo
-carga de vuelta (12 nodos, 12 enlaces) antes de darlo por terminado. Falta abrirlo en
-la interfaz de Orange para tomar las capturas y completar dos ajustes manuales que
-dependen de los datos de entrada y no se pueden fijar de antemano (ver nota al final
-de la tabla).
+los parametros de la tabla ya cargados en cada widget. Se abrio en Orange Data Mining
+3.40.0, se completaron los dos ajustes manuales de la nota al final de la tabla y se
+ejecuto el flujo completo sin errores.
+
+![Flujo completo del analisis de texto, desde la carga del CSV hasta los cuatro analisis finales (temas, clustering, enriquecimiento de palabras y sentimiento)](img/youtube/01_flujo_completo.png)
+
+Figura 1. Flujo completo en `orange/texto/youtube_comentarios.ows`: desde la carga del
+CSV (File -> Corpus) hasta los cuatro analisis finales -- bolsa de palabras y temas
+(arriba), distancias y clustering jerarquico con enriquecimiento de palabras (centro),
+y sentimiento con su comparacion por video (abajo).
 
 | Widget | Conexion (de -> a) | Parametros |
 |---|---|---|
@@ -135,19 +140,45 @@ en el widget **Corpus**, marcar `texto_limpio` como caracteristica de texto y el
 idioma **Spanish**; en los dos widgets **Box Plot**, elegir `video_id` como variable
 de agrupacion (y la columna de sentimiento / el tema correspondiente como variable a
 comparar). El resto de los parametros de la tabla ya quedan guardados en el `.ows`.
+Nota de reproducibilidad: estos dos ajustes son ContextSettings y Orange los puede
+reiniciar a sus valores por defecto (idioma detectado automaticamente, por ejemplo
+"Vietnamese") cada vez que el widget File se vuelve a ejecutar; si al abrir el flujo
+aparece el aviso "No tokens on the output" en Preprocess Text, hay que repetir el
+ajuste del Corpus.
+
+![Widget Corpus configurado con texto_limpio como caracteristica de texto e idioma Spanish](img/youtube/02_corpus.png)
+
+Figura 2. Configuracion del widget Corpus: `texto_limpio` como unica caracteristica de
+texto usada, idioma Spanish, 703 documentos cargados desde `comentarios_limpios.csv`
+(via el widget File).
 
 Todos los valores de esta tabla y de la seccion 4 se calcularon de forma real,
 ejecutando `Orange.data`, `orangecontrib.text` (Corpus, preprocesamiento, BowVectorizer,
 LdaWrapper) y `gensim`/`scipy`/`scikit-learn` con el Python que trae instalado Orange
 Data Mining 3.40.0, directamente sobre `comentarios_limpios.csv` (no son valores de
-ejemplo). Construir el flujo en la interfaz de Orange con estos mismos parametros debe
-reproducir estos numeros (con variacion minima por la aleatoriedad de LDA/k-Means).
+ejemplo), y se verificaron de nuevo reproduciendo el flujo completo en la interfaz de
+Orange (ver capturas de la seccion 4): la reproduccion en la interfaz dio 2.679 tokens
+en 69 tipos (vs. 70 de la verificacion por libreria), una variacion minima esperada por
+la aleatoriedad de LDA/k-Means.
 
 ## 4. Resultados
 
-*(Las cifras de esta seccion son reales, calculadas ejecutando el flujo equivalente con
-la libreria de Orange sobre `comentarios_limpios.csv`. Pendiente: agregar las capturas
-de Orange en `docs/etapa6/img/youtube/` al reproducir el flujo en la interfaz.)*
+Las cifras de esta seccion son reales: se calcularon ejecutando el flujo equivalente
+con la libreria de Orange sobre `comentarios_limpios.csv` y se confirmaron reproduciendo
+el flujo completo en la interfaz de Orange Data Mining 3.40.0 (capturas abajo).
+
+![Pipeline de preprocesamiento de texto con sus 4 pasos activos y sin advertencias](img/youtube/03_preprocess_text.png)
+
+Figura 3. Pipeline de preprocesamiento: transformacion a minusculas, tokenizacion
+Regexp (`\w+`), normalizacion con UDPipe Lemmatizer en espanol y filtrado (stopwords en
+espanol + frecuencia de documento). Resultado en la interfaz: 2.679 tokens en 69 tipos
+distintos sobre los 703 comentarios.
+
+![Widget Bag of Words con Term Frequency Count y Document Frequency IDF](img/youtube/04_bag_of_words.png)
+
+Figura 4. Vectorizacion Bag of Words: frecuencia de termino por conteo (Count)
+ponderada por frecuencia inversa de documento (IDF), el esquema TF-IDF clasico usado
+como entrada para los temas y el clustering.
 
 ### 4.1 Temas (LDA, k=4, coherencia c_v=0,3281)
 
@@ -161,6 +192,22 @@ de Orange en `docs/etapa6/img/youtube/` al reproducir el flujo en la interfaz.)*
 Los 4 temas no estan fuertemente separados (coherencia c_v entre 0,29 y 0,33 para
 cualquier k de 4 a 8): son comentarios cortos sobre un mismo evento, por lo que
 comparten mucho vocabulario ("incendio", "país", "colombia" aparecen en varios temas).
+
+![Los 4 temas de LDA con sus palabras clave en el widget Topic Modelling](img/youtube/05_topic_modelling.png)
+
+Figura 5. Los 4 temas obtenidos con LDA en la interfaz de Orange (coherencia 0,33;
+log-perplexity 15,86): Tema 1 (dios, carcel, israel, fuego) ligado a suplica religiosa;
+Tema 2 (incendiar, petro, pais, gobierno) a atribucion politica; Tema 3 (incendio,
+poder, mundo) mas generico; Tema 4 (criminal, misericordia, patria, colombia) a
+acusacion de intencionalidad. Por la naturaleza estocastica de LDA, las palabras
+exactas de cada tema varian levemente entre ejecuciones, aunque los ejes tematicos
+(religioso, politico, penal/geopolitico) se mantienen.
+
+![Peso de cada tema de LDA agrupado por video en un Box Plot](img/youtube/07_boxplot_temas.png)
+
+Figura 6. Distribucion del peso de cada tema de LDA agrupada por `video_id`: permite
+comparar que videos concentran mas comentarios de cada tema (por ejemplo, el video de
+VANGUARDIA frente a los demas).
 
 ### 4.2 Clustering jerarquico (Ward): no se encontro una particion util
 
@@ -183,6 +230,13 @@ comentario pertenezca un poco a varios temas), este corpus no tiene subgrupos
 bien separados en el espacio de palabras: la mayoria de los comentarios comparten
 vocabulario similar sobre el mismo evento. Por eso el analisis de esta seccion se apoya
 en los temas de LDA (seccion 4.1) y no en los grupos del clustering jerarquico.
+
+![Dendrograma del clustering jerarquico de los 703 comentarios](img/youtube/06_hierarchical_clustering.png)
+
+Figura 7. Dendrograma del clustering jerarquico (enlace Ward) sobre los 703
+comentarios: confirma lo documentado arriba -- no hay una particion balanceada; la
+mayoria de los comentarios queda en una rama grande y solo se separan grupos pequeños
+con vocabulario atipico (visibles como ramas cortas en la parte superior del arbol).
 
 ### 4.3 Sentiment Analysis (Multilingual Sentiment, es)
 

@@ -1,0 +1,59 @@
+<?xml version='1.0' encoding='utf-8'?>
+<scheme version="2.0" title="YouTube - Analisis de texto de comentarios (Etapa 6)" description="Corpus de 703 comentarios de 8 videos de YouTube sobre incendios forestales en Colombia (data/etapa6/youtube/comentarios_limpios.csv). Preprocesamiento en espanol, bolsa de palabras TF-IDF, temas (LDA), clustering jerarquico (Ward), enriquecimiento de palabras, sentimiento (Multilingual) y comparacion por video. Ver docs/etapa6/informe_youtube.md seccion 3 para los parametros exactos de cada widget.">
+	<nodes>
+		<node id="0" name="File" qualified_name="Orange.widgets.data.owfile.OWFile" project_name="" version="" title="File (comentarios_limpios.csv)" position="(50, 50)" />
+		<node id="1" name="Corpus" qualified_name="orangecontrib.text.widgets.owcorpus.OWCorpus" project_name="" version="" title="Corpus" position="(260, 50)" />
+		<node id="2" name="Preprocess Text" qualified_name="orangecontrib.text.widgets.owpreprocess.OWPreprocess" project_name="" version="" title="Preprocess Text" position="(470, 50)" />
+		<node id="3" name="Bag of Words" qualified_name="orangecontrib.text.widgets.owbagofwords.OWTBagOfWords" project_name="" version="" title="Bag of Words (TF-IDF)" position="(680, 50)" />
+		<node id="4" name="Topic Modelling" qualified_name="orangecontrib.text.widgets.owtopicmodeling.OWTopicModeling" project_name="" version="" title="Topic Modelling (LDA, k=4)" position="(890, -100)" />
+		<node id="5" name="Distances" qualified_name="Orange.widgets.unsupervised.owdistances.OWDistances" project_name="" version="" title="Distances (Euclidea)" position="(890, 140)" />
+		<node id="6" name="Hierarchical Clustering" qualified_name="Orange.widgets.unsupervised.owhierarchicalclustering.OWHierarchicalClustering" project_name="" version="" title="Hierarchical Clustering (Ward)" position="(1100, 140)" />
+		<node id="7" name="Word Enrichment" qualified_name="orangecontrib.text.widgets.owwordenrichment.OWWordEnrichment" project_name="" version="" title="Word Enrichment" position="(1310, 140)" />
+		<node id="8" name="Corpus Viewer" qualified_name="orangecontrib.text.widgets.owcorpusviewer.OWCorpusViewer" project_name="" version="" title="Corpus Viewer" position="(680, 280)" />
+		<node id="9" name="Sentiment Analysis" qualified_name="orangecontrib.text.widgets.owsentimentanalysis.OWSentimentAnalysis" project_name="" version="" title="Sentiment Analysis (Multilingual, es)" position="(470, 280)" />
+		<node id="10" name="Box Plot" qualified_name="Orange.widgets.visualize.owboxplot.OWBoxPlot" project_name="" version="" title="Box Plot (sentimiento por video)" position="(680, 420)" />
+		<node id="11" name="Box Plot" qualified_name="Orange.widgets.visualize.owboxplot.OWBoxPlot" project_name="" version="" title="Box Plot (peso de tema por video)" position="(1100, -100)" />
+	</nodes>
+	<links>
+		<link id="0" source_node_id="0" sink_node_id="1" source_channel="Data" sink_channel="Data" enabled="true" source_channel_id="data" sink_channel_id="data" />
+		<link id="1" source_node_id="1" sink_node_id="2" source_channel="Corpus" sink_channel="Corpus" enabled="true" source_channel_id="corpus" sink_channel_id="corpus" />
+		<link id="2" source_node_id="2" sink_node_id="3" source_channel="Corpus" sink_channel="Corpus" enabled="true" source_channel_id="corpus" sink_channel_id="corpus" />
+		<link id="3" source_node_id="3" sink_node_id="4" source_channel="Corpus" sink_channel="Corpus" enabled="true" source_channel_id="corpus" sink_channel_id="corpus" />
+		<link id="4" source_node_id="3" sink_node_id="5" source_channel="Corpus" sink_channel="Data" enabled="true" source_channel_id="corpus" sink_channel_id="data" />
+		<link id="5" source_node_id="5" sink_node_id="6" source_channel="Distances" sink_channel="Distances" enabled="true" source_channel_id="distances" sink_channel_id="distances" />
+		<link id="6" source_node_id="6" sink_node_id="7" source_channel="Selected Data" sink_channel="Selected Data" enabled="true" source_channel_id="selected_data" sink_channel_id="selected_data" />
+		<link id="7" source_node_id="6" sink_node_id="7" source_channel="Data" sink_channel="Data" enabled="true" source_channel_id="annotated_data" sink_channel_id="data" />
+		<link id="8" source_node_id="1" sink_node_id="8" source_channel="Corpus" sink_channel="Corpus" enabled="true" source_channel_id="corpus" sink_channel_id="corpus" />
+		<link id="9" source_node_id="1" sink_node_id="9" source_channel="Corpus" sink_channel="Corpus" enabled="true" source_channel_id="corpus" sink_channel_id="corpus" />
+		<link id="10" source_node_id="9" sink_node_id="10" source_channel="Corpus" sink_channel="Data" enabled="true" source_channel_id="corpus" sink_channel_id="data" />
+		<link id="11" source_node_id="4" sink_node_id="11" source_channel="Corpus" sink_channel="Data" enabled="true" source_channel_id="corpus" sink_channel_id="data" />
+	</links>
+	<annotations>
+		<text id="0" type="text/plain" rect="(50, -180, 500, 70)">Etapa 6 - Laura Bautista. Flujo documentado en docs/etapa6/informe_youtube.md (seccion 3). El widget File usa una ruta relativa a este archivo .ows (prefijo basedir): si el .csv no aparece al abrir, usar Reload o volver a buscar el archivo en data/etapa6/youtube/comentarios_limpios.csv.</text>
+	</annotations>
+	<thumbnail />
+	<node_properties>
+		<properties node_id="0" format="pickle">gASVXQEAAAAAAAB9lCiMC19fdmVyc2lvbl9flEsBjAxyZWNlbnRfcGF0aHOUXZSMHm9yYW5nZXdp
+ZGdldC51dGlscy5maWxlZGlhbG9nc5SMClJlY2VudFBhdGiUk5QpgZR9lCiMB2Fic3BhdGiUjGxD
+Oi9Vc2Vycy9VU1VBUklPL0RvY3VtZW50cy9NSU5FUklBIERFIERBVE9TL3dpbGRmaXJlLWRhdGEt
+bWluaW5nL2RhdGEvZXRhcGE2L3lvdXR1YmUvY29tZW50YXJpb3NfbGltcGlvcy5jc3aUjAZwcmVm
+aXiUjAdiYXNlZGlylIwHcmVscGF0aJSMMS4uLy4uL2RhdGEvZXRhcGE2L3lvdXR1YmUvY29tZW50
+YXJpb3NfbGltcGlvcy5jc3aUjAV0aXRsZZSMAJSMBXNoZWV0lGgQjAtmaWxlX2Zvcm1hdJROdWJh
+jAtzaGVldF9uYW1lc5R9lHUu
+</properties>
+		<properties node_id="1" format="literal">{'__version__': 2}</properties>
+		<properties node_id="2" format="literal">{'__version__': 4, 'storedsettings': {'preprocessors': [('preprocess.transform', {'methods': [0]}), ('preprocess.tokenize', {'method': 3, 'pattern': '\\w+'}), ('preprocess.normalize', {'method': 3, 'udpipe_language': 'es', 'udpipe_tokenizer': False}), ('preprocess.filter', {'methods': [0, 4], 'language': 'es', 'freq_type': 0, 'rel_start': 0.02, 'rel_end': 0.9})]}}</properties>
+		<properties node_id="3" format="literal">{'__version__': 1, 'wlocal': 'Count', 'wglobal': 'IDF', 'normalization': '(None)'}</properties>
+		<properties node_id="4" format="literal">{'__version__': 2, 'method_index': 0, 'lda': {'num_topics': 4}}</properties>
+		<properties node_id="5" format="literal">{'__version__': 4, 'metric_id': 0}</properties>
+		<properties node_id="6" format="literal">{'__version__': 2}</properties>
+		<properties node_id="7" format="literal">{'__version__': 1}</properties>
+		<properties node_id="8" format="literal">{'__version__': 2}</properties>
+		<properties node_id="9" format="literal">{'__version__': 2, 'method_idx': 2, 'multi_language': 'es'}</properties>
+		<properties node_id="10" format="literal">{'__version__': 1}</properties>
+		<properties node_id="11" format="literal">{'__version__': 1}</properties>
+	</node_properties>
+	<session_state>
+		<window_groups />
+	</session_state>
+</scheme>

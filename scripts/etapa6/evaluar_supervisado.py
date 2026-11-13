@@ -20,6 +20,7 @@ import numpy as np
 import Orange
 from Orange.classification import KNNLearner, LogisticRegressionLearner, RandomForestLearner
 from Orange.evaluation import AUC, CA, F1, CrossValidation, Precision, Recall, TestOnTestData
+from Orange.widgets.evaluate.owtestandscore import results_one_vs_rest
 
 warnings.filterwarnings("ignore")
 
@@ -56,6 +57,9 @@ def metricas(resultados, indice_grande):
     g = indice_grande
     filas = []
     actual = resultados.actual.astype(int)
+    # Con una clase objetivo, Test and Score calcula el AUC "uno contra el resto" sobre esa
+    # clase; se replica igual para que las cifras coincidan con las que muestra el widget.
+    auc = AUC(results_one_vs_rest(resultados, g), target=1)
     for i, predicho in enumerate(resultados.predicted):
         predicho = predicho.astype(int)
         tp = int(((actual == g) & (predicho == g)).sum())
@@ -63,7 +67,7 @@ def metricas(resultados, indice_grande):
         fp = int(((actual != g) & (predicho == g)).sum())
         tn = int(((actual != g) & (predicho != g)).sum())
         filas.append({
-            "auc": float(AUC(resultados)[i]), "accuracy": float(CA(resultados)[i]),
+            "auc": float(auc[i]), "accuracy": float(CA(resultados)[i]),
             "f1": float(F1(resultados, target=g)[i]),
             "precision": float(Precision(resultados, target=g)[i]),
             "recall": float(Recall(resultados, target=g)[i]),

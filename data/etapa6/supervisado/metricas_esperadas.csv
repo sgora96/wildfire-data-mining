@@ -1,9 +1,9 @@
 escenario,modelo,auc,accuracy,f1,precision,recall,vp,fn,fp,vn
-principal,Regresion logistica,0.7711,0.717,0.1918,0.1113,0.6935,1161,513,9274,23631
-principal,Random Forest,0.7734,0.7902,0.223,0.1358,0.6219,1041,633,6623,26282
-principal,kNN,0.7297,0.9509,0.0241,0.3182,0.0125,21,1653,45,32860
-sensibilidad,Regresion logistica sin balancear,0.77,0.9516,0.0,0.0,0.0,0,1674,0,32905
-sensibilidad,Random Forest sin balancear,0.7799,0.9512,0.0452,0.4255,0.0239,40,1634,54,32851
+principal,Regresion logistica,0.7716,0.717,0.1918,0.1113,0.6935,1161,513,9274,23631
+principal,Random Forest,0.774,0.7902,0.223,0.1358,0.6219,1041,633,6623,26282
+principal,kNN,0.7298,0.9509,0.0241,0.3182,0.0125,21,1653,45,32860
+sensibilidad,Regresion logistica sin balancear,0.7706,0.9516,0.0,0.0,0.0,0,1674,0,32905
+sensibilidad,Random Forest sin balancear,0.7804,0.9512,0.0452,0.4255,0.0239,40,1634,54,32851
 temporal,Regresion logistica,0.7003,0.6405,0.1148,0.0633,0.6209,249,152,3687,6592
 temporal,Random Forest,0.7215,0.8362,0.1636,0.1012,0.4264,171,230,1519,8760
 temporal,kNN,0.6097,0.9625,0.0,0.0,0.0,0,401,0,10279

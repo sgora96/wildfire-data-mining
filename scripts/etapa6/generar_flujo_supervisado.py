@@ -11,7 +11,10 @@ Requiere Orange 3.40 (se ejecuta con el Python que trae Orange):
 Antes hay que generar los datos: python scripts/etapa6/preparar_supervisado.py
 """
 
+import base64
 import os
+import pickle
+import re
 import sys
 import time
 import warnings
@@ -198,9 +201,8 @@ def main():
                   f"F1 {float(F1(r, target=g)[0]):.3f} | Prec {float(Precision(r, target=g)[0]):.3f} | "
                   f"Rec {float(Recall(r, target=g)[0]):.3f}")
 
-    # ---- Guardar (ruta relativa a los datos, sin rutas absolutas de la maquina)
+    # ---- Guardar (la ruta absoluta que guarda el widget File se quita despues de escribir)
     ESQUEMA.sync_node_properties() if hasattr(ESQUEMA, "sync_node_properties") else None
-    archivo.properties = dict(archivo.properties, recent_paths=[RecentPath("", "basedir", RUTA_DATOS)], source=0)
     ESQUEMA.title = "Etapa 6 - Modelos supervisados: incendio grande (mas de 100 ha)"
     ESQUEMA.description = ("Tres modelos (regresion logistica, Random Forest y kNN) evaluados con validacion "
                            "cruzada estratificada, verificacion temporal y sensibilidad al desbalance.")
@@ -208,8 +210,69 @@ def main():
     with open(FLUJO, "wb") as f:
         from orangecanvas.scheme.readwrite import scheme_to_ows_stream
         scheme_to_ows_stream(ESQUEMA, f, pretty=True, pickle_fallback=True)
+    limpiar_rutas_absolutas(FLUJO)
     print(f"\nFlujo guardado en {FLUJO.relative_to(RAIZ)}")
 
 
+PATRON_PROPIEDADES = re.compile(r'(<properties node_id="\d+" format="pickle">)(.*?)(</properties>)', re.S)
+PATRON_RUTA_ABSOLUTA = re.compile(r"[A-Za-z]:[\\/]")
+
+
+def limpiar_rutas_absolutas(ruta):
+    """Deja la ruta del archivo de datos en el .ows relativa a la carpeta del flujo.
+
+    El widget File guarda la ruta absoluta del equipo y, si el archivo no esta dentro de la
+    carpeta del flujo (aqui esta en data/, fuera de orange/), no guarda ninguna ruta relativa.
+    Esta funcion calcula la relativa (prefijo "basedir") y vacia la absoluta, de modo que
+    Orange encuentra el archivo en cualquier equipo. Despues comprueba que no quede ninguna
+    ruta de unidad (C:\\...) en el archivo y lanza un error si queda alguna.
+    """
+    def quitar(objeto):
+        if isinstance(objeto, RecentPath):
+            if objeto.prefix is None and objeto.abspath:
+                if not os.path.exists(objeto.abspath):
+                    raise RuntimeError(
+                        f"La ruta {objeto.abspath} no existe en este equipo: el flujo debe "
+                        "limpiarse en el equipo donde se guardo, con el repositorio en su sitio.")
+                relativa = os.path.relpath(objeto.abspath, ruta.parent).replace("\\", "/")
+                objeto.prefix, objeto.relpath = "basedir", relativa
+            objeto.abspath = ""
+            return 1
+        if isinstance(objeto, dict):
+            return sum(quitar(v) for v in objeto.values())
+        if isinstance(objeto, (list, tuple)):
+            return sum(quitar(v) for v in objeto)
+        return 0
+
+    cambios = 0
+
+    def reemplazar(m):
+        nonlocal cambios
+        objeto = pickle.loads(base64.b64decode(m.group(2)))
+        n = quitar(objeto)
+        if not n:
+            return m.group(0)
+        cambios += n
+        nuevo = base64.encodebytes(pickle.dumps(objeto, protocol=4)).decode("ascii")
+        return m.group(1) + nuevo + m.group(3)
+
+    texto = ruta.read_bytes().decode("utf-8")
+    ruta.write_bytes(PATRON_PROPIEDADES.sub(reemplazar, texto).encode("utf-8"))
+    restantes = []
+    texto = ruta.read_bytes().decode("utf-8")
+    for m in PATRON_PROPIEDADES.finditer(texto):
+        restantes += PATRON_RUTA_ABSOLUTA.findall(repr(pickle.loads(base64.b64decode(m.group(2)))))
+    restantes += PATRON_RUTA_ABSOLUTA.findall(PATRON_PROPIEDADES.sub("", texto))
+    if restantes:
+        raise RuntimeError(f"Quedan {len(restantes)} rutas absolutas en {ruta.name}")
+    print(f"Rutas absolutas quitadas: {cambios}. Verificado: ninguna ruta de unidad en {ruta.name}.")
+
+
 if __name__ == "__main__":
-    main()
+    if "--limpiar-rutas" in sys.argv:
+        # Solo limpia un .ows existente, sin volver a calcular. Sin argumento limpia el de esta
+        # seccion; con una ruta limpia ese archivo: --limpiar-rutas orange/otra/flujo.ows
+        posicion = sys.argv.index("--limpiar-rutas") + 1
+        limpiar_rutas_absolutas(Path(sys.argv[posicion]).resolve() if len(sys.argv) > posicion else FLUJO)
+    else:
+        main()

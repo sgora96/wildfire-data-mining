@@ -22,6 +22,7 @@ Cada entregable del curso vive dentro de la misma app, bajo el menú lateral
 | 3 | ETL y limpieza con SSIS | Completa | `/etapa-3/...` |
 | 4 | Conocimiento evidente (Power BI) | Completa | `/etapa-4/` |
 | 5 | Análisis multidimensional (modelo estrella) | Completa | `/etapa-5/` |
+| 6 | Conocimiento oculto (Orange y YouTube) | Completa | `/etapa-6/` |
 
 ---
 
@@ -31,6 +32,7 @@ Cada entregable del curso vive dentro de la misma app, bajo el menú lateral
 - [Estructura del proyecto](#-estructura-del-proyecto)
 - [Etapa 4 — Conocimiento evidente (Power BI)](#-etapa-4--conocimiento-evidente-power-bi)
 - [Etapa 5 — Análisis multidimensional (modelo estrella)](#-etapa-5--análisis-multidimensional-modelo-estrella)
+- [Etapa 6 — Conocimiento oculto (Orange y YouTube)](#-etapa-6--conocimiento-oculto-orange-y-youtube)
 - [Inicio rápido](#-inicio-rápido)
 - [API disponible](#-api-disponible)
 - [Datos y modelado](#-datos-y-modelado)
@@ -189,6 +191,57 @@ No se agregaron dependencias nuevas de Python para esta etapa.
 - Repositorio: https://github.com/sgora96/wildfire-data-mining
 - Aplicación publicada: https://sgora96.github.io/wildfire-data-mining/
 - Página de la etapa: https://sgora96.github.io/wildfire-data-mining/etapa-5/
+
+---
+
+## 🔎 Etapa 6 — Conocimiento oculto (Orange y YouTube)
+
+Modelos de aprendizaje supervisado y no supervisado en Orange Data Mining y análisis de comentarios de
+YouTube, sobre los mismos 35.355 incendios del IDEAM. La sección **Conocimiento Oculto** (`/etapa-6/`)
+resume los hallazgos, ofrece el informe técnico en PDF y enlaza el video de sustentación.
+
+### Qué contiene
+
+| Sección | Qué hace | Flujo de Orange | Informe |
+|---|---|---|---|
+| Aprendizaje supervisado | ¿Puede predecirse que un incendio será grande (más de 100 ha)? Compara regresión logística, Random Forest y kNN | `orange/supervisado/modelos_supervisados.ows` | [`docs/etapa6/informe_supervisado.md`](docs/etapa6/informe_supervisado.md) |
+| Clustering | Agrupa 32 departamentos por su perfil de incendios (k-Means, k = 3) | `orange/clustering/clustering_departamentos.ows` | [`docs/etapa6/informe_clustering.md`](docs/etapa6/informe_clustering.md) |
+| Comentarios de YouTube | Extrae y analiza 703 comentarios de 8 videos (temas, clustering y sentimiento) | `orange/texto/youtube_comentarios.ows` | [`docs/etapa6/informe_youtube.md`](docs/etapa6/informe_youtube.md) |
+| Conclusiones integradas | Relaciona las tres secciones y cruza los grupos con los incendios grandes | — | [`docs/etapa6/conclusiones_integradas.md`](docs/etapa6/conclusiones_integradas.md) |
+
+### Datos y scripts
+
+- `data/etapa6/`: datos preparados para cada sección (`supervisado/`, `clustering/`, `youtube/`, `integracion/`).
+- `scripts/etapa6/`: preparación de datos (`preparar_supervisado.py`, `preparar_clustering.py`), evaluación y generación del flujo supervisado, extracción y limpieza de comentarios (`youtube_extraer.py`, `youtube_limpiar.py`) y cruce de resultados (`cruce_resultados.py`).
+- Los comentarios de YouTube se publican **sin datos de sus autores**. La clave de la API va solo en un archivo `.env` local (variable `YOUTUBE_API_KEY`, ver `.env.example`), que no se sube; los datos crudos de la API tampoco.
+
+### Cómo reproducirlo
+
+```bash
+pip install -r requirements.txt
+python scripts/etapa6/preparar_supervisado.py    # datos del modelo supervisado
+python scripts/etapa6/preparar_clustering.py     # perfil de los departamentos
+python scripts/etapa6/cruce_resultados.py        # cruce de grupos x incendios grandes
+python run.py                                    # abrir http://127.0.0.1:5000/etapa-6/
+python freeze.py                                 # genera build/ (sitio estatico)
+```
+
+Los flujos `.ows` se abren con Orange 3.40 (el de YouTube necesita además el complemento *Text*). Los scripts
+`evaluar_supervisado.py` y `generar_flujo_supervisado.py` usan el Python que trae Orange. El detalle de cada
+sección, con sus parámetros y capturas, está en su informe. No se agregaron dependencias nuevas de Python.
+
+### Cambios realizados en la aplicación web
+
+- `app/etapa6.py` y `app/templates/etapa6/conocimiento_oculto.html`: blueprint y página de la sección (síntesis de hallazgos, cruce de resultados, conclusiones, informe y video).
+- `app/static/etapa6/`: figuras de la página. `app/static/docs/Informe_Etapa6_Conocimiento_Oculto.pdf`: informe técnico.
+- `app/navigation.py`, `app/__init__.py` y `freeze.py`: la Etapa 6 se agrega al menú, se registra el blueprint y la página se incluye en el sitio estático.
+- `app/templates/index.html`: el inicio muestra la tarjeta de la Etapa 6.
+
+### Enlaces
+
+- Repositorio: https://github.com/sgora96/wildfire-data-mining
+- Aplicación publicada: https://sgora96.github.io/wildfire-data-mining/
+- Página de la etapa: https://sgora96.github.io/wildfire-data-mining/etapa-6/
 
 ---
 

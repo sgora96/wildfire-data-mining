@@ -44,6 +44,7 @@ build/
 data/raw/*.xlsx
 data/raw/*.xls
 data/processed/build/
+data/etapa6/youtube/raw/
 
 # --- Modelos entrenados -----------------------------------------------------
 models/*

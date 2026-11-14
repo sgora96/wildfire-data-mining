@@ -8,6 +8,7 @@ from app.etapa2 import SUBMENU as _ETAPA2_PAGINAS
 from app.etapa3 import SUBMENU as _ETAPA3_PAGINAS
 from app.etapa4 import SUBMENU as _ETAPA4_PAGINAS
 from app.etapa5 import SUBMENU as _ETAPA5_PAGINAS
+from app.etapa6 import SUBMENU as _ETAPA6_PAGINAS
 
 MODULOS: list[dict] = [
     {
@@ -68,10 +69,20 @@ MODULOS: list[dict] = [
                 "id": "etapa-5",
                 "label": "Etapa 5",
                 "sublabel": "Analisis multidimensional",
-                "estado": "En desarrollo",
+                "estado": "Completa",
                 "paginas": [
                     {"endpoint": f"etapa5.{p['slug']}", "label": p["label"]}
                     for p in _ETAPA5_PAGINAS
+                ],
+            },
+            {
+                "id": "etapa-6",
+                "label": "Etapa 6",
+                "sublabel": "Conocimiento oculto",
+                "estado": "Completa",
+                "paginas": [
+                    {"endpoint": f"etapa6.{p['slug']}", "label": p["label"]}
+                    for p in _ETAPA6_PAGINAS
                 ],
             },
             # misma forma: {"id", "label", "sublabel", "estado", "paginas"}.

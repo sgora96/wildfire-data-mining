@@ -1,0 +1,228 @@
+{% extends "_shell.html" %}
+{% block title %}Conocimiento Oculto{% endblock %}
+{% block meta_description %}Etapa 6 - Conocimiento oculto de los incendios de la cobertura vegetal: aprendizaje supervisado, clustering y comentarios de YouTube con Orange Data Mining.{% endblock %}
+{% set repo = 'https://github.com/sgora96/wildfire-data-mining' %}
+{% set pdf = url_for('static', filename='docs/Informe_Etapa6_Conocimiento_Oculto.pdf') %}
+{% block content %}
+
+<p class="text-xs font-semibold uppercase tracking-[0.2em] text-ember-400">Etapa 6</p>
+<h1 class="mt-2 text-3xl font-extrabold tracking-tight text-white sm:text-4xl">Conocimiento oculto</h1>
+<p class="mt-3 max-w-3xl text-sm text-slate-300">
+  Qué se descubre al ir más allá de los conteos y las matrices de las etapas anteriores: un modelo de aprendizaje
+  supervisado, un agrupamiento de departamentos y el análisis de comentarios de YouTube, todo en Orange Data Mining,
+  sobre los 35.355 incendios de la cobertura vegetal del IDEAM (2010-2024). Esta página resume los hallazgos; el
+  detalle y las capturas están en el informe técnico.
+</p>
+
+<div class="mt-5 flex flex-wrap gap-3">
+  <a href="{{ pdf }}" class="inline-flex items-center gap-2 rounded-lg bg-ember-600 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-ember-600/20 transition hover:bg-ember-500">
+    Descargar el informe técnico (PDF)
+    <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 4v12M6 12l6 6 6-6M5 20h14"/></svg>
+  </a>
+  <a href="#video" class="inline-flex items-center gap-2 rounded-lg border border-white/20 px-4 py-2 text-sm font-semibold text-slate-200 transition hover:bg-white/10">Ver el video de sustentación</a>
+  <a href="{{ repo }}" target="_blank" rel="noopener" class="inline-flex items-center gap-2 rounded-lg border border-white/20 px-4 py-2 text-sm font-semibold text-slate-200 transition hover:bg-white/10">Repositorio</a>
+</div>
+
+<!-- ===================== LOS TRES ANALISIS ===================== -->
+<section class="mt-8">
+  <h2 class="text-sm font-bold uppercase tracking-wider text-white">Los tres análisis</h2>
+  <div class="mt-4 grid gap-4 lg:grid-cols-3">
+
+    <article class="flex flex-col rounded-2xl border border-white/10 bg-ash-900/60 p-5 shadow-xl">
+      <p class="text-[11px] font-bold uppercase tracking-wider text-ember-400">1 · Aprendizaje supervisado</p>
+      <h3 class="mt-1 text-base font-bold text-white">¿Puede predecirse que un incendio será grande?</h3>
+      <p class="mt-2 text-sm text-slate-300">Clasificación de los 34.579 incendios con área (más de 100 ha = grande; solo el 4,84 % lo es) con año, mes, departamento y hoja de origen, evaluada con validación cruzada. Se comparan regresión logística, Random Forest y kNN, y se elige la <strong>regresión logística</strong> con clases balanceadas.</p>
+      <dl class="mt-4 grid grid-cols-3 gap-2 text-center">
+        <div class="rounded-lg bg-white/5 p-2"><dt class="text-[10px] uppercase tracking-wider text-slate-400">AUC</dt><dd class="text-lg font-extrabold text-white">0,772</dd></div>
+        <div class="rounded-lg bg-white/5 p-2"><dt class="text-[10px] uppercase tracking-wider text-slate-400">Recall</dt><dd class="text-lg font-extrabold text-white">0,694</dd></div>
+        <div class="rounded-lg bg-white/5 p-2"><dt class="text-[10px] uppercase tracking-wider text-slate-400">Precisión</dt><dd class="text-lg font-extrabold text-white">0,111</dd></div>
+      </dl>
+      <p class="mt-4 text-sm text-slate-300"><strong class="text-white">Hallazgo:</strong> el departamento es la variable que más pesa. Vichada (25,8 %), Arauca (21,1 %), Casanare (15,8 %), Meta (14,3 %) y Caquetá (14,1 %) tienen las mayores proporciones de incendios grandes, frente a 4,84 % en general. El modelo detecta 1.161 de los 1.674 grandes, pero con 9.274 falsas alarmas: sirve para priorizar, no para decidir.</p>
+      <img src="{{ url_for('static', filename='etapa6/supervisado_nomograma.png') }}" alt="Nomograma de la regresión logística: el departamento es la variable de mayor peso" class="mt-4 rounded-lg border border-white/10" loading="lazy">
+      <p class="mt-1 text-[11px] text-slate-500">Nomograma de la regresión logística (clase «Grande»).</p>
+      <a href="{{ repo }}/blob/main/docs/etapa6/informe_supervisado.md" target="_blank" rel="noopener" class="mt-auto pt-4 text-sm font-semibold text-ember-400 hover:underline">Informe de esta sección →</a>
+    </article>
+
+    <article class="flex flex-col rounded-2xl border border-white/10 bg-ash-900/60 p-5 shadow-xl">
+      <p class="text-[11px] font-bold uppercase tracking-wider text-ember-400">2 · Clustering</p>
+      <h3 class="mt-1 text-base font-bold text-white">¿Qué departamentos comparten un perfil de incendios?</h3>
+      <p class="mt-2 text-sm text-slate-300">Agrupamiento de 32 departamentos por intensidad, estacionalidad, extensión territorial y regularidad entre años (variables estandarizadas, sin usar el área). k-Means con k = 3, elegido por la silueta y contrastado con el jerárquico (Ward).</p>
+      <dl class="mt-4 grid grid-cols-3 gap-2 text-center">
+        <div class="rounded-lg bg-white/5 p-2"><dt class="text-[10px] uppercase tracking-wider text-slate-400">Grupos</dt><dd class="text-lg font-extrabold text-white">3</dd></div>
+        <div class="rounded-lg bg-white/5 p-2"><dt class="text-[10px] uppercase tracking-wider text-slate-400">Silueta</dt><dd class="text-lg font-extrabold text-white">0,429</dd></div>
+        <div class="rounded-lg bg-white/5 p-2"><dt class="text-[10px] uppercase tracking-wider text-slate-400">Rand ajust.</dt><dd class="text-lg font-extrabold text-white">0,891</dd></div>
+      </dl>
+      <ul class="mt-4 space-y-1 text-sm text-slate-300">
+        <li><strong class="text-white">A · Andinos grandes y extendidos</strong> (4): Cundinamarca, Antioquia, Boyacá y Santander.</li>
+        <li><strong class="text-white">B · Pico en julio-septiembre</strong> (8): Huila, Tolima, Nariño, Valle del Cauca y otros.</li>
+        <li><strong class="text-white">C · Pico en enero-marzo, menos eventos</strong> (20): Llanos, Caribe y Amazonía.</li>
+      </ul>
+      <p class="mt-3 text-sm text-slate-300"><strong class="text-white">Hallazgo:</strong> el calendario divide al país en dos, y también separa a los departamentos andinos en dos perfiles. Los tres grupos se repiten con el algoritmo jerárquico (solo cambia Amazonas).</p>
+      <img src="{{ url_for('static', filename='etapa6/clustering_silueta.png') }}" alt="Silueta promedio de k-Means para k de 2 a 8: el mayor valor es con k = 3" class="mt-4 rounded-lg border border-white/10" loading="lazy">
+      <p class="mt-1 text-[11px] text-slate-500">Silueta de k-Means de 2 a 8 grupos.</p>
+      <a href="{{ repo }}/blob/main/docs/etapa6/informe_clustering.md" target="_blank" rel="noopener" class="mt-auto pt-4 text-sm font-semibold text-ember-400 hover:underline">Informe de esta sección →</a>
+    </article>
+
+    <article class="flex flex-col rounded-2xl border border-white/10 bg-ash-900/60 p-5 shadow-xl">
+      <p class="text-[11px] font-bold uppercase tracking-wider text-ember-400">3 · Comentarios de YouTube</p>
+      <h3 class="mt-1 text-base font-bold text-white">¿Qué dice la conversación pública sobre las causas?</h3>
+      <p class="mt-2 text-sm text-slate-300">Extracción con la API de YouTube de 768 comentarios de 8 videos sobre incendios forestales en Colombia; tras la limpieza quedaron 703. Análisis en Orange Text: temas (LDA), clustering jerárquico y sentimiento.</p>
+      <dl class="mt-4 grid grid-cols-3 gap-2 text-center">
+        <div class="rounded-lg bg-white/5 p-2"><dt class="text-[10px] uppercase tracking-wider text-slate-400">Videos</dt><dd class="text-lg font-extrabold text-white">8</dd></div>
+        <div class="rounded-lg bg-white/5 p-2"><dt class="text-[10px] uppercase tracking-wider text-slate-400">Comentarios</dt><dd class="text-lg font-extrabold text-white">703</dd></div>
+        <div class="rounded-lg bg-white/5 p-2"><dt class="text-[10px] uppercase tracking-wider text-slate-400">Temas</dt><dd class="text-lg font-extrabold text-white">4</dd></div>
+      </dl>
+      <p class="mt-4 text-sm text-slate-300"><strong class="text-white">Hallazgo:</strong> el 45 % de los comentarios (316 de 703) atribuye el incendio a una causa política o intencional, mientras el IDEAM solo registra la causa en el 11,7 % de los eventos (4.148 de 35.355). El tono varía mucho por video (sentimiento promedio de +5,66 a −6,01).</p>
+      <img src="{{ url_for('static', filename='etapa6/youtube_temas.png') }}" alt="Los 4 temas de LDA con sus palabras clave en Orange" class="mt-4 rounded-lg border border-white/10" loading="lazy">
+      <p class="mt-1 text-[11px] text-slate-500">Los 4 temas de LDA en Orange (Topic Modelling).</p>
+      <a href="{{ repo }}/blob/main/docs/etapa6/informe_youtube.md" target="_blank" rel="noopener" class="mt-auto pt-4 text-sm font-semibold text-ember-400 hover:underline">Informe de esta sección →</a>
+    </article>
+  </div>
+</section>
+
+<!-- ===================== CRUCE ===================== -->
+<section class="mt-8 rounded-2xl border border-white/10 bg-ash-900/60 p-6 shadow-xl">
+  <h2 class="text-sm font-bold uppercase tracking-wider text-white">Cruce de resultados: los grupos de departamentos y los incendios grandes</h2>
+  <p class="mt-2 max-w-3xl text-sm text-slate-300">
+    Al cruzar los tres grupos del clustering con los incendios grandes del ejercicio supervisado se ve que
+    <strong class="text-white">el tamaño no sigue a la frecuencia</strong>: el grupo con más eventos tiene la menor proporción de incendios grandes, y el de
+    pico en enero-marzo, con menos eventos, reúne más de la mitad.
+  </p>
+  <div class="mt-4 overflow-x-auto rounded-xl border border-white/10">
+    <table class="w-full border-collapse text-left text-xs text-slate-200">
+      <thead class="bg-white/5 text-slate-300">
+        <tr>
+          <th class="px-3 py-2 font-semibold">Grupo (clustering)</th>
+          <th class="px-3 py-2 text-right font-semibold">Eventos con área</th>
+          <th class="px-3 py-2 text-right font-semibold">Grandes</th>
+          <th class="px-3 py-2 font-semibold">% de sus eventos que son grandes</th>
+          <th class="px-3 py-2 text-right font-semibold">% de los eventos</th>
+          <th class="px-3 py-2 text-right font-semibold">% de los grandes</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for nombre, eventos, grandes, pct, pe, pg in [
+          ('A · Andinos grandes y extendidos', '13.301', '245', 1.84, '38,5 %', '14,6 %'),
+          ('B · Pico en julio-septiembre', '11.759', '504', 4.29, '34,1 %', '30,1 %'),
+          ('C · Pico en enero-marzo, menos eventos', '9.471', '925', 9.77, '27,4 %', '55,3 %')] %}
+        <tr class="border-t border-white/5">
+          <th class="px-3 py-2 font-medium">{{ nombre }}</th>
+          <td class="px-3 py-2 text-right tabular-nums">{{ eventos }}</td>
+          <td class="px-3 py-2 text-right tabular-nums">{{ grandes }}</td>
+          <td class="px-3 py-2">
+            <div class="flex items-center gap-2">
+              <div class="h-2 w-28 rounded-full bg-white/10"><div class="h-2 rounded-full bg-ember-500" style="width: {{ (pct / 12 * 100)|round(0)|int }}%"></div></div>
+              <span class="tabular-nums">{{ ('%.2f'|format(pct))|replace('.', ',') }} %</span>
+            </div>
+          </td>
+          <td class="px-3 py-2 text-right tabular-nums">{{ pe }}</td>
+          <td class="px-3 py-2 text-right tabular-nums">{{ pg }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+      <tfoot class="border-t border-white/20 bg-white/5 font-semibold">
+        <tr><th class="px-3 py-2">32 departamentos</th><td class="px-3 py-2 text-right tabular-nums">34.531</td><td class="px-3 py-2 text-right tabular-nums">1.674</td><td class="px-3 py-2 tabular-nums">4,85 %</td><td class="px-3 py-2 text-right">100 %</td><td class="px-3 py-2 text-right">100 %</td></tr>
+      </tfoot>
+    </table>
+  </div>
+  <p class="mt-3 max-w-3xl text-sm text-slate-300">
+    Dentro del grupo C, el efecto se concentra en cinco departamentos (Vichada, Arauca, Casanare, Meta y Caquetá): reúnen 663 de los 1.674
+    incendios grandes (39,6 %) con solo el 11,5 % de los eventos. El resto del grupo C tiene 4,78 %, igual al promedio general.
+    El calendario no basta para explicar el tamaño: el departamento pesa.
+  </p>
+  <p class="mt-2 text-xs text-slate-500">Calculado con <code class="font-mono">scripts/etapa6/cruce_resultados.py</code>: pertenencia a los grupos del informe de clustering y eventos con área y año del archivo supervisado.</p>
+</section>
+
+<!-- ===================== CONCLUSIONES ===================== -->
+<section class="mt-6 grid gap-4 lg:grid-cols-2">
+  <article class="rounded-2xl border border-white/10 bg-ash-900/60 p-6 shadow-xl">
+    <h2 class="text-sm font-bold uppercase tracking-wider text-white">Conclusiones integradas</h2>
+    <ul class="mt-3 list-disc space-y-2 pl-5 text-sm text-slate-300">
+      <li><strong class="text-white">El tamaño se asocia más con dónde ocurre que con cuándo o con cuántos incendios hay.</strong> Es el hallazgo que comparten el modelo supervisado y el clustering.</li>
+      <li><strong class="text-white">Coinciden en lo territorial:</strong> los cinco departamentos de mayor proporción de incendios grandes están todos en el grupo C.</li>
+      <li><strong class="text-white">Difieren:</strong> el grupo andino A tiene los incendios más frecuentes y regulares, pero la menor proporción de grandes (1,84 %).</li>
+      <li><strong class="text-white">Los comentarios aportan lo que no hay en los datos:</strong> una narrativa pública que da por hecha la intencionalidad, frente a un registro que desconoce la causa en casi nueve de cada diez eventos. Los 8 videos tratan de la zona andina; ninguno, de un departamento del grupo C.</li>
+    </ul>
+  </article>
+  <article class="rounded-2xl border border-white/10 bg-ash-900/60 p-6 shadow-xl">
+    <h2 class="text-sm font-bold uppercase tracking-wider text-white">Evidencia frente a hipótesis</h2>
+    <p class="mt-3 text-xs font-bold uppercase tracking-wider text-emerald-400">Respaldado por evidencia</p>
+    <ul class="mt-1 list-disc space-y-1 pl-5 text-sm text-slate-300">
+      <li>El grupo C concentra el 55,3 % de los incendios grandes con el 27,4 % de los eventos.</li>
+      <li>El departamento es la variable que más pesa para predecir un incendio grande (AUC 0,772).</li>
+      <li>Hay 3 perfiles de departamentos, estables frente al algoritmo.</li>
+      <li>El 45 % de los comentarios atribuye el incendio a una causa política o intencional; el IDEAM registra la causa en el 11,7 % de los eventos.</li>
+    </ul>
+    <p class="mt-4 text-xs font-bold uppercase tracking-wider text-amber-400">Hipótesis por validar</p>
+    <ul class="mt-1 list-disc space-y-1 pl-5 text-sm text-slate-300">
+      <li>Que la concentración en esos departamentos se deba a la vegetación de sabana abierta o a diferencias de respuesta y reporte.</li>
+      <li>Que la estacionalidad se deba al régimen de lluvias.</li>
+      <li>Que los incendios sean realmente provocados: es una percepción de quienes comentaron.</li>
+      <li>Que el modelo se sostenga en el tiempo: con 2023-2024 el AUC baja a 0,70.</li>
+    </ul>
+  </article>
+</section>
+
+<section class="mt-6 rounded-2xl border border-white/10 bg-ash-900/60 p-6 shadow-xl">
+  <h2 class="text-sm font-bold uppercase tracking-wider text-white">Decisiones que podrían apoyarse</h2>
+  <ul class="mt-3 list-disc space-y-2 pl-5 text-sm text-slate-300">
+    <li>Priorizar la respuesta ante incendios extensos antes de enero en Vichada, Arauca, Casanare, Meta y Caquetá.</li>
+    <li>Preparar la zona andina por frecuencia y por temporada (antes de enero en el grupo A y antes de julio en el grupo B), sin dimensionarla como la de los incendios más extensos.</li>
+    <li>Usar el modelo para priorizar departamentos y meses, no como alarma automática: con una precisión de 11 % el umbral debe ajustarse al costo de una falsa alarma.</li>
+    <li>Mejorar el registro de la causa y de la cobertura, que hoy faltan en la mayoría de los eventos.</li>
+  </ul>
+</section>
+
+<!-- ===================== INFORME Y VIDEO ===================== -->
+<section id="video" class="mt-6 grid gap-4 lg:grid-cols-2">
+  <article class="rounded-2xl border border-white/10 bg-ash-900/60 p-6 shadow-xl">
+    <h2 class="text-sm font-bold uppercase tracking-wider text-white">Informe técnico</h2>
+    <p class="mt-2 text-sm text-slate-300">Informe en PDF con el contexto, los datos y sus transformaciones, los flujos de Orange (widgets, conexiones y parámetros), la evaluación de los tres modelos, el clustering, el análisis de comentarios y las conclusiones integradas, con capturas explicadas.</p>
+    <a href="{{ pdf }}" class="mt-4 inline-flex items-center gap-2 rounded-lg bg-ember-600 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-ember-600/20 transition hover:bg-ember-500">
+      Descargar el informe técnico (PDF)
+      <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 4v12M6 12l6 6 6-6M5 20h14"/></svg>
+    </a>
+  </article>
+  <article class="rounded-2xl border border-white/10 bg-ash-900/60 p-6 shadow-xl">
+    <h2 class="text-sm font-bold uppercase tracking-wider text-white">Video de sustentación</h2>
+    {% if video_embed %}
+    <div class="mt-3 aspect-video overflow-hidden rounded-xl border border-white/10">
+      <iframe src="{{ video_embed }}" title="Video de sustentación de la Etapa 6" class="h-full w-full" allowfullscreen loading="lazy"></iframe>
+    </div>
+    <a href="{{ video_url }}" target="_blank" rel="noopener" class="mt-3 inline-block text-sm font-semibold text-ember-400 hover:underline">Abrir el video en una pestaña nueva →</a>
+    {% elif video_url %}
+    <p class="mt-2 text-sm text-slate-300">Explicación, de máximo 10 minutos, de los hallazgos de cada sección, la selección del modelo, la interpretación de los grupos y las conclusiones.</p>
+    <a href="{{ video_url }}" target="_blank" rel="noopener" class="mt-4 inline-flex items-center gap-2 rounded-lg bg-ember-600 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-ember-600/20 transition hover:bg-ember-500">Ver el video</a>
+    {% else %}
+    <p class="mt-2 text-sm text-slate-300">Explicación, de máximo 10 minutos, de los hallazgos de cada sección, la selección del modelo, la interpretación de los grupos y las conclusiones.</p>
+    <p class="mt-3 rounded-lg border border-dashed border-white/15 p-3 text-sm text-slate-400">El enlace del video aún no está disponible. Se publicará aquí en cuanto esté listo.</p>
+    {% endif %}
+  </article>
+</section>
+
+<!-- ===================== LIMITACIONES, REPOSITORIO Y REPRODUCCION ===================== -->
+<section class="mt-6 grid gap-4 lg:grid-cols-2">
+  <article class="rounded-2xl border border-white/10 bg-ash-900/60 p-6 shadow-xl">
+    <h2 class="text-sm font-bold uppercase tracking-wider text-white">Limitaciones</h2>
+    <ul class="mt-3 list-disc space-y-2 pl-5 text-sm text-slate-300">
+      <li>Los datos del IDEAM son eventos reportados, y el reporte cambia entre hojas de origen y años.</li>
+      <li>La muestra de YouTube es pequeña: 8 videos, uno con el 42,7 % de los comentarios. Son opiniones de quienes comentaron, no de toda la población.</li>
+      <li>Los 8 videos son de agosto y septiembre de 2026; los datos del IDEAM llegan hasta 2024. El contraste es de enfoque, no de los mismos incendios.</li>
+      <li>El modelo usa pocas variables: causa y cobertura faltan en la mayoría de los eventos y las coordenadas son nulas en el 97 %.</li>
+      <li>Toda relación encontrada es una asociación, no una causa.</li>
+    </ul>
+  </article>
+  <article class="rounded-2xl border border-white/10 bg-ash-900/60 p-6 shadow-xl">
+    <h2 class="text-sm font-bold uppercase tracking-wider text-white">Repositorio y cómo reproducirlo</h2>
+    <ul class="mt-3 space-y-2 text-sm text-slate-300">
+      <li><strong class="text-white">Flujos de Orange:</strong> <a class="text-ember-400 hover:underline" href="{{ repo }}/tree/main/orange" target="_blank" rel="noopener"><code class="font-mono">orange/</code></a> (supervisado, clustering y texto).</li>
+      <li><strong class="text-white">Código y scripts:</strong> <a class="text-ember-400 hover:underline" href="{{ repo }}/tree/main/scripts/etapa6" target="_blank" rel="noopener"><code class="font-mono">scripts/etapa6/</code></a> (preparación de datos, extracción y limpieza de comentarios, cruce de resultados).</li>
+      <li><strong class="text-white">Datos:</strong> <a class="text-ember-400 hover:underline" href="{{ repo }}/tree/main/data/etapa6" target="_blank" rel="noopener"><code class="font-mono">data/etapa6/</code></a>. Los comentarios se publican sin datos de sus autores y sin la clave de la API.</li>
+      <li><strong class="text-white">Informes por sección y conclusiones:</strong> <a class="text-ember-400 hover:underline" href="{{ repo }}/tree/main/docs/etapa6" target="_blank" rel="noopener"><code class="font-mono">docs/etapa6/</code></a>.</li>
+      <li><strong class="text-white">Fuente de los datos:</strong> BD-ICV del IDEAM, 2010-2024.</li>
+    </ul>
+    <p class="mt-3 text-xs text-slate-500">Para abrir los flujos se necesita Orange 3.40 (con el complemento Text para el de YouTube); las instrucciones de cada sección están en su informe.</p>
+  </article>
+</section>
+
+{% endblock %}

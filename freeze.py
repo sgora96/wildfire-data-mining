@@ -58,6 +58,7 @@ def dashboard_pages():
         "etapa5.vista2",
         "etapa5.vista3",
         "etapa5.vista4",
+        "etapa6.conocimiento_oculto",
     ):
         yield endpoint, {}
 

@@ -37,6 +37,7 @@ def create_app(config_name: str | None = None) -> Flask:
     from app.etapa3 import etapa3_bp
     from app.etapa4 import etapa4_bp
     from app.etapa5 import etapa5_bp, olap_api_bp
+    from app.etapa6 import etapa6_bp
 
     app.register_blueprint(main_bp)
     app.register_blueprint(api_bp, url_prefix="/api")
@@ -45,6 +46,7 @@ def create_app(config_name: str | None = None) -> Flask:
     app.register_blueprint(etapa3_bp)
     app.register_blueprint(etapa4_bp)
     app.register_blueprint(etapa5_bp)
+    app.register_blueprint(etapa6_bp)
     app.register_blueprint(olap_api_bp)
 
     # --- Manejo de errores en formato JSON para el prefijo /api -------------
